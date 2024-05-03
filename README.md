@@ -31,8 +31,8 @@ response, err := client.Fees.Calculate(
   context.TODO(),
   &mercoa.CalculateFeesRequest{
     Amount:               42.0,
-    PaymentSourceID:      "c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
-    PaymentDestinationID: "12121928-47a0-488b-9357-70e1fded0568",
+    PaymentSourceID:      "pm_c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
+    PaymentDestinationID: "pm_12121928-47a0-488b-9357-70e1fded0568",
 
   },
 )
@@ -73,8 +73,8 @@ response, err := client.Fees.Calculate(
   ctx,
   &mercoa.CalculateFeesRequest{
     Amount:               42.0,
-    PaymentSourceID:      "c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
-    PaymentDestinationID: "12121928-47a0-488b-9357-70e1fded0568",
+    PaymentSourceID:      "pm_c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
+    PaymentDestinationID: "pm_12121928-47a0-488b-9357-70e1fded0568",
 
   },
 )
@@ -105,8 +105,8 @@ response, err := client.Fees.Calculate(
   ctx,
   &mercoa.CalculateFeesRequest{
     Amount:               42.0,
-    PaymentSourceID:      "c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
-    PaymentDestinationID: "12121928-47a0-488b-9357-70e1fded0568",
+    PaymentSourceID:      "pm_c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
+    PaymentDestinationID: "pm_12121928-47a0-488b-9357-70e1fded0568",
   },
   option.WithToken("<YOUR_API_KEY>"),
 )
@@ -146,8 +146,8 @@ response, err := client.Fees.Calculate(
   ctx,
   &mercoa.CalculateFeesRequest{
     Amount:               42.0,
-    PaymentSourceID:      "c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
-    PaymentDestinationID: "12121928-47a0-488b-9357-70e1fded0568",
+    PaymentSourceID:      "pm_c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
+    PaymentDestinationID: "pm_12121928-47a0-488b-9357-70e1fded0568",
   },
   option.WithMaxAttempts(1),
 )
@@ -163,8 +163,8 @@ response, err := client.Fees.Calculate(
   ctx,
   &mercoa.CalculateFeesRequest{
     Amount:               42.0,
-    PaymentSourceID:      "c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
-    PaymentDestinationID: "12121928-47a0-488b-9357-70e1fded0568",
+    PaymentSourceID:      "pm_c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
+    PaymentDestinationID: "pm_12121928-47a0-488b-9357-70e1fded0568",
   },
 )
 if err != nil {
@@ -183,8 +183,8 @@ response, err := client.Fees.Calculate(
   ctx,
   &mercoa.CalculateFeesRequest{
     Amount:               42.0,
-    PaymentSourceID:      "c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
-    PaymentDestinationID: "12121928-47a0-488b-9357-70e1fded0568",
+    PaymentSourceID:      "pm_c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
+    PaymentDestinationID: "pm_12121928-47a0-488b-9357-70e1fded0568",
   },
 )
 if err != nil {
@@ -204,8 +204,8 @@ response, err := client.Fees.Calculate(
   ctx,
   &mercoa.CalculateFeesRequest{
     Amount:               42.0,
-    PaymentSourceID:      "c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
-    PaymentDestinationID: "12121928-47a0-488b-9357-70e1fded0568",
+    PaymentSourceID:      "pm_c0f9f5e8-516b-4516-9185-0a2c67ed1fe5",
+    PaymentDestinationID: "pm_12121928-47a0-488b-9357-70e1fded0568",
   },
 )
 if err != nil {
