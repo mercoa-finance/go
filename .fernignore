@@ -1,5 +1,2 @@
 # Specify files that shouldn't be modified by Fern
 README.md
-
-# Temporary fix for mistakenly encoding images as query parameters.
-ocr.go
