@@ -14,9 +14,9 @@ type RunOcrSync struct {
 	// When using the Entity vendor network, specify the entity to use if. EntityId on an auth token will take precedence over this parameter.
 	EntityID *EntityID `json:"-" url:"entityId,omitempty"`
 	// MIME type of the image. Supported types are image/png, image/jpeg, and application/pdf.
-	MimeType string `json:"mimeType" url:"mimeType"`
+	MimeType string `json:"mimeType" url:"-"`
 	// Base64 encoded image or PDF. PNG, JPG, and PDF are supported. 10MB max.
-	Image string `json:"image" url:"image"`
+	Image string `json:"image" url:"-"`
 }
 
 type RunOcrAsync struct {
