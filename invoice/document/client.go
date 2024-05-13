@@ -547,7 +547,7 @@ func (c *Client) GetSourceEmail(
 	ctx context.Context,
 	invoiceID mercoafinancego.InvoiceID,
 	opts ...option.RequestOption,
-) (*mercoafinancego.SourceEmailResponse, error) {
+) (*mercoafinancego.EmailLogResponse, error) {
 	options := core.NewRequestOptions(opts...)
 
 	baseURL := "https://api.mercoa.com"
@@ -629,7 +629,7 @@ func (c *Client) GetSourceEmail(
 		return apiError
 	}
 
-	var response *mercoafinancego.SourceEmailResponse
+	var response *mercoafinancego.EmailLogResponse
 	if err := c.caller.Call(
 		ctx,
 		&core.CallParams{

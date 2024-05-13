@@ -12,6 +12,7 @@ import (
 	entity "github.com/mercoa-finance/go/entity"
 	approvalpolicy "github.com/mercoa-finance/go/entity/approvalpolicy"
 	counterparty "github.com/mercoa-finance/go/entity/counterparty"
+	emaillogclient "github.com/mercoa-finance/go/entity/emaillog/client"
 	externalaccountingsystem "github.com/mercoa-finance/go/entity/externalaccountingsystem"
 	invoice "github.com/mercoa-finance/go/entity/invoice"
 	metadata "github.com/mercoa-finance/go/entity/metadata"
@@ -29,6 +30,7 @@ type Client struct {
 	caller  *core.Caller
 	header  http.Header
 
+	EmailLog                 *emaillogclient.Client
 	User                     *userclient.Client
 	ApprovalPolicy           *approvalpolicy.Client
 	Counterparty             *counterparty.Client
@@ -51,6 +53,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 			},
 		),
 		header:                   options.ToHeader(),
+		EmailLog:                 emaillogclient.NewClient(opts...),
 		User:                     userclient.NewClient(opts...),
 		ApprovalPolicy:           approvalpolicy.NewClient(opts...),
 		Counterparty:             counterparty.NewClient(opts...),

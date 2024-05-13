@@ -112,3 +112,62 @@ func (c *CodatCompanyResponse) String() string {
 	}
 	return fmt.Sprintf("%#v", c)
 }
+
+type RutterCompanyCreationRequest struct {
+	// The access token for the existing Rutter connection. If the connection does not exist, leave this field blank and Rutter will create a new connection.
+	AccessToken *string `json:"accessToken,omitempty" url:"accessToken,omitempty"`
+
+	_rawJSON json.RawMessage
+}
+
+func (r *RutterCompanyCreationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler RutterCompanyCreationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RutterCompanyCreationRequest(value)
+	r._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RutterCompanyCreationRequest) String() string {
+	if len(r._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(r._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+type RutterCompanyResponse struct {
+	AccessToken string `json:"accessToken" url:"accessToken"`
+
+	_rawJSON json.RawMessage
+}
+
+func (r *RutterCompanyResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler RutterCompanyResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RutterCompanyResponse(value)
+	r._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RutterCompanyResponse) String() string {
+	if len(r._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(r._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}

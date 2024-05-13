@@ -7,7 +7,8 @@ import (
 )
 
 type CompleteMicroDepositsRequest struct {
-	Amounts []int `json:"amounts,omitempty" url:"amounts,omitempty"`
+	// The amounts of the micro deposits in cents
+	Amounts []int `json:"amounts,omitempty" url:"-"`
 }
 
 type GetAllPaymentMethodsRequest struct {

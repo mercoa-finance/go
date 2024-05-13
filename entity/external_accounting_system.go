@@ -9,8 +9,9 @@ import (
 )
 
 type ExternalAccountingSystemCompanyCreationRequest struct {
-	Type  string
-	Codat *CodatCompanyCreationRequest
+	Type   string
+	Codat  *CodatCompanyCreationRequest
+	Rutter *RutterCompanyCreationRequest
 }
 
 func (e *ExternalAccountingSystemCompanyCreationRequest) UnmarshalJSON(data []byte) error {
@@ -28,6 +29,12 @@ func (e *ExternalAccountingSystemCompanyCreationRequest) UnmarshalJSON(data []by
 			return err
 		}
 		e.Codat = value
+	case "rutter":
+		value := new(RutterCompanyCreationRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		e.Rutter = value
 	}
 	return nil
 }
@@ -36,23 +43,31 @@ func (e ExternalAccountingSystemCompanyCreationRequest) MarshalJSON() ([]byte, e
 	if e.Codat != nil {
 		return core.MarshalJSONWithExtraProperty(e.Codat, "type", "codat")
 	}
+	if e.Rutter != nil {
+		return core.MarshalJSONWithExtraProperty(e.Rutter, "type", "rutter")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", e)
 }
 
 type ExternalAccountingSystemCompanyCreationRequestVisitor interface {
 	VisitCodat(*CodatCompanyCreationRequest) error
+	VisitRutter(*RutterCompanyCreationRequest) error
 }
 
 func (e *ExternalAccountingSystemCompanyCreationRequest) Accept(visitor ExternalAccountingSystemCompanyCreationRequestVisitor) error {
 	if e.Codat != nil {
 		return visitor.VisitCodat(e.Codat)
 	}
+	if e.Rutter != nil {
+		return visitor.VisitRutter(e.Rutter)
+	}
 	return fmt.Errorf("type %T does not define a non-empty union type", e)
 }
 
 type ExternalAccountingSystemCompanyResponse struct {
-	Type  string
-	Codat *CodatCompanyResponse
+	Type   string
+	Codat  *CodatCompanyResponse
+	Rutter *RutterCompanyResponse
 }
 
 func (e *ExternalAccountingSystemCompanyResponse) UnmarshalJSON(data []byte) error {
@@ -70,6 +85,12 @@ func (e *ExternalAccountingSystemCompanyResponse) UnmarshalJSON(data []byte) err
 			return err
 		}
 		e.Codat = value
+	case "rutter":
+		value := new(RutterCompanyResponse)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		e.Rutter = value
 	}
 	return nil
 }
@@ -78,16 +99,23 @@ func (e ExternalAccountingSystemCompanyResponse) MarshalJSON() ([]byte, error) {
 	if e.Codat != nil {
 		return core.MarshalJSONWithExtraProperty(e.Codat, "type", "codat")
 	}
+	if e.Rutter != nil {
+		return core.MarshalJSONWithExtraProperty(e.Rutter, "type", "rutter")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", e)
 }
 
 type ExternalAccountingSystemCompanyResponseVisitor interface {
 	VisitCodat(*CodatCompanyResponse) error
+	VisitRutter(*RutterCompanyResponse) error
 }
 
 func (e *ExternalAccountingSystemCompanyResponse) Accept(visitor ExternalAccountingSystemCompanyResponseVisitor) error {
 	if e.Codat != nil {
 		return visitor.VisitCodat(e.Codat)
+	}
+	if e.Rutter != nil {
+		return visitor.VisitRutter(e.Rutter)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", e)
 }

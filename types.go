@@ -222,6 +222,96 @@ func (p *PhoneNumber) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
+type EmailLog struct {
+	ID        EmailLogID `json:"id" url:"id"`
+	Subject   string     `json:"subject" url:"subject"`
+	From      string     `json:"from" url:"from"`
+	To        string     `json:"to" url:"to"`
+	HTMLBody  string     `json:"htmlBody" url:"htmlBody"`
+	TextBody  string     `json:"textBody" url:"textBody"`
+	CreatedAt time.Time  `json:"createdAt" url:"createdAt"`
+	InvoiceID *InvoiceID `json:"invoiceId,omitempty" url:"invoiceId,omitempty"`
+
+	_rawJSON json.RawMessage
+}
+
+func (e *EmailLog) UnmarshalJSON(data []byte) error {
+	type embed EmailLog
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+	}{
+		embed: embed(*e),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*e = EmailLog(unmarshaler.embed)
+	e.CreatedAt = unmarshaler.CreatedAt.Time()
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailLog) MarshalJSON() ([]byte, error) {
+	type embed EmailLog
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+	}{
+		embed:     embed(*e),
+		CreatedAt: core.NewDateTime(e.CreatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (e *EmailLog) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EmailLogID = string
+
+type EmailLogResponse struct {
+	// Total number of logs for the given filters. This value is not limited by the limit parameter. It is provided so that you can determine how many pages of results are available.
+	Count int `json:"count" url:"count"`
+	// True if there are more logs available for the given filters.
+	HasMore bool        `json:"hasMore" url:"hasMore"`
+	Data    []*EmailLog `json:"data,omitempty" url:"data,omitempty"`
+
+	_rawJSON json.RawMessage
+}
+
+func (e *EmailLogResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailLogResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailLogResponse(value)
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailLogResponse) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
 type AccountType string
 
 const (
@@ -2118,6 +2208,7 @@ type TokenGenerationPagesOptions struct {
 	Notifications   *bool `json:"notifications,omitempty" url:"notifications,omitempty"`
 	Counterparties  *bool `json:"counterparties,omitempty" url:"counterparties,omitempty"`
 	Approvals       *bool `json:"approvals,omitempty" url:"approvals,omitempty"`
+	EmailLog        *bool `json:"emailLog,omitempty" url:"emailLog,omitempty"`
 
 	_rawJSON json.RawMessage
 }
@@ -2877,7 +2968,7 @@ type InvoiceCreationRequest struct {
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
 	// DEPRECATED. Use document field instead.
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
-	// ID of entity who created this invoice.
+	// ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 	// ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
@@ -3376,7 +3467,7 @@ type InvoiceRequest struct {
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
 	// DEPRECATED. Use document field instead.
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
-	// ID of entity who created this invoice.
+	// ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 	// ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
@@ -3677,59 +3768,6 @@ func (p *PaymentDestinationOptions) Accept(visitor PaymentDestinationOptionsVisi
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
-type SourceEmailResponse struct {
-	Subject   string    `json:"subject" url:"subject"`
-	From      string    `json:"from" url:"from"`
-	To        string    `json:"to" url:"to"`
-	HTMLBody  string    `json:"htmlBody" url:"htmlBody"`
-	TextBody  string    `json:"textBody" url:"textBody"`
-	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
-
-	_rawJSON json.RawMessage
-}
-
-func (s *SourceEmailResponse) UnmarshalJSON(data []byte) error {
-	type embed SourceEmailResponse
-	var unmarshaler = struct {
-		embed
-		CreatedAt *core.DateTime `json:"createdAt"`
-	}{
-		embed: embed(*s),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*s = SourceEmailResponse(unmarshaler.embed)
-	s.CreatedAt = unmarshaler.CreatedAt.Time()
-
-	s._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (s *SourceEmailResponse) MarshalJSON() ([]byte, error) {
-	type embed SourceEmailResponse
-	var marshaler = struct {
-		embed
-		CreatedAt *core.DateTime `json:"createdAt"`
-	}{
-		embed:     embed(*s),
-		CreatedAt: core.NewDateTime(s.CreatedAt),
-	}
-	return json.Marshal(marshaler)
-}
-
-func (s *SourceEmailResponse) String() string {
-	if len(s._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(s._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(s); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", s)
-}
-
 type OcrJobStatus string
 
 const (
@@ -3915,92 +3953,6 @@ func (c *ColorSchemeResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-type EmailLog struct {
-	ID         string    `json:"id" url:"id"`
-	From       string    `json:"from" url:"from"`
-	To         string    `json:"to" url:"to"`
-	Subject    string    `json:"subject" url:"subject"`
-	RawContent string    `json:"rawContent" url:"rawContent"`
-	CreatedAt  time.Time `json:"createdAt" url:"createdAt"`
-
-	_rawJSON json.RawMessage
-}
-
-func (e *EmailLog) UnmarshalJSON(data []byte) error {
-	type embed EmailLog
-	var unmarshaler = struct {
-		embed
-		CreatedAt *core.DateTime `json:"createdAt"`
-	}{
-		embed: embed(*e),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*e = EmailLog(unmarshaler.embed)
-	e.CreatedAt = unmarshaler.CreatedAt.Time()
-
-	e._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (e *EmailLog) MarshalJSON() ([]byte, error) {
-	type embed EmailLog
-	var marshaler = struct {
-		embed
-		CreatedAt *core.DateTime `json:"createdAt"`
-	}{
-		embed:     embed(*e),
-		CreatedAt: core.NewDateTime(e.CreatedAt),
-	}
-	return json.Marshal(marshaler)
-}
-
-func (e *EmailLog) String() string {
-	if len(e._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(e); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", e)
-}
-
-type EmailLogResponse struct {
-	// Total number of logs for the given start and end date filters. This value is not limited by the limit parameter. It is provided so that you can determine how many pages of results are available.
-	Count int `json:"count" url:"count"`
-	// True if there are more logs available for the given start and end date filters.
-	HasMore bool        `json:"hasMore" url:"hasMore"`
-	Data    []*EmailLog `json:"data,omitempty" url:"data,omitempty"`
-
-	_rawJSON json.RawMessage
-}
-
-func (e *EmailLogResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler EmailLogResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*e = EmailLogResponse(value)
-	e._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (e *EmailLogResponse) String() string {
-	if len(e._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(e); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", e)
-}
-
 type EmailProviderRequest struct {
 	Sender      *EmailSenderRequest `json:"sender,omitempty" url:"sender,omitempty"`
 	InboxDomain string              `json:"inboxDomain" url:"inboxDomain"`
@@ -4154,8 +4106,10 @@ func (e *EmailSenderResponse) String() string {
 }
 
 type ExternalAccountingSystemProviderRequest struct {
-	Type  string
-	Codat *CodatProviderRequest
+	Type   string
+	None   *CodatProviderRequest
+	Codat  *CodatProviderRequest
+	Rutter *RutterProviderRequest
 }
 
 func (e *ExternalAccountingSystemProviderRequest) UnmarshalJSON(data []byte) error {
@@ -4167,38 +4121,65 @@ func (e *ExternalAccountingSystemProviderRequest) UnmarshalJSON(data []byte) err
 	}
 	e.Type = unmarshaler.Type
 	switch unmarshaler.Type {
+	case "none":
+		value := new(CodatProviderRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		e.None = value
 	case "codat":
 		value := new(CodatProviderRequest)
 		if err := json.Unmarshal(data, &value); err != nil {
 			return err
 		}
 		e.Codat = value
+	case "rutter":
+		value := new(RutterProviderRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		e.Rutter = value
 	}
 	return nil
 }
 
 func (e ExternalAccountingSystemProviderRequest) MarshalJSON() ([]byte, error) {
+	if e.None != nil {
+		return core.MarshalJSONWithExtraProperty(e.None, "type", "none")
+	}
 	if e.Codat != nil {
 		return core.MarshalJSONWithExtraProperty(e.Codat, "type", "codat")
+	}
+	if e.Rutter != nil {
+		return core.MarshalJSONWithExtraProperty(e.Rutter, "type", "rutter")
 	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", e)
 }
 
 type ExternalAccountingSystemProviderRequestVisitor interface {
+	VisitNone(*CodatProviderRequest) error
 	VisitCodat(*CodatProviderRequest) error
+	VisitRutter(*RutterProviderRequest) error
 }
 
 func (e *ExternalAccountingSystemProviderRequest) Accept(visitor ExternalAccountingSystemProviderRequestVisitor) error {
+	if e.None != nil {
+		return visitor.VisitNone(e.None)
+	}
 	if e.Codat != nil {
 		return visitor.VisitCodat(e.Codat)
+	}
+	if e.Rutter != nil {
+		return visitor.VisitRutter(e.Rutter)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", e)
 }
 
 type ExternalAccountingSystemProviderResponse struct {
-	Type  string
-	None  *CodatProviderResponse
-	Codat *CodatProviderResponse
+	Type   string
+	None   *CodatProviderResponse
+	Codat  *CodatProviderResponse
+	Rutter *RutterProviderResponse
 }
 
 func (e *ExternalAccountingSystemProviderResponse) UnmarshalJSON(data []byte) error {
@@ -4222,6 +4203,12 @@ func (e *ExternalAccountingSystemProviderResponse) UnmarshalJSON(data []byte) er
 			return err
 		}
 		e.Codat = value
+	case "rutter":
+		value := new(RutterProviderResponse)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		e.Rutter = value
 	}
 	return nil
 }
@@ -4233,12 +4220,16 @@ func (e ExternalAccountingSystemProviderResponse) MarshalJSON() ([]byte, error) 
 	if e.Codat != nil {
 		return core.MarshalJSONWithExtraProperty(e.Codat, "type", "codat")
 	}
+	if e.Rutter != nil {
+		return core.MarshalJSONWithExtraProperty(e.Rutter, "type", "rutter")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", e)
 }
 
 type ExternalAccountingSystemProviderResponseVisitor interface {
 	VisitNone(*CodatProviderResponse) error
 	VisitCodat(*CodatProviderResponse) error
+	VisitRutter(*RutterProviderResponse) error
 }
 
 func (e *ExternalAccountingSystemProviderResponse) Accept(visitor ExternalAccountingSystemProviderResponseVisitor) error {
@@ -4247,6 +4238,9 @@ func (e *ExternalAccountingSystemProviderResponse) Accept(visitor ExternalAccoun
 	}
 	if e.Codat != nil {
 		return visitor.VisitCodat(e.Codat)
+	}
+	if e.Rutter != nil {
+		return visitor.VisitRutter(e.Rutter)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", e)
 }
@@ -4906,6 +4900,66 @@ func (p *PaymentRailResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+type RutterProviderRequest struct {
+	ClientID     string `json:"clientId" url:"clientId"`
+	ClientSecret string `json:"clientSecret" url:"clientSecret"`
+
+	_rawJSON json.RawMessage
+}
+
+func (r *RutterProviderRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler RutterProviderRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RutterProviderRequest(value)
+	r._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RutterProviderRequest) String() string {
+	if len(r._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(r._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+type RutterProviderResponse struct {
+	HasClientID     bool `json:"hasClientId" url:"hasClientId"`
+	HasClientSecret bool `json:"hasClientSecret" url:"hasClientSecret"`
+
+	_rawJSON json.RawMessage
+}
+
+func (r *RutterProviderResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler RutterProviderResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RutterProviderResponse(value)
+	r._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RutterProviderResponse) String() string {
+	if len(r._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(r._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
 }
 
 type BankAccountCheckOptions struct {
