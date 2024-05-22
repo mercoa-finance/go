@@ -69,22 +69,8 @@ func (c *Client) GetPayerLink(
 			return err
 		}
 		switch discriminant.ErrorName {
-		case "VendorNotFound":
-			value := new(mercoafinancego.VendorNotFound)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMissingError":
-			value := new(mercoafinancego.AuthHeaderMissingError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMalformedError":
-			value := new(mercoafinancego.AuthHeaderMalformedError)
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -106,6 +92,20 @@ func (c *Client) GetPayerLink(
 			return value
 		case "NotFound":
 			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -183,22 +183,8 @@ func (c *Client) SendPayerEmail(
 			return err
 		}
 		switch discriminant.ErrorName {
-		case "InvoiceError":
-			value := new(mercoafinancego.InvoiceError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMissingError":
-			value := new(mercoafinancego.AuthHeaderMissingError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMalformedError":
-			value := new(mercoafinancego.AuthHeaderMalformedError)
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -220,6 +206,20 @@ func (c *Client) SendPayerEmail(
 			return value
 		case "NotFound":
 			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -286,22 +286,8 @@ func (c *Client) GetVendorLink(
 			return err
 		}
 		switch discriminant.ErrorName {
-		case "VendorNotFound":
-			value := new(mercoafinancego.VendorNotFound)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMissingError":
-			value := new(mercoafinancego.AuthHeaderMissingError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMalformedError":
-			value := new(mercoafinancego.AuthHeaderMalformedError)
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -323,6 +309,20 @@ func (c *Client) GetVendorLink(
 			return value
 		case "NotFound":
 			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -391,22 +391,8 @@ func (c *Client) SendVendorEmail(
 			return err
 		}
 		switch discriminant.ErrorName {
-		case "InvoiceError":
-			value := new(mercoafinancego.InvoiceError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMissingError":
-			value := new(mercoafinancego.AuthHeaderMissingError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMalformedError":
-			value := new(mercoafinancego.AuthHeaderMalformedError)
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -428,6 +414,20 @@ func (c *Client) SendVendorEmail(
 			return value
 		case "NotFound":
 			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError

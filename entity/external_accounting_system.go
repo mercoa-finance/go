@@ -8,6 +8,15 @@ import (
 	core "github.com/mercoa-finance/go/core"
 )
 
+type SyncExternalSystemRequest struct {
+	// Sync vendors from external accounting system. Default is to pull vendors from external system.
+	Vendors *SyncType `json:"-" url:"vendors,omitempty"`
+	// Sync bills from external accounting system. Default is to not sync bills.
+	Bills *SyncType `json:"-" url:"bills,omitempty"`
+	// Sync GL accounts from external accounting system. Default is to pull GL accounts from external system. Pushing GL accounts is not supported.
+	GlAccounts *SyncType `json:"-" url:"glAccounts,omitempty"`
+}
+
 type ExternalAccountingSystemCompanyCreationRequest struct {
 	Type   string
 	Codat  *CodatCompanyCreationRequest
@@ -118,4 +127,32 @@ func (e *ExternalAccountingSystemCompanyResponse) Accept(visitor ExternalAccount
 		return visitor.VisitRutter(e.Rutter)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", e)
+}
+
+type SyncType string
+
+const (
+	SyncTypeNone SyncType = "none"
+	SyncTypePush SyncType = "push"
+	SyncTypePull SyncType = "pull"
+	SyncTypeBoth SyncType = "both"
+)
+
+func NewSyncTypeFromString(s string) (SyncType, error) {
+	switch s {
+	case "none":
+		return SyncTypeNone, nil
+	case "push":
+		return SyncTypePush, nil
+	case "pull":
+		return SyncTypePull, nil
+	case "both":
+		return SyncTypeBoth, nil
+	}
+	var t SyncType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SyncType) Ptr() *SyncType {
+	return &s
 }

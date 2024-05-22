@@ -47,9 +47,10 @@ type Address struct {
 	AddressLine2 *string `json:"addressLine2,omitempty" url:"addressLine2,omitempty"`
 	City         string  `json:"city" url:"city"`
 	// State or province code. Must be in the format XX.
-	StateOrProvince string  `json:"stateOrProvince" url:"stateOrProvince"`
-	PostalCode      string  `json:"postalCode" url:"postalCode"`
-	Country         *string `json:"country,omitempty" url:"country,omitempty"`
+	StateOrProvince string `json:"stateOrProvince" url:"stateOrProvince"`
+	// Postal code. Must be in the format XXXXX or XXXXX-XXXX.
+	PostalCode string  `json:"postalCode" url:"postalCode"`
+	Country    *string `json:"country,omitempty" url:"country,omitempty"`
 
 	_rawJSON json.RawMessage
 }
@@ -2968,10 +2969,10 @@ type InvoiceCreationRequest struct {
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
 	// DEPRECATED. Use document field instead.
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
-	// ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
-	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 	// ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
+	// ID of entity who created this invoice.
+	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
 
 	_rawJSON json.RawMessage
 }
@@ -3429,7 +3430,7 @@ func (i InvoiceOrderByField) Ptr() *InvoiceOrderByField {
 	return &i
 }
 
-type InvoiceRequest struct {
+type InvoiceRequestBase struct {
 	Status *InvoiceStatus `json:"status,omitempty" url:"status,omitempty"`
 	// Total amount of invoice in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
 	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
@@ -3467,16 +3468,14 @@ type InvoiceRequest struct {
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
 	// DEPRECATED. Use document field instead.
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
-	// ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
-	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 	// ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
 
 	_rawJSON json.RawMessage
 }
 
-func (i *InvoiceRequest) UnmarshalJSON(data []byte) error {
-	type embed InvoiceRequest
+func (i *InvoiceRequestBase) UnmarshalJSON(data []byte) error {
+	type embed InvoiceRequestBase
 	var unmarshaler = struct {
 		embed
 		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
@@ -3491,7 +3490,7 @@ func (i *InvoiceRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*i = InvoiceRequest(unmarshaler.embed)
+	*i = InvoiceRequestBase(unmarshaler.embed)
 	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
 	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
 	i.SettlementDate = unmarshaler.SettlementDate.TimePtr()
@@ -3503,8 +3502,8 @@ func (i *InvoiceRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (i *InvoiceRequest) MarshalJSON() ([]byte, error) {
-	type embed InvoiceRequest
+func (i *InvoiceRequestBase) MarshalJSON() ([]byte, error) {
+	type embed InvoiceRequestBase
 	var marshaler = struct {
 		embed
 		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
@@ -3525,7 +3524,7 @@ func (i *InvoiceRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(marshaler)
 }
 
-func (i *InvoiceRequest) String() string {
+func (i *InvoiceRequestBase) String() string {
 	if len(i._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
 			return value
@@ -3710,6 +3709,114 @@ func NewInvoiceStatusFromString(s string) (InvoiceStatus, error) {
 
 func (i InvoiceStatus) Ptr() *InvoiceStatus {
 	return &i
+}
+
+type InvoiceUpdateRequest struct {
+	Status *InvoiceStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Total amount of invoice in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
+	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+	// Currency code for the amount. Defaults to USD.
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	// Date the invoice was issued.
+	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
+	// Date when funds will be deducted from payer's account.
+	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// Date of funds settlement.
+	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
+	// Due date of invoice.
+	DueDate       *time.Time `json:"dueDate,omitempty" url:"dueDate,omitempty"`
+	InvoiceNumber *string    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
+	// Note to self or memo on invoice.
+	NoteToSelf       *string    `json:"noteToSelf,omitempty" url:"noteToSelf,omitempty"`
+	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	PayerID          *EntityID  `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
+	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	VendorID        *EntityID        `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
+	PaymentDestinationID *PaymentMethodID `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
+	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	// Set approvers for this invoice.
+	Approvers []*ApprovalSlotAssignment `json:"approvers,omitempty" url:"approvers,omitempty"`
+	LineItems []*InvoiceLineItemRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	// Metadata associated with this invoice. You can specify up to 10 keys, with key names up to 40 characters long and values up to 200 characters long.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
+	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	// Base64 encoded image or PDF of invoice document. PNG, JPG, and PDF are supported. 10MB max. If the invoice already has a document, this will add a new document to the invoice.
+	Document *string `json:"document,omitempty" url:"document,omitempty"`
+	// DEPRECATED. Use document field instead.
+	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
+	// ID of entity user who created this invoice.
+	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
+	// ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
+	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
+
+	_rawJSON json.RawMessage
+}
+
+func (i *InvoiceUpdateRequest) UnmarshalJSON(data []byte) error {
+	type embed InvoiceUpdateRequest
+	var unmarshaler = struct {
+		embed
+		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		SettlementDate   *core.DateTime `json:"settlementDate,omitempty"`
+		DueDate          *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceUpdateRequest(unmarshaler.embed)
+	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
+	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.SettlementDate = unmarshaler.SettlementDate.TimePtr()
+	i.DueDate = unmarshaler.DueDate.TimePtr()
+	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
+	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceUpdateRequest) MarshalJSON() ([]byte, error) {
+	type embed InvoiceUpdateRequest
+	var marshaler = struct {
+		embed
+		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		SettlementDate   *core.DateTime `json:"settlementDate,omitempty"`
+		DueDate          *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed:            embed(*i),
+		InvoiceDate:      core.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:    core.NewOptionalDateTime(i.DeductionDate),
+		SettlementDate:   core.NewOptionalDateTime(i.SettlementDate),
+		DueDate:          core.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceUpdateRequest) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
 }
 
 type PaymentDestinationOptions struct {
@@ -4339,6 +4446,38 @@ func (i *InvoiceNotificationConfigurationResponse) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
+type MetadataRegexValidationRule struct {
+	// A regular expression that the value must match.
+	Regex string `json:"regex" url:"regex"`
+	// The error message to display if the value does not match the regular expression.
+	ErrorMessage string `json:"errorMessage" url:"errorMessage"`
+
+	_rawJSON json.RawMessage
+}
+
+func (m *MetadataRegexValidationRule) UnmarshalJSON(data []byte) error {
+	type unmarshaler MetadataRegexValidationRule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MetadataRegexValidationRule(value)
+	m._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MetadataRegexValidationRule) String() string {
+	if len(m._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(m._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
 type MetadataSchema struct {
 	Key         string  `json:"key" url:"key"`
 	DisplayName string  `json:"displayName" url:"displayName"`
@@ -4348,6 +4487,8 @@ type MetadataSchema struct {
 	Type     MetadataType `json:"type" url:"type"`
 	// Whether or not multiple values are allowed for this field. Defaults to false. If true, the value will be a list of the specified type.
 	AllowMultiple *bool `json:"allowMultiple,omitempty" url:"allowMultiple,omitempty"`
+	// Validation rules are currently only supported for STRING types.
+	ValidationRules *MetadataValidationRule `json:"validationRules,omitempty" url:"validationRules,omitempty"`
 	// A list of conditional rules that determine whether or not this field should be shown. The field will only be shown if all of the conditions are met. If no conditions are specified, the field will always be shown.
 	ShowConditions *MetadataShowConditions `json:"showConditions,omitempty" url:"showConditions,omitempty"`
 
@@ -4448,6 +4589,48 @@ func NewMetadataTypeFromString(s string) (MetadataType, error) {
 
 func (m MetadataType) Ptr() *MetadataType {
 	return &m
+}
+
+type MetadataValidationRule struct {
+	Type  string
+	Regex *MetadataRegexValidationRule
+}
+
+func (m *MetadataValidationRule) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	m.Type = unmarshaler.Type
+	switch unmarshaler.Type {
+	case "regex":
+		value := new(MetadataRegexValidationRule)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		m.Regex = value
+	}
+	return nil
+}
+
+func (m MetadataValidationRule) MarshalJSON() ([]byte, error) {
+	if m.Regex != nil {
+		return core.MarshalJSONWithExtraProperty(m.Regex, "type", "regex")
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", m)
+}
+
+type MetadataValidationRuleVisitor interface {
+	VisitRegex(*MetadataRegexValidationRule) error
+}
+
+func (m *MetadataValidationRule) Accept(visitor MetadataValidationRuleVisitor) error {
+	if m.Regex != nil {
+		return visitor.VisitRegex(m.Regex)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", m)
 }
 
 type NotificationConfigurationRequest struct {

@@ -7,40 +7,50 @@ import (
 	core "github.com/mercoa-finance/go/core"
 )
 
-type AuthHeaderMalformedError struct {
+type BadRequest struct {
 	*core.APIError
 	Body string
 }
 
-func (a *AuthHeaderMalformedError) UnmarshalJSON(data []byte) error {
+func (b *BadRequest) UnmarshalJSON(data []byte) error {
 	var body string
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	a.StatusCode = 400
-	a.Body = body
+	b.StatusCode = 400
+	b.Body = body
 	return nil
 }
 
-func (a *AuthHeaderMalformedError) MarshalJSON() ([]byte, error) {
-	return json.Marshal(a.Body)
+func (b *BadRequest) MarshalJSON() ([]byte, error) {
+	return json.Marshal(b.Body)
 }
 
-func (a *AuthHeaderMalformedError) Unwrap() error {
-	return a.APIError
+func (b *BadRequest) Unwrap() error {
+	return b.APIError
 }
 
-type AuthHeaderMissingError struct {
+type Conflict struct {
 	*core.APIError
+	Body string
 }
 
-func (a *AuthHeaderMissingError) UnmarshalJSON(data []byte) error {
-	a.StatusCode = 400
+func (c *Conflict) UnmarshalJSON(data []byte) error {
+	var body string
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	c.StatusCode = 409
+	c.Body = body
 	return nil
 }
 
-func (a *AuthHeaderMissingError) MarshalJSON() ([]byte, error) {
-	return nil, nil
+func (c *Conflict) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.Body)
+}
+
+func (c *Conflict) Unwrap() error {
+	return c.APIError
 }
 
 type Forbidden struct {
@@ -66,49 +76,26 @@ func (f *Forbidden) Unwrap() error {
 	return f.APIError
 }
 
-type InvalidPostalCode struct {
+type InternalServerError struct {
 	*core.APIError
 	Body string
 }
 
-func (i *InvalidPostalCode) UnmarshalJSON(data []byte) error {
+func (i *InternalServerError) UnmarshalJSON(data []byte) error {
 	var body string
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	i.StatusCode = 400
+	i.StatusCode = 500
 	i.Body = body
 	return nil
 }
 
-func (i *InvalidPostalCode) MarshalJSON() ([]byte, error) {
+func (i *InternalServerError) MarshalJSON() ([]byte, error) {
 	return json.Marshal(i.Body)
 }
 
-func (i *InvalidPostalCode) Unwrap() error {
-	return i.APIError
-}
-
-type InvalidStateOrProvince struct {
-	*core.APIError
-	Body string
-}
-
-func (i *InvalidStateOrProvince) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	i.StatusCode = 400
-	i.Body = body
-	return nil
-}
-
-func (i *InvalidStateOrProvince) MarshalJSON() ([]byte, error) {
-	return json.Marshal(i.Body)
-}
-
-func (i *InvalidStateOrProvince) Unwrap() error {
+func (i *InternalServerError) Unwrap() error {
 	return i.APIError
 }
 
@@ -179,257 +166,4 @@ func (u *Unimplemented) MarshalJSON() ([]byte, error) {
 
 func (u *Unimplemented) Unwrap() error {
 	return u.APIError
-}
-
-type EntityError struct {
-	*core.APIError
-	Body string
-}
-
-func (e *EntityError) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	e.StatusCode = 400
-	e.Body = body
-	return nil
-}
-
-func (e *EntityError) MarshalJSON() ([]byte, error) {
-	return json.Marshal(e.Body)
-}
-
-func (e *EntityError) Unwrap() error {
-	return e.APIError
-}
-
-type EntityForeignIDAlreadyExists struct {
-	*core.APIError
-	Body string
-}
-
-func (e *EntityForeignIDAlreadyExists) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	e.StatusCode = 409
-	e.Body = body
-	return nil
-}
-
-func (e *EntityForeignIDAlreadyExists) MarshalJSON() ([]byte, error) {
-	return json.Marshal(e.Body)
-}
-
-func (e *EntityForeignIDAlreadyExists) Unwrap() error {
-	return e.APIError
-}
-
-type InvalidTaxID struct {
-	*core.APIError
-	Body string
-}
-
-func (i *InvalidTaxID) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	i.StatusCode = 400
-	i.Body = body
-	return nil
-}
-
-func (i *InvalidTaxID) MarshalJSON() ([]byte, error) {
-	return json.Marshal(i.Body)
-}
-
-func (i *InvalidTaxID) Unwrap() error {
-	return i.APIError
-}
-
-type TokenGenerationFailed struct {
-	*core.APIError
-	Body string
-}
-
-func (t *TokenGenerationFailed) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	t.StatusCode = 400
-	t.Body = body
-	return nil
-}
-
-func (t *TokenGenerationFailed) MarshalJSON() ([]byte, error) {
-	return json.Marshal(t.Body)
-}
-
-func (t *TokenGenerationFailed) Unwrap() error {
-	return t.APIError
-}
-
-type DuplicateInvoiceNumber struct {
-	*core.APIError
-	Body string
-}
-
-func (d *DuplicateInvoiceNumber) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	d.StatusCode = 409
-	d.Body = body
-	return nil
-}
-
-func (d *DuplicateInvoiceNumber) MarshalJSON() ([]byte, error) {
-	return json.Marshal(d.Body)
-}
-
-func (d *DuplicateInvoiceNumber) Unwrap() error {
-	return d.APIError
-}
-
-type InvoiceError struct {
-	*core.APIError
-	Body string
-}
-
-func (i *InvoiceError) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	i.StatusCode = 400
-	i.Body = body
-	return nil
-}
-
-func (i *InvoiceError) MarshalJSON() ([]byte, error) {
-	return json.Marshal(i.Body)
-}
-
-func (i *InvoiceError) Unwrap() error {
-	return i.APIError
-}
-
-type InvoiceQueryError struct {
-	*core.APIError
-	Body string
-}
-
-func (i *InvoiceQueryError) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	i.StatusCode = 400
-	i.Body = body
-	return nil
-}
-
-func (i *InvoiceQueryError) MarshalJSON() ([]byte, error) {
-	return json.Marshal(i.Body)
-}
-
-func (i *InvoiceQueryError) Unwrap() error {
-	return i.APIError
-}
-
-type InvoiceStatusError struct {
-	*core.APIError
-	Body string
-}
-
-func (i *InvoiceStatusError) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	i.StatusCode = 422
-	i.Body = body
-	return nil
-}
-
-func (i *InvoiceStatusError) MarshalJSON() ([]byte, error) {
-	return json.Marshal(i.Body)
-}
-
-func (i *InvoiceStatusError) Unwrap() error {
-	return i.APIError
-}
-
-type VendorNotFound struct {
-	*core.APIError
-	Body string
-}
-
-func (v *VendorNotFound) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	v.StatusCode = 404
-	v.Body = body
-	return nil
-}
-
-func (v *VendorNotFound) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.Body)
-}
-
-func (v *VendorNotFound) Unwrap() error {
-	return v.APIError
-}
-
-type OcrFailure struct {
-	*core.APIError
-	Body string
-}
-
-func (o *OcrFailure) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	o.StatusCode = 500
-	o.Body = body
-	return nil
-}
-
-func (o *OcrFailure) MarshalJSON() ([]byte, error) {
-	return json.Marshal(o.Body)
-}
-
-func (o *OcrFailure) Unwrap() error {
-	return o.APIError
-}
-
-type PaymentMethodError struct {
-	*core.APIError
-	Body string
-}
-
-func (p *PaymentMethodError) UnmarshalJSON(data []byte) error {
-	var body string
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	p.StatusCode = 400
-	p.Body = body
-	return nil
-}
-
-func (p *PaymentMethodError) MarshalJSON() ([]byte, error) {
-	return json.Marshal(p.Body)
-}
-
-func (p *PaymentMethodError) Unwrap() error {
-	return p.APIError
 }

@@ -78,22 +78,8 @@ func (c *Client) Find(
 			return err
 		}
 		switch discriminant.ErrorName {
-		case "InvoiceQueryError":
-			value := new(mercoafinancego.InvoiceQueryError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMissingError":
-			value := new(mercoafinancego.AuthHeaderMissingError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMalformedError":
-			value := new(mercoafinancego.AuthHeaderMalformedError)
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -115,6 +101,20 @@ func (c *Client) Find(
 			return value
 		case "NotFound":
 			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -197,15 +197,8 @@ func (c *Client) Get(
 			return err
 		}
 		switch discriminant.ErrorName {
-		case "AuthHeaderMissingError":
-			value := new(mercoafinancego.AuthHeaderMissingError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMalformedError":
-			value := new(mercoafinancego.AuthHeaderMalformedError)
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -227,6 +220,20 @@ func (c *Client) Get(
 			return value
 		case "NotFound":
 			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -304,22 +311,8 @@ func (c *Client) Metrics(
 			return err
 		}
 		switch discriminant.ErrorName {
-		case "InvoiceQueryError":
-			value := new(mercoafinancego.InvoiceQueryError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMissingError":
-			value := new(mercoafinancego.AuthHeaderMissingError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "AuthHeaderMalformedError":
-			value := new(mercoafinancego.AuthHeaderMalformedError)
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
@@ -341,6 +334,20 @@ func (c *Client) Metrics(
 			return value
 		case "NotFound":
 			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
 			value.APIError = apiError
 			if err := json.Unmarshal(discriminant.Content, value); err != nil {
 				return apiError
