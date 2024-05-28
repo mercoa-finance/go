@@ -44,11 +44,6 @@ type EntityGetInvoicesRequest struct {
 	IncludeFees *bool `json:"-" url:"includeFees,omitempty"`
 }
 
-type GetInvoice struct {
-	// DEPRECATED. Fees are now included by default in the response.
-	IncludeFees *bool `json:"-" url:"includeFees,omitempty"`
-}
-
 type InvoiceMetricsRequest struct {
 	// Find invoices by vendor name, invoice number, or amount. Partial matches are supported.
 	Search *string `json:"-" url:"search,omitempty"`

@@ -37,7 +37,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Run OCR on an Base64 encoded image or PDF. This endpoint will block until the OCR is complete.
 func (c *Client) Ocr(
 	ctx context.Context,
-	request *mercoafinancego.RunOcrSync,
+	request *mercoafinancego.OcrRequest,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.OcrResponse, error) {
 	options := core.NewRequestOptions(opts...)
@@ -50,14 +50,6 @@ func (c *Client) Ocr(
 		baseURL = options.BaseURL
 	}
 	endpointURL := baseURL + "/ocr"
-
-	queryParams, err := core.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	if len(queryParams) > 0 {
-		endpointURL += "?" + queryParams.Encode()
-	}
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 
@@ -151,7 +143,7 @@ func (c *Client) Ocr(
 // Run OCR on an Base64 encoded image or PDF. This endpoint will return immediately and the OCR will be processed asynchronously.
 func (c *Client) RunAsyncOcr(
 	ctx context.Context,
-	request *mercoafinancego.RunOcrAsync,
+	request *mercoafinancego.OcrRequest,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.OcrAsyncResponse, error) {
 	options := core.NewRequestOptions(opts...)
@@ -164,14 +156,6 @@ func (c *Client) RunAsyncOcr(
 		baseURL = options.BaseURL
 	}
 	endpointURL := baseURL + "/ocr-async"
-
-	queryParams, err := core.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	if len(queryParams) > 0 {
-		endpointURL += "?" + queryParams.Encode()
-	}
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 

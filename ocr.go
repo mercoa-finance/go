@@ -8,53 +8,6 @@ import (
 	core "github.com/mercoa-finance/go/core"
 )
 
-type RunOcrSync struct {
-	// Limit OCR vendor search to a specific network
-	VendorNetwork *VendorNetwork `json:"-" url:"vendorNetwork,omitempty"`
-	// When using the Entity vendor network, specify the entity to use if. EntityId on an auth token will take precedence over this parameter.
-	EntityID *EntityID `json:"-" url:"entityId,omitempty"`
-	// MIME type of the image. Supported types are image/png, image/jpeg, and application/pdf.
-	MimeType string `json:"mimeType" url:"-"`
-	// Base64 encoded image or PDF. PNG, JPG, and PDF are supported. 10MB max.
-	Image string `json:"image" url:"-"`
-}
-
-type RunOcrAsync struct {
-	// Limit OCR vendor search to a specific network
-	VendorNetwork *VendorNetwork `json:"-" url:"vendorNetwork,omitempty"`
-	// When using the Entity vendor network, specify the entity to use if. EntityId on an auth token will take precedence over this parameter.
-	EntityID *EntityID `json:"-" url:"entityId,omitempty"`
-	// MIME type of the image. Supported types are image/png, image/jpeg, and application/pdf.
-	MimeType string `json:"mimeType" url:"-"`
-	// Base64 encoded image or PDF. PNG, JPG, and PDF are supported. 10MB max.
-	Image string `json:"image" url:"-"`
-}
-
-type VendorNetwork string
-
-const (
-	VendorNetworkAll      VendorNetwork = "all"
-	VendorNetworkPlatform VendorNetwork = "platform"
-	VendorNetworkEntity   VendorNetwork = "entity"
-)
-
-func NewVendorNetworkFromString(s string) (VendorNetwork, error) {
-	switch s {
-	case "all":
-		return VendorNetworkAll, nil
-	case "platform":
-		return VendorNetworkPlatform, nil
-	case "entity":
-		return VendorNetworkEntity, nil
-	}
-	var t VendorNetwork
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (v VendorNetwork) Ptr() *VendorNetwork {
-	return &v
-}
-
 type OcrAsyncResponse struct {
 	JobID string `json:"jobId" url:"jobId"`
 
@@ -104,6 +57,42 @@ func (o *OcrJobResponse) UnmarshalJSON(data []byte) error {
 }
 
 func (o *OcrJobResponse) String() string {
+	if len(o._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(o); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", o)
+}
+
+type OcrRequest struct {
+	// MIME type of the image. Supported types are image/png, image/jpeg, and application/pdf.
+	MimeType string `json:"mimeType" url:"mimeType"`
+	// Base64 encoded image or PDF. PNG, JPG, and PDF are supported. 10MB max.
+	Image string `json:"image" url:"image"`
+	// Limit OCR vendor search to a specific network
+	VendorNetwork *VendorNetwork `json:"vendorNetwork,omitempty" url:"vendorNetwork,omitempty"`
+	// When using the Entity vendor network, specify the entity to use if. EntityId on an auth token will take precedence over this parameter.
+	EntityID *EntityID `json:"entityId,omitempty" url:"entityId,omitempty"`
+
+	_rawJSON json.RawMessage
+}
+
+func (o *OcrRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler OcrRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*o = OcrRequest(value)
+	o._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (o *OcrRequest) String() string {
 	if len(o._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
 			return value

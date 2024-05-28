@@ -2436,6 +2436,31 @@ func (u *UserNotificationPolicyResponse) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+type VendorNetwork string
+
+const (
+	VendorNetworkAll      VendorNetwork = "all"
+	VendorNetworkPlatform VendorNetwork = "platform"
+	VendorNetworkEntity   VendorNetwork = "entity"
+)
+
+func NewVendorNetworkFromString(s string) (VendorNetwork, error) {
+	switch s {
+	case "all":
+		return VendorNetworkAll, nil
+	case "platform":
+		return VendorNetworkPlatform, nil
+	case "entity":
+		return VendorNetworkEntity, nil
+	}
+	var t VendorNetwork
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (v VendorNetwork) Ptr() *VendorNetwork {
+	return &v
+}
+
 type VendorTrigger struct {
 	VendorIDs []EntityID `json:"vendorIds,omitempty" url:"vendorIds,omitempty"`
 
@@ -6317,6 +6342,185 @@ func (c *CustomPaymentMethodResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+type CustomPaymentMethodSchemaField struct {
+	Name        string                             `json:"name" url:"name"`
+	DisplayName *string                            `json:"displayName,omitempty" url:"displayName,omitempty"`
+	Type        CustomPaymentMethodSchemaFieldType `json:"type" url:"type"`
+	// Indicates whether this field is optional
+	Optional bool `json:"optional" url:"optional"`
+	// Indicates whether this field should be used as the name of the payment method. Only one field can be used as the name. Will set the accountName field of the payment method to the value of this field.
+	UseAsAccountName *bool `json:"useAsAccountName,omitempty" url:"useAsAccountName,omitempty"`
+	// Indicates whether this field should be used as the account number of the payment method. Only one field can be used as the account number. Will set the accountNumber field of the payment method to the value of this field.
+	UseAsAccountNumber *bool `json:"useAsAccountNumber,omitempty" url:"useAsAccountNumber,omitempty"`
+	// When type is 'select', provide options that can be selected
+	Options []string `json:"options,omitempty" url:"options,omitempty"`
+
+	_rawJSON json.RawMessage
+}
+
+func (c *CustomPaymentMethodSchemaField) UnmarshalJSON(data []byte) error {
+	type unmarshaler CustomPaymentMethodSchemaField
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CustomPaymentMethodSchemaField(value)
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CustomPaymentMethodSchemaField) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CustomPaymentMethodSchemaFieldType string
+
+const (
+	CustomPaymentMethodSchemaFieldTypeText    CustomPaymentMethodSchemaFieldType = "text"
+	CustomPaymentMethodSchemaFieldTypeNumber  CustomPaymentMethodSchemaFieldType = "number"
+	CustomPaymentMethodSchemaFieldTypeSelect  CustomPaymentMethodSchemaFieldType = "select"
+	CustomPaymentMethodSchemaFieldTypeDate    CustomPaymentMethodSchemaFieldType = "date"
+	CustomPaymentMethodSchemaFieldTypePhone   CustomPaymentMethodSchemaFieldType = "phone"
+	CustomPaymentMethodSchemaFieldTypeEmail   CustomPaymentMethodSchemaFieldType = "email"
+	CustomPaymentMethodSchemaFieldTypeURL     CustomPaymentMethodSchemaFieldType = "url"
+	CustomPaymentMethodSchemaFieldTypeAddress CustomPaymentMethodSchemaFieldType = "address"
+)
+
+func NewCustomPaymentMethodSchemaFieldTypeFromString(s string) (CustomPaymentMethodSchemaFieldType, error) {
+	switch s {
+	case "text":
+		return CustomPaymentMethodSchemaFieldTypeText, nil
+	case "number":
+		return CustomPaymentMethodSchemaFieldTypeNumber, nil
+	case "select":
+		return CustomPaymentMethodSchemaFieldTypeSelect, nil
+	case "date":
+		return CustomPaymentMethodSchemaFieldTypeDate, nil
+	case "phone":
+		return CustomPaymentMethodSchemaFieldTypePhone, nil
+	case "email":
+		return CustomPaymentMethodSchemaFieldTypeEmail, nil
+	case "url":
+		return CustomPaymentMethodSchemaFieldTypeURL, nil
+	case "address":
+		return CustomPaymentMethodSchemaFieldTypeAddress, nil
+	}
+	var t CustomPaymentMethodSchemaFieldType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CustomPaymentMethodSchemaFieldType) Ptr() *CustomPaymentMethodSchemaFieldType {
+	return &c
+}
+
+type CustomPaymentMethodSchemaID = string
+
+type CustomPaymentMethodSchemaRequest struct {
+	Name string `json:"name" url:"name"`
+	// This payment method can be used as a payment source for an invoice
+	IsSource bool `json:"isSource" url:"isSource"`
+	// This payment method can be used as a payment destination for an invoice
+	IsDestination bool `json:"isDestination" url:"isDestination"`
+	// List of currencies that this payment method supports. If not provided, the payment method will support only USD.
+	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
+	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
+
+	_rawJSON json.RawMessage
+}
+
+func (c *CustomPaymentMethodSchemaRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CustomPaymentMethodSchemaRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CustomPaymentMethodSchemaRequest(value)
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CustomPaymentMethodSchemaRequest) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CustomPaymentMethodSchemaResponse struct {
+	ID   CustomPaymentMethodSchemaID `json:"id" url:"id"`
+	Name string                      `json:"name" url:"name"`
+	// This payment method can be used as a payment source for an invoice
+	IsSource bool `json:"isSource" url:"isSource"`
+	// This payment method can be used as a payment destination for an invoice
+	IsDestination bool `json:"isDestination" url:"isDestination"`
+	// List of currencies that this payment method supports.
+	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
+	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
+	CreatedAt           time.Time                         `json:"createdAt" url:"createdAt"`
+	UpdatedAt           time.Time                         `json:"updatedAt" url:"updatedAt"`
+
+	_rawJSON json.RawMessage
+}
+
+func (c *CustomPaymentMethodSchemaResponse) UnmarshalJSON(data []byte) error {
+	type embed CustomPaymentMethodSchemaResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = CustomPaymentMethodSchemaResponse(unmarshaler.embed)
+	c.CreatedAt = unmarshaler.CreatedAt.Time()
+	c.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CustomPaymentMethodSchemaResponse) MarshalJSON() ([]byte, error) {
+	type embed CustomPaymentMethodSchemaResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*c),
+		CreatedAt: core.NewDateTime(c.CreatedAt),
+		UpdatedAt: core.NewDateTime(c.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (c *CustomPaymentMethodSchemaResponse) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 type CustomPaymentMethodUpdateRequest struct {
 	// If true, this payment method will be set as the default source. Only one payment method can be set as the default source. If another payment method is already set as the default source, it will be unset.
 	DefaultSource *bool `json:"defaultSource,omitempty" url:"defaultSource,omitempty"`
@@ -6899,183 +7103,4 @@ func (p *PlaidLinkRequest) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
-}
-
-type CustomPaymentMethodSchemaField struct {
-	Name        string                             `json:"name" url:"name"`
-	DisplayName *string                            `json:"displayName,omitempty" url:"displayName,omitempty"`
-	Type        CustomPaymentMethodSchemaFieldType `json:"type" url:"type"`
-	// Indicates whether this field is optional
-	Optional bool `json:"optional" url:"optional"`
-	// Indicates whether this field should be used as the name of the payment method. Only one field can be used as the name. Will set the accountName field of the payment method to the value of this field.
-	UseAsAccountName *bool `json:"useAsAccountName,omitempty" url:"useAsAccountName,omitempty"`
-	// Indicates whether this field should be used as the account number of the payment method. Only one field can be used as the account number. Will set the accountNumber field of the payment method to the value of this field.
-	UseAsAccountNumber *bool `json:"useAsAccountNumber,omitempty" url:"useAsAccountNumber,omitempty"`
-	// When type is 'select', provide options that can be selected
-	Options []string `json:"options,omitempty" url:"options,omitempty"`
-
-	_rawJSON json.RawMessage
-}
-
-func (c *CustomPaymentMethodSchemaField) UnmarshalJSON(data []byte) error {
-	type unmarshaler CustomPaymentMethodSchemaField
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CustomPaymentMethodSchemaField(value)
-	c._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CustomPaymentMethodSchemaField) String() string {
-	if len(c._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-type CustomPaymentMethodSchemaFieldType string
-
-const (
-	CustomPaymentMethodSchemaFieldTypeText    CustomPaymentMethodSchemaFieldType = "text"
-	CustomPaymentMethodSchemaFieldTypeNumber  CustomPaymentMethodSchemaFieldType = "number"
-	CustomPaymentMethodSchemaFieldTypeSelect  CustomPaymentMethodSchemaFieldType = "select"
-	CustomPaymentMethodSchemaFieldTypeDate    CustomPaymentMethodSchemaFieldType = "date"
-	CustomPaymentMethodSchemaFieldTypePhone   CustomPaymentMethodSchemaFieldType = "phone"
-	CustomPaymentMethodSchemaFieldTypeEmail   CustomPaymentMethodSchemaFieldType = "email"
-	CustomPaymentMethodSchemaFieldTypeURL     CustomPaymentMethodSchemaFieldType = "url"
-	CustomPaymentMethodSchemaFieldTypeAddress CustomPaymentMethodSchemaFieldType = "address"
-)
-
-func NewCustomPaymentMethodSchemaFieldTypeFromString(s string) (CustomPaymentMethodSchemaFieldType, error) {
-	switch s {
-	case "text":
-		return CustomPaymentMethodSchemaFieldTypeText, nil
-	case "number":
-		return CustomPaymentMethodSchemaFieldTypeNumber, nil
-	case "select":
-		return CustomPaymentMethodSchemaFieldTypeSelect, nil
-	case "date":
-		return CustomPaymentMethodSchemaFieldTypeDate, nil
-	case "phone":
-		return CustomPaymentMethodSchemaFieldTypePhone, nil
-	case "email":
-		return CustomPaymentMethodSchemaFieldTypeEmail, nil
-	case "url":
-		return CustomPaymentMethodSchemaFieldTypeURL, nil
-	case "address":
-		return CustomPaymentMethodSchemaFieldTypeAddress, nil
-	}
-	var t CustomPaymentMethodSchemaFieldType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CustomPaymentMethodSchemaFieldType) Ptr() *CustomPaymentMethodSchemaFieldType {
-	return &c
-}
-
-type CustomPaymentMethodSchemaID = string
-
-type CustomPaymentMethodSchemaRequest struct {
-	Name string `json:"name" url:"name"`
-	// This payment method can be used as a payment source for an invoice
-	IsSource bool `json:"isSource" url:"isSource"`
-	// This payment method can be used as a payment destination for an invoice
-	IsDestination bool `json:"isDestination" url:"isDestination"`
-	// List of currencies that this payment method supports. If not provided, the payment method will support only USD.
-	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
-	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
-
-	_rawJSON json.RawMessage
-}
-
-func (c *CustomPaymentMethodSchemaRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CustomPaymentMethodSchemaRequest
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CustomPaymentMethodSchemaRequest(value)
-	c._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CustomPaymentMethodSchemaRequest) String() string {
-	if len(c._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-type CustomPaymentMethodSchemaResponse struct {
-	ID   CustomPaymentMethodSchemaID `json:"id" url:"id"`
-	Name string                      `json:"name" url:"name"`
-	// This payment method can be used as a payment source for an invoice
-	IsSource bool `json:"isSource" url:"isSource"`
-	// This payment method can be used as a payment destination for an invoice
-	IsDestination bool `json:"isDestination" url:"isDestination"`
-	// List of currencies that this payment method supports.
-	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
-	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
-	CreatedAt           time.Time                         `json:"createdAt" url:"createdAt"`
-	UpdatedAt           time.Time                         `json:"updatedAt" url:"updatedAt"`
-
-	_rawJSON json.RawMessage
-}
-
-func (c *CustomPaymentMethodSchemaResponse) UnmarshalJSON(data []byte) error {
-	type embed CustomPaymentMethodSchemaResponse
-	var unmarshaler = struct {
-		embed
-		CreatedAt *core.DateTime `json:"createdAt"`
-		UpdatedAt *core.DateTime `json:"updatedAt"`
-	}{
-		embed: embed(*c),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*c = CustomPaymentMethodSchemaResponse(unmarshaler.embed)
-	c.CreatedAt = unmarshaler.CreatedAt.Time()
-	c.UpdatedAt = unmarshaler.UpdatedAt.Time()
-
-	c._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CustomPaymentMethodSchemaResponse) MarshalJSON() ([]byte, error) {
-	type embed CustomPaymentMethodSchemaResponse
-	var marshaler = struct {
-		embed
-		CreatedAt *core.DateTime `json:"createdAt"`
-		UpdatedAt *core.DateTime `json:"updatedAt"`
-	}{
-		embed:     embed(*c),
-		CreatedAt: core.NewDateTime(c.CreatedAt),
-		UpdatedAt: core.NewDateTime(c.UpdatedAt),
-	}
-	return json.Marshal(marshaler)
-}
-
-func (c *CustomPaymentMethodSchemaResponse) String() string {
-	if len(c._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
 }

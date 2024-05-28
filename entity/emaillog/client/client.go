@@ -35,7 +35,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 	}
 }
 
-// Get entity users
+// Get all incoming invoice emails for an entity.
 func (c *Client) Find(
 	ctx context.Context,
 	entityID mercoafinancego.EntityID,
@@ -149,7 +149,7 @@ func (c *Client) Find(
 	return response, nil
 }
 
-// Get email log
+// Get an email log by ID
 func (c *Client) Get(
 	ctx context.Context,
 	entityID mercoafinancego.EntityID,
