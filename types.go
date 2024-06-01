@@ -889,6 +889,70 @@ func (e *EntityAddPayorsRequest) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
+type EntityCustomizationRequest struct {
+	Metadata           []*MetadataCustomizationRequest      `json:"metadata,omitempty" url:"metadata,omitempty"`
+	PaymentSource      []*PaymentMethodCustomizationRequest `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	BackupDisbursement []*PaymentMethodCustomizationRequest `json:"backupDisbursement,omitempty" url:"backupDisbursement,omitempty"`
+	PaymentDestination []*PaymentMethodCustomizationRequest `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+
+	_rawJSON json.RawMessage
+}
+
+func (e *EntityCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityCustomizationRequest(value)
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityCustomizationRequest) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EntityCustomizationResponse struct {
+	Metadata           []*MetadataCustomizationRequest      `json:"metadata,omitempty" url:"metadata,omitempty"`
+	PaymentSource      []*PaymentMethodCustomizationRequest `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	BackupDisbursement []*PaymentMethodCustomizationRequest `json:"backupDisbursement,omitempty" url:"backupDisbursement,omitempty"`
+	PaymentDestination []*PaymentMethodCustomizationRequest `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+
+	_rawJSON json.RawMessage
+}
+
+func (e *EntityCustomizationResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityCustomizationResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityCustomizationResponse(value)
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityCustomizationResponse) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
 type EntityHidePayeesRequest struct {
 	// List of payee entity IDs to hide
 	Payees []EntityID `json:"payees,omitempty" url:"payees,omitempty"`
@@ -1433,6 +1497,39 @@ func (f *FindEntityResponse) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
+type FindEntityUserResponse struct {
+	// Total number of users for the given filters. This value is not limited by the limit parameter. It is provided so that you can determine how many pages of results are available.
+	Count int `json:"count" url:"count"`
+	// True if there are more users available for the given filters.
+	HasMore bool                  `json:"hasMore" url:"hasMore"`
+	Data    []*EntityUserResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	_rawJSON json.RawMessage
+}
+
+func (f *FindEntityUserResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler FindEntityUserResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FindEntityUserResponse(value)
+	f._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FindEntityUserResponse) String() string {
+	if len(f._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(f._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
 type FindNotificationResponse struct {
 	// Total number of notifications for the given start and end date filters. This value is not limited by the limit parameter. It is provided so that you can determine how many pages of results are available.
 	Count int `json:"count" url:"count"`
@@ -1635,6 +1732,38 @@ func (l LineItemAvailabilities) Ptr() *LineItemAvailabilities {
 	return &l
 }
 
+type MetadataCustomizationRequest struct {
+	// The key of the metadata field. This must be defined at the organization level, otherwise an error will be returned.
+	Key string `json:"key" url:"key"`
+	// If true, this field will not be available to the entity.
+	Disabled bool `json:"disabled" url:"disabled"`
+
+	_rawJSON json.RawMessage
+}
+
+func (m *MetadataCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler MetadataCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MetadataCustomizationRequest(value)
+	m._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MetadataCustomizationRequest) String() string {
+	if len(m._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(m._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
 type MetadataTrigger struct {
 	// The metadata key to match
 	Key string `json:"key" url:"key"`
@@ -1830,6 +1959,39 @@ func NewNotificationTypeFromString(s string) (NotificationType, error) {
 
 func (n NotificationType) Ptr() *NotificationType {
 	return &n
+}
+
+type PaymentMethodCustomizationRequest struct {
+	Type PaymentMethodType `json:"type" url:"type"`
+	// If type is custom, this is the ID of the schema to use for this payment method.
+	SchemaID *string `json:"schemaId,omitempty" url:"schemaId,omitempty"`
+	// If true, this method will will not be available to the entity.
+	Disabled bool `json:"disabled" url:"disabled"`
+
+	_rawJSON json.RawMessage
+}
+
+func (p *PaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentMethodCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentMethodCustomizationRequest(value)
+	p._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentMethodCustomizationRequest) String() string {
+	if len(p._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }
 
 type ProfileRequest struct {
@@ -2700,6 +2862,8 @@ func (a *AssociatedApprovalAction) String() string {
 type BankAccountPaymentDestinationOptions struct {
 	// Delivery method for ACH payments. Defaults to ACH_SAME_DAY.
 	Delivery *BankDeliveryMethod `json:"delivery,omitempty" url:"delivery,omitempty"`
+	// ACH Statement Description. By default, this will be 'AP' followed by the first 8 characters of the invoice ID. Must be at least 4 characters and no more than 10 characters, and follow this regex pattern ^[a-zA-Z0-9\-#.$&*]{4,10}$
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
 
 	_rawJSON json.RawMessage
 }
@@ -4989,65 +5153,11 @@ func (p *PaymentMethodsResponse) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-type PaymentRailMarkup struct {
-	Type   PaymentRailMarkupType `json:"type" url:"type"`
-	Amount float64               `json:"amount" url:"amount"`
-
-	_rawJSON json.RawMessage
-}
-
-func (p *PaymentRailMarkup) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentRailMarkup
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentRailMarkup(value)
-	p._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentRailMarkup) String() string {
-	if len(p._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-type PaymentRailMarkupType string
-
-const (
-	PaymentRailMarkupTypeFlat    PaymentRailMarkupType = "flat"
-	PaymentRailMarkupTypePercent PaymentRailMarkupType = "percent"
-)
-
-func NewPaymentRailMarkupTypeFromString(s string) (PaymentRailMarkupType, error) {
-	switch s {
-	case "flat":
-		return PaymentRailMarkupTypeFlat, nil
-	case "percent":
-		return PaymentRailMarkupTypePercent, nil
-	}
-	var t PaymentRailMarkupType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PaymentRailMarkupType) Ptr() *PaymentRailMarkupType {
-	return &p
-}
-
 type PaymentRailRequest struct {
 	Type PaymentMethodType `json:"type" url:"type"`
-	// Name of the payment method. For custom payment methods, this is the ID of the schema.
-	Name        string             `json:"name" url:"name"`
-	Markup      *PaymentRailMarkup `json:"markup,omitempty" url:"markup,omitempty"`
-	Description *string            `json:"description,omitempty" url:"description,omitempty"`
-	Active      bool               `json:"active" url:"active"`
+	// For custom payment methods, this is the ID of the schema.
+	Name   *string `json:"name,omitempty" url:"name,omitempty"`
+	Active bool    `json:"active" url:"active"`
 
 	_rawJSON json.RawMessage
 }
@@ -5077,12 +5187,9 @@ func (p *PaymentRailRequest) String() string {
 
 type PaymentRailResponse struct {
 	Type PaymentMethodType `json:"type" url:"type"`
-	// Name of the payment method. For custom payment methods, this is the ID of the schema.
-	Name        string             `json:"name" url:"name"`
-	Markup      *PaymentRailMarkup `json:"markup,omitempty" url:"markup,omitempty"`
-	Description *string            `json:"description,omitempty" url:"description,omitempty"`
-	Active      bool               `json:"active" url:"active"`
-	Available   bool               `json:"available" url:"available"`
+	// For custom payment methods, this is the ID of the schema.
+	Name   string `json:"name" url:"name"`
+	Active bool   `json:"active" url:"active"`
 
 	_rawJSON json.RawMessage
 }
