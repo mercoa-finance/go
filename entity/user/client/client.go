@@ -42,7 +42,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 	}
 }
 
-// Get all entity users
+// Get all entity users (DEPRECATED, use Search Entity Users)
 func (c *Client) GetAll(
 	ctx context.Context,
 	entityID mercoafinancego.EntityID,
@@ -147,7 +147,7 @@ func (c *Client) GetAll(
 	return response, nil
 }
 
-// Get all entity users
+// Search entity users
 func (c *Client) Find(
 	ctx context.Context,
 	entityID mercoafinancego.EntityID,

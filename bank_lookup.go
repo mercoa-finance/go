@@ -17,7 +17,12 @@ type BankLookupResponse struct {
 	BankName    string       `json:"bankName" url:"bankName"`
 	BankAddress *BankAddress `json:"bankAddress,omitempty" url:"bankAddress,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BankLookupResponse) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
 }
 
 func (b *BankLookupResponse) UnmarshalJSON(data []byte) error {
@@ -27,6 +32,13 @@ func (b *BankLookupResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*b = BankLookupResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
 	b._rawJSON = json.RawMessage(data)
 	return nil
 }

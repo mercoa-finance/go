@@ -11,7 +11,12 @@ import (
 type OcrAsyncResponse struct {
 	JobID string `json:"jobId" url:"jobId"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OcrAsyncResponse) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
 }
 
 func (o *OcrAsyncResponse) UnmarshalJSON(data []byte) error {
@@ -21,6 +26,13 @@ func (o *OcrAsyncResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OcrAsyncResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
 	o._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -42,7 +54,12 @@ type OcrJobResponse struct {
 	Status OcrJobStatus `json:"status" url:"status"`
 	Data   *OcrResponse `json:"data,omitempty" url:"data,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OcrJobResponse) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
 }
 
 func (o *OcrJobResponse) UnmarshalJSON(data []byte) error {
@@ -52,6 +69,13 @@ func (o *OcrJobResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OcrJobResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
 	o._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -78,7 +102,12 @@ type OcrRequest struct {
 	// When using the Entity vendor network, specify the entity to use if. EntityId on an auth token will take precedence over this parameter.
 	EntityID *EntityID `json:"entityId,omitempty" url:"entityId,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OcrRequest) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
 }
 
 func (o *OcrRequest) UnmarshalJSON(data []byte) error {
@@ -88,6 +117,13 @@ func (o *OcrRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OcrRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
 	o._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -110,7 +146,12 @@ type OcrResponse struct {
 	Check       *CheckResponse       `json:"check,omitempty" url:"check,omitempty"`
 	BankAccount *BankAccountResponse `json:"bankAccount,omitempty" url:"bankAccount,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OcrResponse) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
 }
 
 func (o *OcrResponse) UnmarshalJSON(data []byte) error {
@@ -120,6 +161,13 @@ func (o *OcrResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OcrResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
 	o._rawJSON = json.RawMessage(data)
 	return nil
 }

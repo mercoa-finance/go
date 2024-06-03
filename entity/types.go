@@ -58,7 +58,12 @@ type CodatCompanyCreationRequest struct {
 	// If the company already exists in Codat, provide the company ID to link the company to the entity. If the company does not exist, leave this field blank and Codat will create a new company.
 	CompanyID *string `json:"companyId,omitempty" url:"companyId,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CodatCompanyCreationRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CodatCompanyCreationRequest) UnmarshalJSON(data []byte) error {
@@ -68,6 +73,13 @@ func (c *CodatCompanyCreationRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CodatCompanyCreationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -87,7 +99,12 @@ func (c *CodatCompanyCreationRequest) String() string {
 type CodatCompanyResponse struct {
 	CompanyID string `json:"companyId" url:"companyId"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CodatCompanyResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CodatCompanyResponse) UnmarshalJSON(data []byte) error {
@@ -97,6 +114,13 @@ func (c *CodatCompanyResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CodatCompanyResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -117,7 +141,12 @@ type RutterCompanyCreationRequest struct {
 	// The access token for the existing Rutter connection. If the connection does not exist, leave this field blank and Rutter will create a new connection.
 	AccessToken *string `json:"accessToken,omitempty" url:"accessToken,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (r *RutterCompanyCreationRequest) GetExtraProperties() map[string]interface{} {
+	return r.extraProperties
 }
 
 func (r *RutterCompanyCreationRequest) UnmarshalJSON(data []byte) error {
@@ -127,6 +156,13 @@ func (r *RutterCompanyCreationRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*r = RutterCompanyCreationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+
 	r._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -146,7 +182,12 @@ func (r *RutterCompanyCreationRequest) String() string {
 type RutterCompanyResponse struct {
 	AccessToken string `json:"accessToken" url:"accessToken"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (r *RutterCompanyResponse) GetExtraProperties() map[string]interface{} {
+	return r.extraProperties
 }
 
 func (r *RutterCompanyResponse) UnmarshalJSON(data []byte) error {
@@ -156,6 +197,13 @@ func (r *RutterCompanyResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*r = RutterCompanyResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+
 	r._rawJSON = json.RawMessage(data)
 	return nil
 }

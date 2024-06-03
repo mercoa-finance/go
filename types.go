@@ -16,7 +16,12 @@ type BankAddress struct {
 	PostalCode          string `json:"postalCode" url:"postalCode"`
 	PostalCodeExtension string `json:"postalCodeExtension" url:"postalCodeExtension"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BankAddress) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
 }
 
 func (b *BankAddress) UnmarshalJSON(data []byte) error {
@@ -26,6 +31,13 @@ func (b *BankAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*b = BankAddress(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
 	b._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -52,7 +64,12 @@ type Address struct {
 	PostalCode string  `json:"postalCode" url:"postalCode"`
 	Country    *string `json:"country,omitempty" url:"country,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *Address) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
 }
 
 func (a *Address) UnmarshalJSON(data []byte) error {
@@ -62,6 +79,13 @@ func (a *Address) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = Address(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
 	a._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -83,7 +107,12 @@ type BirthDate struct {
 	Month *string `json:"month,omitempty" url:"month,omitempty"`
 	Year  *string `json:"year,omitempty" url:"year,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BirthDate) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
 }
 
 func (b *BirthDate) UnmarshalJSON(data []byte) error {
@@ -93,6 +122,13 @@ func (b *BirthDate) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*b = BirthDate(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
 	b._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -115,7 +151,12 @@ type FullName struct {
 	LastName   string  `json:"lastName" url:"lastName"`
 	Suffix     *string `json:"suffix,omitempty" url:"suffix,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FullName) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
 }
 
 func (f *FullName) UnmarshalJSON(data []byte) error {
@@ -125,6 +166,13 @@ func (f *FullName) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*f = FullName(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
 	f._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -145,7 +193,12 @@ type IndividualGovernmentID struct {
 	// Full Social Security Number. Must be in the format 123-45-6789.
 	Ssn string `json:"ssn" url:"ssn"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *IndividualGovernmentID) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *IndividualGovernmentID) UnmarshalJSON(data []byte) error {
@@ -155,6 +208,13 @@ func (i *IndividualGovernmentID) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*i = IndividualGovernmentID(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
 	i._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -197,7 +257,12 @@ type PhoneNumber struct {
 	CountryCode string `json:"countryCode" url:"countryCode"`
 	Number      string `json:"number" url:"number"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PhoneNumber) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *PhoneNumber) UnmarshalJSON(data []byte) error {
@@ -207,6 +272,13 @@ func (p *PhoneNumber) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = PhoneNumber(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
 	p._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -233,7 +305,12 @@ type EmailLog struct {
 	CreatedAt time.Time  `json:"createdAt" url:"createdAt"`
 	InvoiceID *InvoiceID `json:"invoiceId,omitempty" url:"invoiceId,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EmailLog) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EmailLog) UnmarshalJSON(data []byte) error {
@@ -249,6 +326,12 @@ func (e *EmailLog) UnmarshalJSON(data []byte) error {
 	}
 	*e = EmailLog(unmarshaler.embed)
 	e.CreatedAt = unmarshaler.CreatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
 
 	e._rawJSON = json.RawMessage(data)
 	return nil
@@ -287,7 +370,12 @@ type EmailLogResponse struct {
 	HasMore bool        `json:"hasMore" url:"hasMore"`
 	Data    []*EmailLog `json:"data,omitempty" url:"data,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EmailLogResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EmailLogResponse) UnmarshalJSON(data []byte) error {
@@ -297,6 +385,13 @@ func (e *EmailLogResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EmailLogResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -339,7 +434,12 @@ type AmountTrigger struct {
 	Amount   float64      `json:"amount" url:"amount"`
 	Currency CurrencyCode `json:"currency" url:"currency"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *AmountTrigger) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
 }
 
 func (a *AmountTrigger) UnmarshalJSON(data []byte) error {
@@ -349,6 +449,13 @@ func (a *AmountTrigger) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = AmountTrigger(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
 	a._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -374,7 +481,12 @@ type ApprovalPolicyRequest struct {
 	// The policy ID of the previous approval policy in the chain of policies. Use 'root' if no upstreamPolicyId is intended to be set.
 	UpstreamPolicyID ApprovalPolicyID `json:"upstreamPolicyId" url:"upstreamPolicyId"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *ApprovalPolicyRequest) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
 }
 
 func (a *ApprovalPolicyRequest) UnmarshalJSON(data []byte) error {
@@ -384,6 +496,13 @@ func (a *ApprovalPolicyRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = ApprovalPolicyRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
 	a._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -406,7 +525,12 @@ type ApprovalPolicyResponse struct {
 	Rule             *Rule            `json:"rule,omitempty" url:"rule,omitempty"`
 	UpstreamPolicyID ApprovalPolicyID `json:"upstreamPolicyId" url:"upstreamPolicyId"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *ApprovalPolicyResponse) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
 }
 
 func (a *ApprovalPolicyResponse) UnmarshalJSON(data []byte) error {
@@ -416,6 +540,13 @@ func (a *ApprovalPolicyResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = ApprovalPolicyResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
 	a._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -437,7 +568,12 @@ type ApprovalPolicyUpdateRequest struct {
 	Rule             *Rule             `json:"rule,omitempty" url:"rule,omitempty"`
 	UpstreamPolicyID *ApprovalPolicyID `json:"upstreamPolicyId,omitempty" url:"upstreamPolicyId,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *ApprovalPolicyUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
 }
 
 func (a *ApprovalPolicyUpdateRequest) UnmarshalJSON(data []byte) error {
@@ -447,6 +583,13 @@ func (a *ApprovalPolicyUpdateRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = ApprovalPolicyUpdateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
 	a._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -467,7 +610,12 @@ type ApproverRule struct {
 	NumApprovers   int             `json:"numApprovers" url:"numApprovers"`
 	IdentifierList *IdentifierList `json:"identifierList,omitempty" url:"identifierList,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *ApproverRule) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
 }
 
 func (a *ApproverRule) UnmarshalJSON(data []byte) error {
@@ -477,6 +625,13 @@ func (a *ApproverRule) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = ApproverRule(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
 	a._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -512,7 +667,12 @@ type BusinessProfileRequest struct {
 	// Date of business formation
 	FormationDate *time.Time `json:"formationDate,omitempty" url:"formationDate,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BusinessProfileRequest) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
 }
 
 func (b *BusinessProfileRequest) UnmarshalJSON(data []byte) error {
@@ -528,6 +688,12 @@ func (b *BusinessProfileRequest) UnmarshalJSON(data []byte) error {
 	}
 	*b = BusinessProfileRequest(unmarshaler.embed)
 	b.FormationDate = unmarshaler.FormationDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
 
 	b._rawJSON = json.RawMessage(data)
 	return nil
@@ -570,7 +736,12 @@ type BusinessProfileResponse struct {
 	OwnersProvided *bool `json:"ownersProvided,omitempty" url:"ownersProvided,omitempty"`
 	TaxIDProvided  bool  `json:"taxIDProvided" url:"taxIDProvided"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BusinessProfileResponse) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
 }
 
 func (b *BusinessProfileResponse) UnmarshalJSON(data []byte) error {
@@ -580,6 +751,13 @@ func (b *BusinessProfileResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*b = BusinessProfileResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
 	b._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -644,7 +822,12 @@ type CounterpartyInvoiceMetricsResponse struct {
 	TotalAmount float64                                     `json:"totalAmount" url:"totalAmount"`
 	Statuses    []*CounterpartyInvoiceMetricsStatusResponse `json:"statuses,omitempty" url:"statuses,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CounterpartyInvoiceMetricsResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CounterpartyInvoiceMetricsResponse) UnmarshalJSON(data []byte) error {
@@ -654,6 +837,13 @@ func (c *CounterpartyInvoiceMetricsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CounterpartyInvoiceMetricsResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -675,7 +865,12 @@ type CounterpartyInvoiceMetricsStatusResponse struct {
 	TotalCount  int           `json:"totalCount" url:"totalCount"`
 	TotalAmount float64       `json:"totalAmount" url:"totalAmount"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CounterpartyInvoiceMetricsStatusResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CounterpartyInvoiceMetricsStatusResponse) UnmarshalJSON(data []byte) error {
@@ -685,6 +880,13 @@ func (c *CounterpartyInvoiceMetricsStatusResponse) UnmarshalJSON(data []byte) er
 		return err
 	}
 	*c = CounterpartyInvoiceMetricsStatusResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -750,7 +952,12 @@ type CounterpartyResponse struct {
 	CounterpartyType []CounterpartyNetworkType           `json:"counterpartyType,omitempty" url:"counterpartyType,omitempty"`
 	InvoiceMetrics   *CounterpartyInvoiceMetricsResponse `json:"invoiceMetrics,omitempty" url:"invoiceMetrics,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CounterpartyResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CounterpartyResponse) UnmarshalJSON(data []byte) error {
@@ -768,6 +975,12 @@ func (c *CounterpartyResponse) UnmarshalJSON(data []byte) error {
 	*c = CounterpartyResponse(unmarshaler.embed)
 	c.CreatedAt = unmarshaler.CreatedAt.Time()
 	c.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
 
 	c._rawJSON = json.RawMessage(data)
 	return nil
@@ -803,7 +1016,12 @@ type Ein struct {
 	// Must be in the format XX-XXXXXXX.
 	Number string `json:"number" url:"number"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *Ein) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *Ein) UnmarshalJSON(data []byte) error {
@@ -813,6 +1031,13 @@ func (e *Ein) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = Ein(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -833,7 +1058,12 @@ type EntityAddPayeesRequest struct {
 	// List of payee entity IDs to associate with the entity
 	Payees []EntityID `json:"payees,omitempty" url:"payees,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityAddPayeesRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityAddPayeesRequest) UnmarshalJSON(data []byte) error {
@@ -843,6 +1073,13 @@ func (e *EntityAddPayeesRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EntityAddPayeesRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -863,7 +1100,12 @@ type EntityAddPayorsRequest struct {
 	// List of payor entity IDs to associate with the entity
 	Payors []EntityID `json:"payors,omitempty" url:"payors,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityAddPayorsRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityAddPayorsRequest) UnmarshalJSON(data []byte) error {
@@ -873,6 +1115,13 @@ func (e *EntityAddPayorsRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EntityAddPayorsRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -895,7 +1144,12 @@ type EntityCustomizationRequest struct {
 	BackupDisbursement []*PaymentMethodCustomizationRequest `json:"backupDisbursement,omitempty" url:"backupDisbursement,omitempty"`
 	PaymentDestination []*PaymentMethodCustomizationRequest `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityCustomizationRequest) UnmarshalJSON(data []byte) error {
@@ -905,6 +1159,13 @@ func (e *EntityCustomizationRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EntityCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -927,7 +1188,12 @@ type EntityCustomizationResponse struct {
 	BackupDisbursement []*PaymentMethodCustomizationRequest `json:"backupDisbursement,omitempty" url:"backupDisbursement,omitempty"`
 	PaymentDestination []*PaymentMethodCustomizationRequest `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityCustomizationResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityCustomizationResponse) UnmarshalJSON(data []byte) error {
@@ -937,6 +1203,13 @@ func (e *EntityCustomizationResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EntityCustomizationResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -957,7 +1230,12 @@ type EntityHidePayeesRequest struct {
 	// List of payee entity IDs to hide
 	Payees []EntityID `json:"payees,omitempty" url:"payees,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityHidePayeesRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityHidePayeesRequest) UnmarshalJSON(data []byte) error {
@@ -967,6 +1245,13 @@ func (e *EntityHidePayeesRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EntityHidePayeesRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -987,7 +1272,12 @@ type EntityHidePayorsRequest struct {
 	// List of payor entity IDs to hide
 	Payors []EntityID `json:"payors,omitempty" url:"payors,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityHidePayorsRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityHidePayorsRequest) UnmarshalJSON(data []byte) error {
@@ -997,6 +1287,13 @@ func (e *EntityHidePayorsRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EntityHidePayorsRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1019,7 +1316,12 @@ type EntityMetadataResponse struct {
 	Key   string   `json:"key" url:"key"`
 	Value []string `json:"value,omitempty" url:"value,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityMetadataResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityMetadataResponse) UnmarshalJSON(data []byte) error {
@@ -1029,6 +1331,13 @@ func (e *EntityMetadataResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EntityMetadataResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1085,7 +1394,12 @@ type EntityRequest struct {
 	// Base64 encoded PNG image data for the entity logo.
 	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityRequest) UnmarshalJSON(data []byte) error {
@@ -1095,6 +1409,13 @@ func (e *EntityRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EntityRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1135,7 +1456,12 @@ type EntityResponse struct {
 	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt" url:"updatedAt"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityResponse) UnmarshalJSON(data []byte) error {
@@ -1153,6 +1479,12 @@ func (e *EntityResponse) UnmarshalJSON(data []byte) error {
 	*e = EntityResponse(unmarshaler.embed)
 	e.CreatedAt = unmarshaler.CreatedAt.Time()
 	e.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
 
 	e._rawJSON = json.RawMessage(data)
 	return nil
@@ -1236,7 +1568,12 @@ type EntityUpdateRequest struct {
 	// Base64 encoded PNG image data for the entity logo.
 	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityUpdateRequest) UnmarshalJSON(data []byte) error {
@@ -1246,6 +1583,13 @@ func (e *EntityUpdateRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EntityUpdateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1272,7 +1616,12 @@ type EntityUserRequest struct {
 	// List of roles. A role can be any string. For example: "payer", "approver", "viewer"
 	Roles []string `json:"roles,omitempty" url:"roles,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityUserRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityUserRequest) UnmarshalJSON(data []byte) error {
@@ -1282,6 +1631,13 @@ func (e *EntityUserRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EntityUserRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1308,7 +1664,12 @@ type EntityUserResponse struct {
 	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt" url:"updatedAt"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityUserResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityUserResponse) UnmarshalJSON(data []byte) error {
@@ -1326,6 +1687,12 @@ func (e *EntityUserResponse) UnmarshalJSON(data []byte) error {
 	*e = EntityUserResponse(unmarshaler.embed)
 	e.CreatedAt = unmarshaler.CreatedAt.Time()
 	e.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
 
 	e._rawJSON = json.RawMessage(data)
 	return nil
@@ -1382,7 +1749,12 @@ type EntityWithPaymentMethodResponse struct {
 	UpdatedAt      time.Time                `json:"updatedAt" url:"updatedAt"`
 	PaymentMethods []*PaymentMethodResponse `json:"paymentMethods,omitempty" url:"paymentMethods,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityWithPaymentMethodResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EntityWithPaymentMethodResponse) UnmarshalJSON(data []byte) error {
@@ -1400,6 +1772,12 @@ func (e *EntityWithPaymentMethodResponse) UnmarshalJSON(data []byte) error {
 	*e = EntityWithPaymentMethodResponse(unmarshaler.embed)
 	e.CreatedAt = unmarshaler.CreatedAt.Time()
 	e.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
 
 	e._rawJSON = json.RawMessage(data)
 	return nil
@@ -1438,7 +1816,12 @@ type FindCounterpartiesResponse struct {
 	HasMore bool                    `json:"hasMore" url:"hasMore"`
 	Data    []*CounterpartyResponse `json:"data,omitempty" url:"data,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FindCounterpartiesResponse) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
 }
 
 func (f *FindCounterpartiesResponse) UnmarshalJSON(data []byte) error {
@@ -1448,6 +1831,13 @@ func (f *FindCounterpartiesResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*f = FindCounterpartiesResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
 	f._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1471,7 +1861,12 @@ type FindEntityResponse struct {
 	HasMore bool                               `json:"hasMore" url:"hasMore"`
 	Data    []*EntityWithPaymentMethodResponse `json:"data,omitempty" url:"data,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FindEntityResponse) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
 }
 
 func (f *FindEntityResponse) UnmarshalJSON(data []byte) error {
@@ -1481,6 +1876,13 @@ func (f *FindEntityResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*f = FindEntityResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
 	f._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1504,7 +1906,12 @@ type FindEntityUserResponse struct {
 	HasMore bool                  `json:"hasMore" url:"hasMore"`
 	Data    []*EntityUserResponse `json:"data,omitempty" url:"data,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FindEntityUserResponse) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
 }
 
 func (f *FindEntityUserResponse) UnmarshalJSON(data []byte) error {
@@ -1514,6 +1921,13 @@ func (f *FindEntityUserResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*f = FindEntityUserResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
 	f._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1537,7 +1951,12 @@ type FindNotificationResponse struct {
 	HasMore bool                    `json:"hasMore" url:"hasMore"`
 	Data    []*NotificationResponse `json:"data,omitempty" url:"data,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FindNotificationResponse) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
 }
 
 func (f *FindNotificationResponse) UnmarshalJSON(data []byte) error {
@@ -1547,6 +1966,13 @@ func (f *FindNotificationResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*f = FindNotificationResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
 	f._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1647,7 +2073,12 @@ type IndividualProfileRequest struct {
 	BirthDate    *BirthDate              `json:"birthDate,omitempty" url:"birthDate,omitempty"`
 	GovernmentID *IndividualGovernmentID `json:"governmentID,omitempty" url:"governmentID,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *IndividualProfileRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *IndividualProfileRequest) UnmarshalJSON(data []byte) error {
@@ -1657,6 +2088,13 @@ func (i *IndividualProfileRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*i = IndividualProfileRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
 	i._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1681,7 +2119,12 @@ type IndividualProfileResponse struct {
 	BirthDateProvided    bool         `json:"birthDateProvided" url:"birthDateProvided"`
 	GovernmentIDProvided bool         `json:"governmentIDProvided" url:"governmentIDProvided"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *IndividualProfileResponse) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *IndividualProfileResponse) UnmarshalJSON(data []byte) error {
@@ -1691,6 +2134,13 @@ func (i *IndividualProfileResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*i = IndividualProfileResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
 	i._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1738,7 +2188,12 @@ type MetadataCustomizationRequest struct {
 	// If true, this field will not be available to the entity.
 	Disabled bool `json:"disabled" url:"disabled"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (m *MetadataCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return m.extraProperties
 }
 
 func (m *MetadataCustomizationRequest) UnmarshalJSON(data []byte) error {
@@ -1748,6 +2203,13 @@ func (m *MetadataCustomizationRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*m = MetadataCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+
 	m._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1770,7 +2232,12 @@ type MetadataTrigger struct {
 	// The metadata value the invoice must have to trigger this policy
 	Value string `json:"value" url:"value"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (m *MetadataTrigger) GetExtraProperties() map[string]interface{} {
+	return m.extraProperties
 }
 
 func (m *MetadataTrigger) UnmarshalJSON(data []byte) error {
@@ -1780,6 +2247,13 @@ func (m *MetadataTrigger) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*m = MetadataTrigger(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+
 	m._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1804,7 +2278,12 @@ type NotificationPolicyRequest struct {
 	// List of user roles that should receive notifications in addition to the default users for this notification type
 	AdditionalRoles []string `json:"additionalRoles,omitempty" url:"additionalRoles,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (n *NotificationPolicyRequest) GetExtraProperties() map[string]interface{} {
+	return n.extraProperties
 }
 
 func (n *NotificationPolicyRequest) UnmarshalJSON(data []byte) error {
@@ -1814,6 +2293,13 @@ func (n *NotificationPolicyRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*n = NotificationPolicyRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *n)
+	if err != nil {
+		return err
+	}
+	n.extraProperties = extraProperties
+
 	n._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1837,7 +2323,12 @@ type NotificationPolicyResponse struct {
 	AdditionalRoles []string         `json:"additionalRoles,omitempty" url:"additionalRoles,omitempty"`
 	Type            NotificationType `json:"type" url:"type"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (n *NotificationPolicyResponse) GetExtraProperties() map[string]interface{} {
+	return n.extraProperties
 }
 
 func (n *NotificationPolicyResponse) UnmarshalJSON(data []byte) error {
@@ -1847,6 +2338,13 @@ func (n *NotificationPolicyResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*n = NotificationPolicyResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *n)
+	if err != nil {
+		return err
+	}
+	n.extraProperties = extraProperties
+
 	n._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1870,7 +2368,12 @@ type NotificationResponse struct {
 	Type      NotificationType `json:"type" url:"type"`
 	CreatedAt time.Time        `json:"createdAt" url:"createdAt"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (n *NotificationResponse) GetExtraProperties() map[string]interface{} {
+	return n.extraProperties
 }
 
 func (n *NotificationResponse) UnmarshalJSON(data []byte) error {
@@ -1886,6 +2389,12 @@ func (n *NotificationResponse) UnmarshalJSON(data []byte) error {
 	}
 	*n = NotificationResponse(unmarshaler.embed)
 	n.CreatedAt = unmarshaler.CreatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *n)
+	if err != nil {
+		return err
+	}
+	n.extraProperties = extraProperties
 
 	n._rawJSON = json.RawMessage(data)
 	return nil
@@ -1968,7 +2477,12 @@ type PaymentMethodCustomizationRequest struct {
 	// If true, this method will will not be available to the entity.
 	Disabled bool `json:"disabled" url:"disabled"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentMethodCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *PaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
@@ -1978,6 +2492,13 @@ func (p *PaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = PaymentMethodCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
 	p._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2000,7 +2521,12 @@ type ProfileRequest struct {
 	// If this entity is a individual, set this field
 	Individual *IndividualProfileRequest `json:"individual,omitempty" url:"individual,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *ProfileRequest) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *ProfileRequest) UnmarshalJSON(data []byte) error {
@@ -2010,6 +2536,13 @@ func (p *ProfileRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = ProfileRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
 	p._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2032,7 +2565,12 @@ type ProfileResponse struct {
 	// Will be set if the entity is a individual
 	Individual *IndividualProfileResponse `json:"individual,omitempty" url:"individual,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *ProfileResponse) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *ProfileResponse) UnmarshalJSON(data []byte) error {
@@ -2042,6 +2580,13 @@ func (p *ProfileResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = ProfileResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
 	p._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2069,7 +2614,12 @@ type RepresentativeRequest struct {
 	GovernmentID     *IndividualGovernmentID `json:"governmentID,omitempty" url:"governmentID,omitempty"`
 	Responsibilities *Responsibilities       `json:"responsibilities,omitempty" url:"responsibilities,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (r *RepresentativeRequest) GetExtraProperties() map[string]interface{} {
+	return r.extraProperties
 }
 
 func (r *RepresentativeRequest) UnmarshalJSON(data []byte) error {
@@ -2079,6 +2629,13 @@ func (r *RepresentativeRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*r = RepresentativeRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+
 	r._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2108,7 +2665,12 @@ type RepresentativeResponse struct {
 	UpdatedOn            time.Time         `json:"updatedOn" url:"updatedOn"`
 	DisabledOn           *time.Time        `json:"disabledOn,omitempty" url:"disabledOn,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (r *RepresentativeResponse) GetExtraProperties() map[string]interface{} {
+	return r.extraProperties
 }
 
 func (r *RepresentativeResponse) UnmarshalJSON(data []byte) error {
@@ -2128,6 +2690,12 @@ func (r *RepresentativeResponse) UnmarshalJSON(data []byte) error {
 	r.CreatedOn = unmarshaler.CreatedOn.Time()
 	r.UpdatedOn = unmarshaler.UpdatedOn.Time()
 	r.DisabledOn = unmarshaler.DisabledOn.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
 
 	r._rawJSON = json.RawMessage(data)
 	return nil
@@ -2170,7 +2738,12 @@ type Responsibilities struct {
 	// Percentage of ownership in the business. Must be between 0 and 100.
 	OwnershipPercentage *int `json:"ownershipPercentage,omitempty" url:"ownershipPercentage,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (r *Responsibilities) GetExtraProperties() map[string]interface{} {
+	return r.extraProperties
 }
 
 func (r *Responsibilities) UnmarshalJSON(data []byte) error {
@@ -2180,6 +2753,13 @@ func (r *Responsibilities) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*r = Responsibilities(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+
 	r._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2241,7 +2821,12 @@ func (r *Rule) Accept(visitor RuleVisitor) error {
 type TaxID struct {
 	Ein *Ein `json:"ein,omitempty" url:"ein,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TaxID) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
 }
 
 func (t *TaxID) UnmarshalJSON(data []byte) error {
@@ -2251,6 +2836,13 @@ func (t *TaxID) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*t = TaxID(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
 	t._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2271,7 +2863,12 @@ type TokenGenerationEntityOptions struct {
 	// If true, will require entity to undergo KYB to use Mercoa payment rails and will capture required KYB data in the portal.
 	EnableMercoaPayments *bool `json:"enableMercoaPayments,omitempty" url:"enableMercoaPayments,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TokenGenerationEntityOptions) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
 }
 
 func (t *TokenGenerationEntityOptions) UnmarshalJSON(data []byte) error {
@@ -2281,6 +2878,13 @@ func (t *TokenGenerationEntityOptions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*t = TokenGenerationEntityOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
 	t._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2304,7 +2908,12 @@ type TokenGenerationInvoiceOptions struct {
 	DisableLineItems *bool           `json:"disableLineItems,omitempty" url:"disableLineItems,omitempty"`
 	Status           []InvoiceStatus `json:"status,omitempty" url:"status,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TokenGenerationInvoiceOptions) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
 }
 
 func (t *TokenGenerationInvoiceOptions) UnmarshalJSON(data []byte) error {
@@ -2314,6 +2923,13 @@ func (t *TokenGenerationInvoiceOptions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*t = TokenGenerationInvoiceOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
 	t._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2339,7 +2955,12 @@ type TokenGenerationOptions struct {
 	Vendors   *TokenGenerationVendorOptions  `json:"vendors,omitempty" url:"vendors,omitempty"`
 	Entity    *TokenGenerationEntityOptions  `json:"entity,omitempty" url:"entity,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TokenGenerationOptions) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
 }
 
 func (t *TokenGenerationOptions) UnmarshalJSON(data []byte) error {
@@ -2349,6 +2970,13 @@ func (t *TokenGenerationOptions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*t = TokenGenerationOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
 	t._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2373,7 +3001,12 @@ type TokenGenerationPagesOptions struct {
 	Approvals       *bool `json:"approvals,omitempty" url:"approvals,omitempty"`
 	EmailLog        *bool `json:"emailLog,omitempty" url:"emailLog,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TokenGenerationPagesOptions) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
 }
 
 func (t *TokenGenerationPagesOptions) UnmarshalJSON(data []byte) error {
@@ -2383,6 +3016,13 @@ func (t *TokenGenerationPagesOptions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*t = TokenGenerationPagesOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
 	t._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2402,7 +3042,12 @@ func (t *TokenGenerationPagesOptions) String() string {
 type TokenGenerationStyleOptions struct {
 	PrimaryColor string `json:"primaryColor" url:"primaryColor"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TokenGenerationStyleOptions) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
 }
 
 func (t *TokenGenerationStyleOptions) UnmarshalJSON(data []byte) error {
@@ -2412,6 +3057,13 @@ func (t *TokenGenerationStyleOptions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*t = TokenGenerationStyleOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
 	t._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2433,7 +3085,12 @@ type TokenGenerationVendorOptions struct {
 	DisableCreation *bool         `json:"disableCreation,omitempty" url:"disableCreation,omitempty"`
 	Network         VendorNetwork `json:"network" url:"network"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TokenGenerationVendorOptions) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
 }
 
 func (t *TokenGenerationVendorOptions) UnmarshalJSON(data []byte) error {
@@ -2443,6 +3100,13 @@ func (t *TokenGenerationVendorOptions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*t = TokenGenerationVendorOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
 	t._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2537,7 +3201,12 @@ type UserNotificationPolicyRequest struct {
 	// Set to true if the selected notification type should be sent immediately. Default is true.
 	Immediate *bool `json:"immediate,omitempty" url:"immediate,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (u *UserNotificationPolicyRequest) GetExtraProperties() map[string]interface{} {
+	return u.extraProperties
 }
 
 func (u *UserNotificationPolicyRequest) UnmarshalJSON(data []byte) error {
@@ -2547,6 +3216,13 @@ func (u *UserNotificationPolicyRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*u = UserNotificationPolicyRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+
 	u._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2572,7 +3248,12 @@ type UserNotificationPolicyResponse struct {
 	Immediate bool             `json:"immediate" url:"immediate"`
 	Type      NotificationType `json:"type" url:"type"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (u *UserNotificationPolicyResponse) GetExtraProperties() map[string]interface{} {
+	return u.extraProperties
 }
 
 func (u *UserNotificationPolicyResponse) UnmarshalJSON(data []byte) error {
@@ -2582,6 +3263,13 @@ func (u *UserNotificationPolicyResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*u = UserNotificationPolicyResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+
 	u._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2626,7 +3314,12 @@ func (v VendorNetwork) Ptr() *VendorNetwork {
 type VendorTrigger struct {
 	VendorIDs []EntityID `json:"vendorIds,omitempty" url:"vendorIds,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (v *VendorTrigger) GetExtraProperties() map[string]interface{} {
+	return v.extraProperties
 }
 
 func (v *VendorTrigger) UnmarshalJSON(data []byte) error {
@@ -2636,6 +3329,13 @@ func (v *VendorTrigger) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*v = VendorTrigger(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *v)
+	if err != nil {
+		return err
+	}
+	v.extraProperties = extraProperties
+
 	v._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2657,7 +3357,12 @@ type AddApproverRequest struct {
 	ApprovalSlotID *ApprovalSlotID `json:"approvalSlotId,omitempty" url:"approvalSlotId,omitempty"`
 	UserID         EntityUserID    `json:"userId" url:"userId"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *AddApproverRequest) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
 }
 
 func (a *AddApproverRequest) UnmarshalJSON(data []byte) error {
@@ -2667,6 +3372,13 @@ func (a *AddApproverRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = AddApproverRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
 	a._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2688,7 +3400,12 @@ type ApprovalRequest struct {
 	Text   *string      `json:"text,omitempty" url:"text,omitempty"`
 	UserID EntityUserID `json:"userId" url:"userId"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *ApprovalRequest) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
 }
 
 func (a *ApprovalRequest) UnmarshalJSON(data []byte) error {
@@ -2698,6 +3415,13 @@ func (a *ApprovalRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = ApprovalRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
 	a._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2726,7 +3450,12 @@ type ApprovalSlot struct {
 	// Either the date the invoice was created, date the approver was assigned, or date of last action by approver, whichever is latest.
 	Date time.Time `json:"date" url:"date"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *ApprovalSlot) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
 }
 
 func (a *ApprovalSlot) UnmarshalJSON(data []byte) error {
@@ -2742,6 +3471,12 @@ func (a *ApprovalSlot) UnmarshalJSON(data []byte) error {
 	}
 	*a = ApprovalSlot(unmarshaler.embed)
 	a.Date = unmarshaler.Date.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
 
 	a._rawJSON = json.RawMessage(data)
 	return nil
@@ -2776,7 +3511,12 @@ type ApprovalSlotAssignment struct {
 	ApprovalSlotID ApprovalSlotID `json:"approvalSlotId" url:"approvalSlotId"`
 	AssignedUserID EntityUserID   `json:"assignedUserId" url:"assignedUserId"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *ApprovalSlotAssignment) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
 }
 
 func (a *ApprovalSlotAssignment) UnmarshalJSON(data []byte) error {
@@ -2786,6 +3526,13 @@ func (a *ApprovalSlotAssignment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = ApprovalSlotAssignment(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
 	a._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2833,7 +3580,12 @@ type AssociatedApprovalAction struct {
 	UserID EntityUserID   `json:"userId" url:"userId"`
 	Action ApproverAction `json:"action" url:"action"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *AssociatedApprovalAction) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
 }
 
 func (a *AssociatedApprovalAction) UnmarshalJSON(data []byte) error {
@@ -2843,6 +3595,13 @@ func (a *AssociatedApprovalAction) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = AssociatedApprovalAction(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
 	a._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2865,7 +3624,12 @@ type BankAccountPaymentDestinationOptions struct {
 	// ACH Statement Description. By default, this will be 'AP' followed by the first 8 characters of the invoice ID. Must be at least 4 characters and no more than 10 characters, and follow this regex pattern ^[a-zA-Z0-9\-#.$&*]{4,10}$
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BankAccountPaymentDestinationOptions) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
 }
 
 func (b *BankAccountPaymentDestinationOptions) UnmarshalJSON(data []byte) error {
@@ -2875,6 +3639,13 @@ func (b *BankAccountPaymentDestinationOptions) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	*b = BankAccountPaymentDestinationOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
 	b._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2939,7 +3710,12 @@ type CheckPaymentDestinationOptions struct {
 	// Delivery method for check disbursements. Defaults to MAIL.
 	Delivery *CheckDeliveryMethod `json:"delivery,omitempty" url:"delivery,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CheckPaymentDestinationOptions) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CheckPaymentDestinationOptions) UnmarshalJSON(data []byte) error {
@@ -2949,6 +3725,13 @@ func (c *CheckPaymentDestinationOptions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CheckPaymentDestinationOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2971,7 +3754,12 @@ type CommentRequest struct {
 	Text   string        `json:"text" url:"text"`
 	UserID *EntityUserID `json:"userId,omitempty" url:"userId,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CommentRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CommentRequest) UnmarshalJSON(data []byte) error {
@@ -2981,6 +3769,13 @@ func (c *CommentRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CommentRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3006,7 +3801,12 @@ type CommentResponse struct {
 	CreatedAt                time.Time                 `json:"createdAt" url:"createdAt"`
 	UpdatedAt                time.Time                 `json:"updatedAt" url:"updatedAt"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CommentResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CommentResponse) UnmarshalJSON(data []byte) error {
@@ -3024,6 +3824,12 @@ func (c *CommentResponse) UnmarshalJSON(data []byte) error {
 	*c = CommentResponse(unmarshaler.embed)
 	c.CreatedAt = unmarshaler.CreatedAt.Time()
 	c.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
 
 	c._rawJSON = json.RawMessage(data)
 	return nil
@@ -3061,7 +3867,12 @@ type DocumentResponse struct {
 	MimeType string  `json:"mimeType" url:"mimeType"`
 	URI      string  `json:"uri" url:"uri"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (d *DocumentResponse) GetExtraProperties() map[string]interface{} {
+	return d.extraProperties
 }
 
 func (d *DocumentResponse) UnmarshalJSON(data []byte) error {
@@ -3071,6 +3882,13 @@ func (d *DocumentResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*d = DocumentResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+
 	d._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3094,7 +3912,12 @@ type FindInvoiceResponse struct {
 	HasMore bool               `json:"hasMore" url:"hasMore"`
 	Data    []*InvoiceResponse `json:"data,omitempty" url:"data,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FindInvoiceResponse) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
 }
 
 func (f *FindInvoiceResponse) UnmarshalJSON(data []byte) error {
@@ -3104,6 +3927,13 @@ func (f *FindInvoiceResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*f = FindInvoiceResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
 	f._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3163,7 +3993,12 @@ type InvoiceCreationRequest struct {
 	// ID of entity who created this invoice.
 	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceCreationRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceCreationRequest) UnmarshalJSON(data []byte) error {
@@ -3189,6 +4024,12 @@ func (i *InvoiceCreationRequest) UnmarshalJSON(data []byte) error {
 	i.DueDate = unmarshaler.DueDate.TimePtr()
 	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
 	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
 
 	i._rawJSON = json.RawMessage(data)
 	return nil
@@ -3269,7 +4110,12 @@ type InvoiceFeesResponse struct {
 	// Fee charged to the payee (C3).
 	DestinationPlatformMarkupFee float64 `json:"destinationPlatformMarkupFee" url:"destinationPlatformMarkupFee"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceFeesResponse) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceFeesResponse) UnmarshalJSON(data []byte) error {
@@ -3279,6 +4125,13 @@ func (i *InvoiceFeesResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*i = InvoiceFeesResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
 	i._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3315,7 +4168,12 @@ type InvoiceLineItemRequest struct {
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceLineItemRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceLineItemRequest) UnmarshalJSON(data []byte) error {
@@ -3333,6 +4191,12 @@ func (i *InvoiceLineItemRequest) UnmarshalJSON(data []byte) error {
 	*i = InvoiceLineItemRequest(unmarshaler.embed)
 	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
 	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
 
 	i._rawJSON = json.RawMessage(data)
 	return nil
@@ -3382,7 +4246,12 @@ type InvoiceLineItemResponse struct {
 	CreatedAt   time.Time `json:"createdAt" url:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt" url:"updatedAt"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceLineItemResponse) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceLineItemResponse) UnmarshalJSON(data []byte) error {
@@ -3404,6 +4273,12 @@ func (i *InvoiceLineItemResponse) UnmarshalJSON(data []byte) error {
 	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
 	i.CreatedAt = unmarshaler.CreatedAt.Time()
 	i.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
 
 	i._rawJSON = json.RawMessage(data)
 	return nil
@@ -3443,7 +4318,12 @@ type InvoiceMetadataFilter struct {
 	Key   string `json:"key" url:"key"`
 	Value string `json:"value" url:"value"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceMetadataFilter) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceMetadataFilter) UnmarshalJSON(data []byte) error {
@@ -3453,6 +4333,13 @@ func (i *InvoiceMetadataFilter) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*i = InvoiceMetadataFilter(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
 	i._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3504,7 +4391,12 @@ type InvoiceMetricsPerDateResponse struct {
 	AverageAmount float64      `json:"averageAmount" url:"averageAmount"`
 	Currency      CurrencyCode `json:"currency" url:"currency"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceMetricsPerDateResponse) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceMetricsPerDateResponse) UnmarshalJSON(data []byte) error {
@@ -3520,6 +4412,12 @@ func (i *InvoiceMetricsPerDateResponse) UnmarshalJSON(data []byte) error {
 	}
 	*i = InvoiceMetricsPerDateResponse(unmarshaler.embed)
 	i.Date = unmarshaler.Date.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
 
 	i._rawJSON = json.RawMessage(data)
 	return nil
@@ -3556,7 +4454,12 @@ type InvoiceMetricsResponse struct {
 	Currency      CurrencyCode                              `json:"currency" url:"currency"`
 	Dates         map[string]*InvoiceMetricsPerDateResponse `json:"dates,omitempty" url:"dates,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceMetricsResponse) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceMetricsResponse) UnmarshalJSON(data []byte) error {
@@ -3566,6 +4469,13 @@ func (i *InvoiceMetricsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*i = InvoiceMetricsResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
 	i._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3660,7 +4570,12 @@ type InvoiceRequestBase struct {
 	// ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceRequestBase) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceRequestBase) UnmarshalJSON(data []byte) error {
@@ -3686,6 +4601,12 @@ func (i *InvoiceRequestBase) UnmarshalJSON(data []byte) error {
 	i.DueDate = unmarshaler.DueDate.TimePtr()
 	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
 	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
 
 	i._rawJSON = json.RawMessage(data)
 	return nil
@@ -3777,7 +4698,12 @@ type InvoiceResponse struct {
 	// Fees associated with this invoice.
 	Fees *InvoiceFeesResponse `json:"fees,omitempty" url:"fees,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceResponse) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceResponse) UnmarshalJSON(data []byte) error {
@@ -3809,6 +4735,12 @@ func (i *InvoiceResponse) UnmarshalJSON(data []byte) error {
 	i.ProcessedAt = unmarshaler.ProcessedAt.TimePtr()
 	i.CreatedAt = unmarshaler.CreatedAt.Time()
 	i.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
 
 	i._rawJSON = json.RawMessage(data)
 	return nil
@@ -3943,7 +4875,12 @@ type InvoiceUpdateRequest struct {
 	// ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceUpdateRequest) UnmarshalJSON(data []byte) error {
@@ -3969,6 +4906,12 @@ func (i *InvoiceUpdateRequest) UnmarshalJSON(data []byte) error {
 	i.DueDate = unmarshaler.DueDate.TimePtr()
 	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
 	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
 
 	i._rawJSON = json.RawMessage(data)
 	return nil
@@ -4103,7 +5046,12 @@ type BusinessOnboardingOptions struct {
 	Description     *OnboardingOption `json:"description,omitempty" url:"description,omitempty"`
 	Representatives *OnboardingOption `json:"representatives,omitempty" url:"representatives,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BusinessOnboardingOptions) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
 }
 
 func (b *BusinessOnboardingOptions) UnmarshalJSON(data []byte) error {
@@ -4113,6 +5061,13 @@ func (b *BusinessOnboardingOptions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*b = BusinessOnboardingOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
 	b._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4132,7 +5087,12 @@ func (b *BusinessOnboardingOptions) String() string {
 type CodatProviderRequest struct {
 	APIKey string `json:"apiKey" url:"apiKey"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CodatProviderRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CodatProviderRequest) UnmarshalJSON(data []byte) error {
@@ -4142,6 +5102,13 @@ func (c *CodatProviderRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CodatProviderRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4161,7 +5128,12 @@ func (c *CodatProviderRequest) String() string {
 type CodatProviderResponse struct {
 	HasAPIKey bool `json:"hasApiKey" url:"hasApiKey"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CodatProviderResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CodatProviderResponse) UnmarshalJSON(data []byte) error {
@@ -4171,6 +5143,13 @@ func (c *CodatProviderResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CodatProviderResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4192,7 +5171,12 @@ type ColorSchemeRequest struct {
 	SecondaryColor      *string `json:"secondaryColor,omitempty" url:"secondaryColor,omitempty"`
 	LogoBackgroundColor *string `json:"logoBackgroundColor,omitempty" url:"logoBackgroundColor,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *ColorSchemeRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *ColorSchemeRequest) UnmarshalJSON(data []byte) error {
@@ -4202,6 +5186,13 @@ func (c *ColorSchemeRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = ColorSchemeRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4223,7 +5214,12 @@ type ColorSchemeResponse struct {
 	SecondaryColor      *string `json:"secondaryColor,omitempty" url:"secondaryColor,omitempty"`
 	LogoBackgroundColor *string `json:"logoBackgroundColor,omitempty" url:"logoBackgroundColor,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *ColorSchemeResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *ColorSchemeResponse) UnmarshalJSON(data []byte) error {
@@ -4233,6 +5229,13 @@ func (c *ColorSchemeResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = ColorSchemeResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4253,7 +5256,12 @@ type EmailProviderRequest struct {
 	Sender      *EmailSenderRequest `json:"sender,omitempty" url:"sender,omitempty"`
 	InboxDomain string              `json:"inboxDomain" url:"inboxDomain"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EmailProviderRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EmailProviderRequest) UnmarshalJSON(data []byte) error {
@@ -4263,6 +5271,13 @@ func (e *EmailProviderRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EmailProviderRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4283,7 +5298,12 @@ type EmailProviderResponse struct {
 	Sender      *EmailSenderResponse `json:"sender,omitempty" url:"sender,omitempty"`
 	InboxDomain string               `json:"inboxDomain" url:"inboxDomain"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EmailProviderResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EmailProviderResponse) UnmarshalJSON(data []byte) error {
@@ -4293,6 +5313,13 @@ func (e *EmailProviderResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EmailProviderResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4343,7 +5370,12 @@ type EmailSenderRequest struct {
 	FromName  string              `json:"fromName" url:"fromName"`
 	APIKey    *string             `json:"apiKey,omitempty" url:"apiKey,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EmailSenderRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EmailSenderRequest) UnmarshalJSON(data []byte) error {
@@ -4353,6 +5385,13 @@ func (e *EmailSenderRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EmailSenderRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4375,7 +5414,12 @@ type EmailSenderResponse struct {
 	FromName  string              `json:"fromName" url:"fromName"`
 	HasAPIKey bool                `json:"hasApiKey" url:"hasApiKey"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EmailSenderResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
 }
 
 func (e *EmailSenderResponse) UnmarshalJSON(data []byte) error {
@@ -4385,6 +5429,13 @@ func (e *EmailSenderResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*e = EmailSenderResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
 	e._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4550,7 +5601,12 @@ type IndividualOnboardingOptions struct {
 	Address        *OnboardingOption `json:"address,omitempty" url:"address,omitempty"`
 	Phone          *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *IndividualOnboardingOptions) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *IndividualOnboardingOptions) UnmarshalJSON(data []byte) error {
@@ -4560,6 +5616,13 @@ func (i *IndividualOnboardingOptions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*i = IndividualOnboardingOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
 	i._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4579,7 +5642,12 @@ func (i *IndividualOnboardingOptions) String() string {
 type InvoiceNotificationConfigurationRequest struct {
 	URL string `json:"url" url:"url"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceNotificationConfigurationRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceNotificationConfigurationRequest) UnmarshalJSON(data []byte) error {
@@ -4589,6 +5657,13 @@ func (i *InvoiceNotificationConfigurationRequest) UnmarshalJSON(data []byte) err
 		return err
 	}
 	*i = InvoiceNotificationConfigurationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
 	i._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4609,7 +5684,12 @@ type InvoiceNotificationConfigurationResponse struct {
 	URL  string           `json:"url" url:"url"`
 	Type NotificationType `json:"type" url:"type"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceNotificationConfigurationResponse) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
 }
 
 func (i *InvoiceNotificationConfigurationResponse) UnmarshalJSON(data []byte) error {
@@ -4619,6 +5699,13 @@ func (i *InvoiceNotificationConfigurationResponse) UnmarshalJSON(data []byte) er
 		return err
 	}
 	*i = InvoiceNotificationConfigurationResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
 	i._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4641,7 +5728,12 @@ type MetadataRegexValidationRule struct {
 	// The error message to display if the value does not match the regular expression.
 	ErrorMessage string `json:"errorMessage" url:"errorMessage"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (m *MetadataRegexValidationRule) GetExtraProperties() map[string]interface{} {
+	return m.extraProperties
 }
 
 func (m *MetadataRegexValidationRule) UnmarshalJSON(data []byte) error {
@@ -4651,6 +5743,13 @@ func (m *MetadataRegexValidationRule) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*m = MetadataRegexValidationRule(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+
 	m._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4681,7 +5780,12 @@ type MetadataSchema struct {
 	// A list of conditional rules that determine whether or not this field should be shown. The field will only be shown if all of the conditions are met. If no conditions are specified, the field will always be shown.
 	ShowConditions *MetadataShowConditions `json:"showConditions,omitempty" url:"showConditions,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (m *MetadataSchema) GetExtraProperties() map[string]interface{} {
+	return m.extraProperties
 }
 
 func (m *MetadataSchema) UnmarshalJSON(data []byte) error {
@@ -4691,6 +5795,13 @@ func (m *MetadataSchema) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*m = MetadataSchema(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+
 	m._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4723,7 +5834,12 @@ type MetadataShowConditions struct {
 	// Show this field only if the payment destination schema ID is in this list of payment destination schema IDs. This is only applicable if paymentDestinationTypes contains CUSTOM.
 	PaymentDestinationCustomSchemaIDs []string `json:"paymentDestinationCustomSchemaIds,omitempty" url:"paymentDestinationCustomSchemaIds,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (m *MetadataShowConditions) GetExtraProperties() map[string]interface{} {
+	return m.extraProperties
 }
 
 func (m *MetadataShowConditions) UnmarshalJSON(data []byte) error {
@@ -4733,6 +5849,13 @@ func (m *MetadataShowConditions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*m = MetadataShowConditions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+
 	m._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4911,7 +6034,12 @@ type OnboardingOption struct {
 	Edit     bool `json:"edit" url:"edit"`
 	Required bool `json:"required" url:"required"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OnboardingOption) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
 }
 
 func (o *OnboardingOption) UnmarshalJSON(data []byte) error {
@@ -4921,6 +6049,13 @@ func (o *OnboardingOption) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OnboardingOption(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
 	o._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4944,7 +6079,12 @@ type OnboardingOptionsRequest struct {
 	Business         *BusinessOnboardingOptions   `json:"business,omitempty" url:"business,omitempty"`
 	Individual       *IndividualOnboardingOptions `json:"individual,omitempty" url:"individual,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OnboardingOptionsRequest) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
 }
 
 func (o *OnboardingOptionsRequest) UnmarshalJSON(data []byte) error {
@@ -4954,6 +6094,13 @@ func (o *OnboardingOptionsRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OnboardingOptionsRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
 	o._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4977,7 +6124,12 @@ type OnboardingOptionsResponse struct {
 	Business         *BusinessOnboardingOptions   `json:"business,omitempty" url:"business,omitempty"`
 	Individual       *IndividualOnboardingOptions `json:"individual,omitempty" url:"individual,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OnboardingOptionsResponse) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
 }
 
 func (o *OnboardingOptionsResponse) UnmarshalJSON(data []byte) error {
@@ -4987,6 +6139,13 @@ func (o *OnboardingOptionsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OnboardingOptionsResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
 	o._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5018,7 +6177,12 @@ type OrganizationRequest struct {
 	PayorOnboardingOptions           *OnboardingOptionsRequest                `json:"payorOnboardingOptions,omitempty" url:"payorOnboardingOptions,omitempty"`
 	MetadataSchema                   []*MetadataSchema                        `json:"metadataSchema,omitempty" url:"metadataSchema,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OrganizationRequest) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
 }
 
 func (o *OrganizationRequest) UnmarshalJSON(data []byte) error {
@@ -5028,6 +6192,13 @@ func (o *OrganizationRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OrganizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
 	o._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5059,7 +6230,12 @@ type OrganizationResponse struct {
 	PayorOnboardingOptions           *OnboardingOptionsResponse                `json:"payorOnboardingOptions,omitempty" url:"payorOnboardingOptions,omitempty"`
 	MetadataSchema                   []*MetadataSchema                         `json:"metadataSchema,omitempty" url:"metadataSchema,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OrganizationResponse) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
 }
 
 func (o *OrganizationResponse) UnmarshalJSON(data []byte) error {
@@ -5069,6 +6245,13 @@ func (o *OrganizationResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OrganizationResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
 	o._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5093,7 +6276,12 @@ type PaymentMethodsRequest struct {
 	// List of payment methods that can be created by a payee to receive disbursements.
 	VendorDisbursements []*PaymentRailRequest `json:"vendorDisbursements,omitempty" url:"vendorDisbursements,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentMethodsRequest) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *PaymentMethodsRequest) UnmarshalJSON(data []byte) error {
@@ -5103,6 +6291,13 @@ func (p *PaymentMethodsRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = PaymentMethodsRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
 	p._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5127,7 +6322,12 @@ type PaymentMethodsResponse struct {
 	// List of payment methods that can be created by a payee to receive disbursements.
 	VendorDisbursements []*PaymentRailResponse `json:"vendorDisbursements,omitempty" url:"vendorDisbursements,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentMethodsResponse) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *PaymentMethodsResponse) UnmarshalJSON(data []byte) error {
@@ -5137,6 +6337,13 @@ func (p *PaymentMethodsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = PaymentMethodsResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
 	p._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5159,7 +6366,12 @@ type PaymentRailRequest struct {
 	Name   *string `json:"name,omitempty" url:"name,omitempty"`
 	Active bool    `json:"active" url:"active"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentRailRequest) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *PaymentRailRequest) UnmarshalJSON(data []byte) error {
@@ -5169,6 +6381,13 @@ func (p *PaymentRailRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = PaymentRailRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
 	p._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5190,8 +6409,15 @@ type PaymentRailResponse struct {
 	// For custom payment methods, this is the ID of the schema.
 	Name   string `json:"name" url:"name"`
 	Active bool   `json:"active" url:"active"`
+	// unused
+	Available *bool `json:"available,omitempty" url:"available,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentRailResponse) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *PaymentRailResponse) UnmarshalJSON(data []byte) error {
@@ -5201,6 +6427,13 @@ func (p *PaymentRailResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = PaymentRailResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
 	p._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5221,7 +6454,12 @@ type RutterProviderRequest struct {
 	ClientID     string `json:"clientId" url:"clientId"`
 	ClientSecret string `json:"clientSecret" url:"clientSecret"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (r *RutterProviderRequest) GetExtraProperties() map[string]interface{} {
+	return r.extraProperties
 }
 
 func (r *RutterProviderRequest) UnmarshalJSON(data []byte) error {
@@ -5231,6 +6469,13 @@ func (r *RutterProviderRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*r = RutterProviderRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+
 	r._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5251,7 +6496,12 @@ type RutterProviderResponse struct {
 	HasClientID     bool `json:"hasClientId" url:"hasClientId"`
 	HasClientSecret bool `json:"hasClientSecret" url:"hasClientSecret"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (r *RutterProviderResponse) GetExtraProperties() map[string]interface{} {
+	return r.extraProperties
 }
 
 func (r *RutterProviderResponse) UnmarshalJSON(data []byte) error {
@@ -5261,6 +6511,13 @@ func (r *RutterProviderResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*r = RutterProviderResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+
 	r._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5293,7 +6550,12 @@ type BankAccountCheckOptions struct {
 	// If true, will print checks with the provided signatureImage. If false, will print checks with a generated signature from the signatoryName. If this parameter is not set the default behavior is to use the signatureImage if provided.
 	UseSignatureImage *bool `json:"useSignatureImage,omitempty" url:"useSignatureImage,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BankAccountCheckOptions) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
 }
 
 func (b *BankAccountCheckOptions) UnmarshalJSON(data []byte) error {
@@ -5303,6 +6565,13 @@ func (b *BankAccountCheckOptions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*b = BankAccountCheckOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
 	b._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5336,7 +6605,12 @@ type BankAccountRequest struct {
 	// If this bank account supports check printing, use this to enable check printing and set the check options. Checks will be printed directly from the bank account.
 	CheckOptions *BankAccountCheckOptions `json:"checkOptions,omitempty" url:"checkOptions,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BankAccountRequest) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
 }
 
 func (b *BankAccountRequest) UnmarshalJSON(data []byte) error {
@@ -5346,6 +6620,13 @@ func (b *BankAccountRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*b = BankAccountRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
 	b._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5380,7 +6661,12 @@ type BankAccountResponse struct {
 	// If check printing is enabled for the account, will return the check options for this bank account
 	CheckOptions *BankAccountCheckOptions `json:"checkOptions,omitempty" url:"checkOptions,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BankAccountResponse) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
 }
 
 func (b *BankAccountResponse) UnmarshalJSON(data []byte) error {
@@ -5398,6 +6684,12 @@ func (b *BankAccountResponse) UnmarshalJSON(data []byte) error {
 	*b = BankAccountResponse(unmarshaler.embed)
 	b.CreatedAt = unmarshaler.CreatedAt.Time()
 	b.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
 
 	b._rawJSON = json.RawMessage(data)
 	return nil
@@ -5440,7 +6732,12 @@ type BankAccountUpdateRequest struct {
 	// If this bank account supports check printing, use this to enable check printing and set the check options. Checks will be printed directly from the bank account.
 	CheckOptions *BankAccountCheckOptions `json:"checkOptions,omitempty" url:"checkOptions,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BankAccountUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
 }
 
 func (b *BankAccountUpdateRequest) UnmarshalJSON(data []byte) error {
@@ -5450,6 +6747,13 @@ func (b *BankAccountUpdateRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*b = BankAccountUpdateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
 	b._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5562,7 +6866,12 @@ type CardRequest struct {
 	ExpYear            string    `json:"expYear" url:"expYear"`
 	Token              string    `json:"token" url:"token"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CardRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CardRequest) UnmarshalJSON(data []byte) error {
@@ -5572,6 +6881,13 @@ func (c *CardRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CardRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5603,7 +6919,12 @@ type CardResponse struct {
 	ExpMonth             string         `json:"expMonth" url:"expMonth"`
 	ExpYear              string         `json:"expYear" url:"expYear"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CardResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CardResponse) UnmarshalJSON(data []byte) error {
@@ -5621,6 +6942,12 @@ func (c *CardResponse) UnmarshalJSON(data []byte) error {
 	*c = CardResponse(unmarshaler.embed)
 	c.CreatedAt = unmarshaler.CreatedAt.Time()
 	c.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
 
 	c._rawJSON = json.RawMessage(data)
 	return nil
@@ -5693,7 +7020,12 @@ type CheckRequest struct {
 	PostalCode         string  `json:"postalCode" url:"postalCode"`
 	Country            string  `json:"country" url:"country"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CheckRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CheckRequest) UnmarshalJSON(data []byte) error {
@@ -5703,6 +7035,13 @@ func (c *CheckRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CheckRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5736,7 +7075,12 @@ type CheckResponse struct {
 	PostalCode           string         `json:"postalCode" url:"postalCode"`
 	Country              string         `json:"country" url:"country"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CheckResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CheckResponse) UnmarshalJSON(data []byte) error {
@@ -5754,6 +7098,12 @@ func (c *CheckResponse) UnmarshalJSON(data []byte) error {
 	*c = CheckResponse(unmarshaler.embed)
 	c.CreatedAt = unmarshaler.CreatedAt.Time()
 	c.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
 
 	c._rawJSON = json.RawMessage(data)
 	return nil
@@ -6355,7 +7705,12 @@ type CustomPaymentMethodRequest struct {
 	// Object of key/value pairs that matches the keys in the linked payment method schema.
 	Data map[string]string `json:"data,omitempty" url:"data,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CustomPaymentMethodRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CustomPaymentMethodRequest) UnmarshalJSON(data []byte) error {
@@ -6365,6 +7720,13 @@ func (c *CustomPaymentMethodRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CustomPaymentMethodRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6400,7 +7762,12 @@ type CustomPaymentMethodResponse struct {
 	// Object of key/value pairs that matches the keys in the linked payment method schema.
 	Data map[string]string `json:"data,omitempty" url:"data,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CustomPaymentMethodResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CustomPaymentMethodResponse) UnmarshalJSON(data []byte) error {
@@ -6418,6 +7785,12 @@ func (c *CustomPaymentMethodResponse) UnmarshalJSON(data []byte) error {
 	*c = CustomPaymentMethodResponse(unmarshaler.embed)
 	c.CreatedAt = unmarshaler.CreatedAt.Time()
 	c.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
 
 	c._rawJSON = json.RawMessage(data)
 	return nil
@@ -6462,7 +7835,12 @@ type CustomPaymentMethodSchemaField struct {
 	// When type is 'select', provide options that can be selected
 	Options []string `json:"options,omitempty" url:"options,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CustomPaymentMethodSchemaField) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CustomPaymentMethodSchemaField) UnmarshalJSON(data []byte) error {
@@ -6472,6 +7850,13 @@ func (c *CustomPaymentMethodSchemaField) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CustomPaymentMethodSchemaField(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6540,7 +7925,12 @@ type CustomPaymentMethodSchemaRequest struct {
 	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CustomPaymentMethodSchemaRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CustomPaymentMethodSchemaRequest) UnmarshalJSON(data []byte) error {
@@ -6550,6 +7940,13 @@ func (c *CustomPaymentMethodSchemaRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CustomPaymentMethodSchemaRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6579,7 +7976,12 @@ type CustomPaymentMethodSchemaResponse struct {
 	CreatedAt           time.Time                         `json:"createdAt" url:"createdAt"`
 	UpdatedAt           time.Time                         `json:"updatedAt" url:"updatedAt"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CustomPaymentMethodSchemaResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CustomPaymentMethodSchemaResponse) UnmarshalJSON(data []byte) error {
@@ -6597,6 +7999,12 @@ func (c *CustomPaymentMethodSchemaResponse) UnmarshalJSON(data []byte) error {
 	*c = CustomPaymentMethodSchemaResponse(unmarshaler.embed)
 	c.CreatedAt = unmarshaler.CreatedAt.Time()
 	c.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
 
 	c._rawJSON = json.RawMessage(data)
 	return nil
@@ -6642,7 +8050,12 @@ type CustomPaymentMethodUpdateRequest struct {
 	// Object of key/value pairs that matches the keys in the linked payment method schema.
 	Data map[string]string `json:"data,omitempty" url:"data,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CustomPaymentMethodUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CustomPaymentMethodUpdateRequest) UnmarshalJSON(data []byte) error {
@@ -6652,6 +8065,13 @@ func (c *CustomPaymentMethodUpdateRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CustomPaymentMethodUpdateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6676,7 +8096,12 @@ type PaymentMethodBalanceResponse struct {
 	// The time the balance was last updated. Will be null if the balance has never been updated.
 	UpdatedAt *time.Time `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentMethodBalanceResponse) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *PaymentMethodBalanceResponse) UnmarshalJSON(data []byte) error {
@@ -6692,6 +8117,12 @@ func (p *PaymentMethodBalanceResponse) UnmarshalJSON(data []byte) error {
 	}
 	*p = PaymentMethodBalanceResponse(unmarshaler.embed)
 	p.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
 
 	p._rawJSON = json.RawMessage(data)
 	return nil
@@ -6752,7 +8183,12 @@ type PaymentMethodBaseRequest struct {
 	// If true, this payment method will be set as the default destination. Only one payment method can be set as the default destination. If another payment method is already set as the default destination, it will be unset.
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentMethodBaseRequest) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *PaymentMethodBaseRequest) UnmarshalJSON(data []byte) error {
@@ -6762,6 +8198,13 @@ func (p *PaymentMethodBaseRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = PaymentMethodBaseRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
 	p._rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6788,7 +8231,12 @@ type PaymentMethodBaseResponse struct {
 	CreatedAt            time.Time      `json:"createdAt" url:"createdAt"`
 	UpdatedAt            time.Time      `json:"updatedAt" url:"updatedAt"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentMethodBaseResponse) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *PaymentMethodBaseResponse) UnmarshalJSON(data []byte) error {
@@ -6806,6 +8254,12 @@ func (p *PaymentMethodBaseResponse) UnmarshalJSON(data []byte) error {
 	*p = PaymentMethodBaseResponse(unmarshaler.embed)
 	p.CreatedAt = unmarshaler.CreatedAt.Time()
 	p.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
 
 	p._rawJSON = json.RawMessage(data)
 	return nil
@@ -7186,7 +8640,12 @@ type PlaidLinkRequest struct {
 	// Plaid access token for the account. If you already have an access token for the account (for example, you have linked the account to your app already), use this instead of publicToken.
 	AccessToken *string `json:"accessToken,omitempty" url:"accessToken,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PlaidLinkRequest) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
 }
 
 func (p *PlaidLinkRequest) UnmarshalJSON(data []byte) error {
@@ -7196,6 +8655,13 @@ func (p *PlaidLinkRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = PlaidLinkRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
 	p._rawJSON = json.RawMessage(data)
 	return nil
 }

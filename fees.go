@@ -20,7 +20,12 @@ type CalculateFeesRequest struct {
 	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 
-	_rawJSON json.RawMessage
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CalculateFeesRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
 }
 
 func (c *CalculateFeesRequest) UnmarshalJSON(data []byte) error {
@@ -30,6 +35,13 @@ func (c *CalculateFeesRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CalculateFeesRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
 	c._rawJSON = json.RawMessage(data)
 	return nil
 }
