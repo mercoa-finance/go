@@ -11,7 +11,7 @@ import (
 type SyncExternalSystemRequest struct {
 	// Sync vendors from external accounting system. Default is to pull vendors from external system.
 	Vendors *SyncType `json:"-" url:"vendors,omitempty"`
-	// Sync bills from external accounting system. Default is to not sync bills.
+	// Sync bills from external accounting system. Default is to not sync bills. Invoices that already exist in both systems will not be updated, only new invoices not present in the other system will be created.
 	Bills *SyncType `json:"-" url:"bills,omitempty"`
 	// Sync GL accounts from external accounting system. Default is to pull GL accounts from external system. Pushing GL accounts is not supported.
 	GlAccounts *SyncType `json:"-" url:"glAccounts,omitempty"`
@@ -77,6 +77,7 @@ type ExternalAccountingSystemCompanyResponse struct {
 	Type   string
 	Codat  *CodatCompanyResponse
 	Rutter *RutterCompanyResponse
+	None   *CodatCompanyResponse
 }
 
 func (e *ExternalAccountingSystemCompanyResponse) UnmarshalJSON(data []byte) error {
@@ -100,6 +101,12 @@ func (e *ExternalAccountingSystemCompanyResponse) UnmarshalJSON(data []byte) err
 			return err
 		}
 		e.Rutter = value
+	case "none":
+		value := new(CodatCompanyResponse)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		e.None = value
 	}
 	return nil
 }
@@ -111,12 +118,16 @@ func (e ExternalAccountingSystemCompanyResponse) MarshalJSON() ([]byte, error) {
 	if e.Rutter != nil {
 		return core.MarshalJSONWithExtraProperty(e.Rutter, "type", "rutter")
 	}
+	if e.None != nil {
+		return core.MarshalJSONWithExtraProperty(e.None, "type", "none")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", e)
 }
 
 type ExternalAccountingSystemCompanyResponseVisitor interface {
 	VisitCodat(*CodatCompanyResponse) error
 	VisitRutter(*RutterCompanyResponse) error
+	VisitNone(*CodatCompanyResponse) error
 }
 
 func (e *ExternalAccountingSystemCompanyResponse) Accept(visitor ExternalAccountingSystemCompanyResponseVisitor) error {
@@ -125,6 +136,9 @@ func (e *ExternalAccountingSystemCompanyResponse) Accept(visitor ExternalAccount
 	}
 	if e.Rutter != nil {
 		return visitor.VisitRutter(e.Rutter)
+	}
+	if e.None != nil {
+		return visitor.VisitNone(e.None)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", e)
 }

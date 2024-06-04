@@ -6593,6 +6593,8 @@ type BankAccountRequest struct {
 	DefaultSource *bool `json:"defaultSource,omitempty" url:"defaultSource,omitempty"`
 	// If true, this payment method will be set as the default destination. Only one payment method can be set as the default destination. If another payment method is already set as the default destination, it will be unset.
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 	// The name of the account. For example "My Checking Account" or "Property XYZ Checking"
 	AccountName *string `json:"accountName,omitempty" url:"accountName,omitempty"`
 	// The name of the bank. This is now automatically set when the bank account is linked.
@@ -6650,14 +6652,16 @@ type BankAccountResponse struct {
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
 	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
-	CreatedAt            time.Time      `json:"createdAt" url:"createdAt"`
-	UpdatedAt            time.Time      `json:"updatedAt" url:"updatedAt"`
-	AccountName          string         `json:"accountName" url:"accountName"`
-	BankName             string         `json:"bankName" url:"bankName"`
-	RoutingNumber        string         `json:"routingNumber" url:"routingNumber"`
-	AccountNumber        string         `json:"accountNumber" url:"accountNumber"`
-	AccountType          BankType       `json:"accountType" url:"accountType"`
-	Status               BankStatus     `json:"status" url:"status"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string    `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	CreatedAt                  time.Time  `json:"createdAt" url:"createdAt"`
+	UpdatedAt                  time.Time  `json:"updatedAt" url:"updatedAt"`
+	AccountName                string     `json:"accountName" url:"accountName"`
+	BankName                   string     `json:"bankName" url:"bankName"`
+	RoutingNumber              string     `json:"routingNumber" url:"routingNumber"`
+	AccountNumber              string     `json:"accountNumber" url:"accountNumber"`
+	AccountType                BankType   `json:"accountType" url:"accountType"`
+	Status                     BankStatus `json:"status" url:"status"`
 	// If check printing is enabled for the account, will return the check options for this bank account
 	CheckOptions *BankAccountCheckOptions `json:"checkOptions,omitempty" url:"checkOptions,omitempty"`
 
@@ -6725,8 +6729,10 @@ type BankAccountUpdateRequest struct {
 	// If true, this payment method will be set as the default source. Only one payment method can be set as the default source. If another payment method is already set as the default source, it will be unset.
 	DefaultSource *bool `json:"defaultSource,omitempty" url:"defaultSource,omitempty"`
 	// If true, this payment method will be set as the default destination. Only one payment method can be set as the default destination. If another payment method is already set as the default destination, it will be unset.
-	DefaultDestination *bool   `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
-	AccountName        *string `json:"accountName,omitempty" url:"accountName,omitempty"`
+	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	AccountName                *string `json:"accountName,omitempty" url:"accountName,omitempty"`
 	// If provided, will update a bank account using Plaid Link
 	Plaid *PlaidLinkRequest `json:"plaid,omitempty" url:"plaid,omitempty"`
 	// If this bank account supports check printing, use this to enable check printing and set the check options. Checks will be printed directly from the bank account.
@@ -6858,13 +6864,15 @@ type CardRequest struct {
 	// If true, this payment method will be set as the default source. Only one payment method can be set as the default source. If another payment method is already set as the default source, it will be unset.
 	DefaultSource *bool `json:"defaultSource,omitempty" url:"defaultSource,omitempty"`
 	// If true, this payment method will be set as the default destination. Only one payment method can be set as the default destination. If another payment method is already set as the default destination, it will be unset.
-	DefaultDestination *bool     `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
-	CardType           CardType  `json:"cardType" url:"cardType"`
-	CardBrand          CardBrand `json:"cardBrand" url:"cardBrand"`
-	LastFour           string    `json:"lastFour" url:"lastFour"`
-	ExpMonth           string    `json:"expMonth" url:"expMonth"`
-	ExpYear            string    `json:"expYear" url:"expYear"`
-	Token              string    `json:"token" url:"token"`
+	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	CardType                   CardType  `json:"cardType" url:"cardType"`
+	CardBrand                  CardBrand `json:"cardBrand" url:"cardBrand"`
+	LastFour                   string    `json:"lastFour" url:"lastFour"`
+	ExpMonth                   string    `json:"expMonth" url:"expMonth"`
+	ExpYear                    string    `json:"expYear" url:"expYear"`
+	Token                      string    `json:"token" url:"token"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -6911,13 +6919,15 @@ type CardResponse struct {
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
 	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
-	CreatedAt            time.Time      `json:"createdAt" url:"createdAt"`
-	UpdatedAt            time.Time      `json:"updatedAt" url:"updatedAt"`
-	CardType             CardType       `json:"cardType" url:"cardType"`
-	CardBrand            CardBrand      `json:"cardBrand" url:"cardBrand"`
-	LastFour             string         `json:"lastFour" url:"lastFour"`
-	ExpMonth             string         `json:"expMonth" url:"expMonth"`
-	ExpYear              string         `json:"expYear" url:"expYear"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	CreatedAt                  time.Time `json:"createdAt" url:"createdAt"`
+	UpdatedAt                  time.Time `json:"updatedAt" url:"updatedAt"`
+	CardType                   CardType  `json:"cardType" url:"cardType"`
+	CardBrand                  CardBrand `json:"cardBrand" url:"cardBrand"`
+	LastFour                   string    `json:"lastFour" url:"lastFour"`
+	ExpMonth                   string    `json:"expMonth" url:"expMonth"`
+	ExpYear                    string    `json:"expYear" url:"expYear"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -7011,14 +7021,16 @@ type CheckRequest struct {
 	// If true, this payment method will be set as the default source. Only one payment method can be set as the default source. If another payment method is already set as the default source, it will be unset.
 	DefaultSource *bool `json:"defaultSource,omitempty" url:"defaultSource,omitempty"`
 	// If true, this payment method will be set as the default destination. Only one payment method can be set as the default destination. If another payment method is already set as the default destination, it will be unset.
-	DefaultDestination *bool   `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
-	PayToTheOrderOf    string  `json:"payToTheOrderOf" url:"payToTheOrderOf"`
-	AddressLine1       string  `json:"addressLine1" url:"addressLine1"`
-	AddressLine2       *string `json:"addressLine2,omitempty" url:"addressLine2,omitempty"`
-	City               string  `json:"city" url:"city"`
-	StateOrProvince    string  `json:"stateOrProvince" url:"stateOrProvince"`
-	PostalCode         string  `json:"postalCode" url:"postalCode"`
-	Country            string  `json:"country" url:"country"`
+	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	PayToTheOrderOf            string  `json:"payToTheOrderOf" url:"payToTheOrderOf"`
+	AddressLine1               string  `json:"addressLine1" url:"addressLine1"`
+	AddressLine2               *string `json:"addressLine2,omitempty" url:"addressLine2,omitempty"`
+	City                       string  `json:"city" url:"city"`
+	StateOrProvince            string  `json:"stateOrProvince" url:"stateOrProvince"`
+	PostalCode                 string  `json:"postalCode" url:"postalCode"`
+	Country                    string  `json:"country" url:"country"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -7065,15 +7077,17 @@ type CheckResponse struct {
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
 	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
-	CreatedAt            time.Time      `json:"createdAt" url:"createdAt"`
-	UpdatedAt            time.Time      `json:"updatedAt" url:"updatedAt"`
-	PayToTheOrderOf      string         `json:"payToTheOrderOf" url:"payToTheOrderOf"`
-	AddressLine1         string         `json:"addressLine1" url:"addressLine1"`
-	AddressLine2         *string        `json:"addressLine2,omitempty" url:"addressLine2,omitempty"`
-	City                 string         `json:"city" url:"city"`
-	StateOrProvince      string         `json:"stateOrProvince" url:"stateOrProvince"`
-	PostalCode           string         `json:"postalCode" url:"postalCode"`
-	Country              string         `json:"country" url:"country"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	CreatedAt                  time.Time `json:"createdAt" url:"createdAt"`
+	UpdatedAt                  time.Time `json:"updatedAt" url:"updatedAt"`
+	PayToTheOrderOf            string    `json:"payToTheOrderOf" url:"payToTheOrderOf"`
+	AddressLine1               string    `json:"addressLine1" url:"addressLine1"`
+	AddressLine2               *string   `json:"addressLine2,omitempty" url:"addressLine2,omitempty"`
+	City                       string    `json:"city" url:"city"`
+	StateOrProvince            string    `json:"stateOrProvince" url:"stateOrProvince"`
+	PostalCode                 string    `json:"postalCode" url:"postalCode"`
+	Country                    string    `json:"country" url:"country"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -7696,6 +7710,8 @@ type CustomPaymentMethodRequest struct {
 	DefaultSource *bool `json:"defaultSource,omitempty" url:"defaultSource,omitempty"`
 	// If true, this payment method will be set as the default destination. Only one payment method can be set as the default destination. If another payment method is already set as the default destination, it will be unset.
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 	// ID for this payment method in your system
 	ForeignID     string  `json:"foreignId" url:"foreignId"`
 	AccountName   *string `json:"accountName,omitempty" url:"accountName,omitempty"`
@@ -7750,8 +7766,10 @@ type CustomPaymentMethodResponse struct {
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
 	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
-	CreatedAt            time.Time      `json:"createdAt" url:"createdAt"`
-	UpdatedAt            time.Time      `json:"updatedAt" url:"updatedAt"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	CreatedAt                  time.Time `json:"createdAt" url:"createdAt"`
+	UpdatedAt                  time.Time `json:"updatedAt" url:"updatedAt"`
 	// ID for this payment method in your system
 	ForeignID     string  `json:"foreignId" url:"foreignId"`
 	AccountName   *string `json:"accountName,omitempty" url:"accountName,omitempty"`
@@ -8041,6 +8059,8 @@ type CustomPaymentMethodUpdateRequest struct {
 	DefaultSource *bool `json:"defaultSource,omitempty" url:"defaultSource,omitempty"`
 	// If true, this payment method will be set as the default destination. Only one payment method can be set as the default destination. If another payment method is already set as the default destination, it will be unset.
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 	// ID for this payment method in your system
 	ForeignID     *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	AccountName   *string `json:"accountName,omitempty" url:"accountName,omitempty"`
@@ -8182,6 +8202,8 @@ type PaymentMethodBaseRequest struct {
 	DefaultSource *bool `json:"defaultSource,omitempty" url:"defaultSource,omitempty"`
 	// If true, this payment method will be set as the default destination. Only one payment method can be set as the default destination. If another payment method is already set as the default destination, it will be unset.
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -8228,8 +8250,10 @@ type PaymentMethodBaseResponse struct {
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
 	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
-	CreatedAt            time.Time      `json:"createdAt" url:"createdAt"`
-	UpdatedAt            time.Time      `json:"updatedAt" url:"updatedAt"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	CreatedAt                  time.Time `json:"createdAt" url:"createdAt"`
+	UpdatedAt                  time.Time `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
