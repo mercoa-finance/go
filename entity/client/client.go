@@ -497,6 +497,7 @@ func (c *Client) Update(
 	return response, nil
 }
 
+// Will archive the entity. This action cannot be undone, and the entity will no longer be available for use.
 func (c *Client) Delete(
 	ctx context.Context,
 	entityID mercoafinancego.EntityID,

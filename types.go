@@ -817,6 +817,49 @@ func (b BusinessType) Ptr() *BusinessType {
 	return &b
 }
 
+type CounterpartyCustomizationRequest struct {
+	CounterpartyID EntityID `json:"counterpartyId" url:"counterpartyId"`
+	// The ID the counterparty has assigned to this account.
+	AccountID *string `json:"accountId,omitempty" url:"accountId,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CounterpartyCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CounterpartyCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CounterpartyCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CounterpartyCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CounterpartyCustomizationRequest) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 type CounterpartyInvoiceMetricsResponse struct {
 	TotalCount  int                                         `json:"totalCount" url:"totalCount"`
 	TotalAmount float64                                     `json:"totalAmount" url:"totalAmount"`
@@ -945,9 +988,17 @@ type CounterpartyResponse struct {
 	// True if this entity can pay invoices.
 	IsPayor bool `json:"isPayor" url:"isPayor"`
 	// True if this entity can receive payments.
-	IsPayee          bool                                `json:"isPayee" url:"isPayee"`
-	CreatedAt        time.Time                           `json:"createdAt" url:"createdAt"`
-	UpdatedAt        time.Time                           `json:"updatedAt" url:"updatedAt"`
+	IsPayee bool `json:"isPayee" url:"isPayee"`
+	// True if this entity is available as a payor to any entity on your platform. Otherwise this entity will only be available as a payor to entities that have a direct relationship with this entity.
+	IsNetworkPayor bool `json:"isNetworkPayor" url:"isNetworkPayor"`
+	// True if this entity is available as a payee to any entity on your platform. Otherwise this entity will only be available as a payee to entities that have a direct relationship with this entity.
+	IsNetworkPayee bool      `json:"isNetworkPayee" url:"isNetworkPayee"`
+	CreatedAt      time.Time `json:"createdAt" url:"createdAt"`
+	UpdatedAt      time.Time `json:"updatedAt" url:"updatedAt"`
+	// If the entity searching for counterparties has an Account ID configured in the Payee/Payor relationship, it will be returned
+	AccountID *string `json:"accountId,omitempty" url:"accountId,omitempty"`
+	// URL to the entity logo
+	Logo             *string                             `json:"logo,omitempty" url:"logo,omitempty"`
 	PaymentMethods   []*PaymentMethodResponse            `json:"paymentMethods,omitempty" url:"paymentMethods,omitempty"`
 	CounterpartyType []CounterpartyNetworkType           `json:"counterpartyType,omitempty" url:"counterpartyType,omitempty"`
 	InvoiceMetrics   *CounterpartyInvoiceMetricsResponse `json:"invoiceMetrics,omitempty" url:"invoiceMetrics,omitempty"`
@@ -1057,6 +1108,8 @@ func (e *Ein) String() string {
 type EntityAddPayeesRequest struct {
 	// List of payee entity IDs to associate with the entity
 	Payees []EntityID `json:"payees,omitempty" url:"payees,omitempty"`
+	// List of customizations to apply to the payees. If the payee is not currently a counterparty of the entity, the counterparty will be created with the provided customizations.
+	Customizations []*CounterpartyCustomizationRequest `json:"customizations,omitempty" url:"customizations,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -1099,6 +1152,8 @@ func (e *EntityAddPayeesRequest) String() string {
 type EntityAddPayorsRequest struct {
 	// List of payor entity IDs to associate with the entity
 	Payors []EntityID `json:"payors,omitempty" url:"payors,omitempty"`
+	// List of customizations to apply to the payors. If the payor is not currently a counterparty of the entity, the counterparty will be created with the provided customizations.
+	Customizations []*CounterpartyCustomizationRequest `json:"customizations,omitempty" url:"customizations,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -1391,6 +1446,10 @@ type EntityRequest struct {
 	IsPayor bool `json:"isPayor" url:"isPayor"`
 	// If this entity will be receiving payments, set this to true.
 	IsPayee bool `json:"isPayee" url:"isPayee"`
+	// Control if this entity should be available as a payor to any entity on your platform. If set to false, this entity will only be available as a payor to entities that have a direct relationship with this entity. Defaults to false.
+	IsNetworkPayor *bool `json:"isNetworkPayor,omitempty" url:"isNetworkPayor,omitempty"`
+	// Control if this entity should be available as a payee to any entity on your platform. If set to false, this entity will only be available as a payee to entities that have a direct relationship with this entity. Defaults to false.
+	IsNetworkPayee *bool `json:"isNetworkPayee,omitempty" url:"isNetworkPayee,omitempty"`
 	// Base64 encoded PNG image data for the entity logo.
 	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
 
@@ -1452,9 +1511,13 @@ type EntityResponse struct {
 	// True if this entity can pay invoices.
 	IsPayor bool `json:"isPayor" url:"isPayor"`
 	// True if this entity can receive payments.
-	IsPayee   bool      `json:"isPayee" url:"isPayee"`
-	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt" url:"updatedAt"`
+	IsPayee bool `json:"isPayee" url:"isPayee"`
+	// True if this entity is available as a payor to any entity on your platform. Otherwise this entity will only be available as a payor to entities that have a direct relationship with this entity.
+	IsNetworkPayor bool `json:"isNetworkPayor" url:"isNetworkPayor"`
+	// True if this entity is available as a payee to any entity on your platform. Otherwise this entity will only be available as a payee to entities that have a direct relationship with this entity.
+	IsNetworkPayee bool      `json:"isNetworkPayee" url:"isNetworkPayee"`
+	CreatedAt      time.Time `json:"createdAt" url:"createdAt"`
+	UpdatedAt      time.Time `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -1565,6 +1628,10 @@ type EntityUpdateRequest struct {
 	IsPayor *bool `json:"isPayor,omitempty" url:"isPayor,omitempty"`
 	// If this entity will be receiving payments, set this to true.
 	IsPayee *bool `json:"isPayee,omitempty" url:"isPayee,omitempty"`
+	// Control if this entity should be available as a payor to any entity on your platform. If set to false, this entity will only be available as a payor to entities that have a direct relationship with this entity. Defaults to false.
+	IsNetworkPayor *bool `json:"isNetworkPayor,omitempty" url:"isNetworkPayor,omitempty"`
+	// Control if this entity should be available as a payee to any entity on your platform. If set to false, this entity will only be available as a payee to entities that have a direct relationship with this entity. Defaults to false.
+	IsNetworkPayee *bool `json:"isNetworkPayee,omitempty" url:"isNetworkPayee,omitempty"`
 	// Base64 encoded PNG image data for the entity logo.
 	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
 
@@ -1744,7 +1811,11 @@ type EntityWithPaymentMethodResponse struct {
 	// True if this entity can pay invoices.
 	IsPayor bool `json:"isPayor" url:"isPayor"`
 	// True if this entity can receive payments.
-	IsPayee        bool                     `json:"isPayee" url:"isPayee"`
+	IsPayee bool `json:"isPayee" url:"isPayee"`
+	// True if this entity is available as a payor to any entity on your platform. Otherwise this entity will only be available as a payor to entities that have a direct relationship with this entity.
+	IsNetworkPayor bool `json:"isNetworkPayor" url:"isNetworkPayor"`
+	// True if this entity is available as a payee to any entity on your platform. Otherwise this entity will only be available as a payee to entities that have a direct relationship with this entity.
+	IsNetworkPayee bool                     `json:"isNetworkPayee" url:"isNetworkPayee"`
 	CreatedAt      time.Time                `json:"createdAt" url:"createdAt"`
 	UpdatedAt      time.Time                `json:"updatedAt" url:"updatedAt"`
 	PaymentMethods []*PaymentMethodResponse `json:"paymentMethods,omitempty" url:"paymentMethods,omitempty"`
@@ -3621,7 +3692,7 @@ func (a *AssociatedApprovalAction) String() string {
 type BankAccountPaymentDestinationOptions struct {
 	// Delivery method for ACH payments. Defaults to ACH_SAME_DAY.
 	Delivery *BankDeliveryMethod `json:"delivery,omitempty" url:"delivery,omitempty"`
-	// ACH Statement Description. By default, this will be 'AP' followed by the first 8 characters of the invoice ID. Must be at least 4 characters and no more than 10 characters, and follow this regex pattern ^[a-zA-Z0-9\-#.$&*]{4,10}$
+	// ACH Statement Description. By default, this will be 'AP' followed by the first 8 characters of the invoice ID. Must be at least 4 characters and no more than 10 characters, and follow this regex pattern ^[a-zA-Z0-9\-#.$&* ]{4,10}$
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -4666,11 +4737,11 @@ type InvoiceResponse struct {
 	ServiceStartDate          *time.Time                 `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
 	ServiceEndDate            *time.Time                 `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
 	PayerID                   *EntityID                  `json:"payerId,omitempty" url:"payerId,omitempty"`
-	Payer                     *EntityResponse            `json:"payer,omitempty" url:"payer,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
 	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
 	PaymentSourceID           *PaymentMethodID           `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
 	VendorID                  *EntityID                  `json:"vendorId,omitempty" url:"vendorId,omitempty"`
-	Vendor                    *EntityResponse            `json:"vendor,omitempty" url:"vendor,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
 	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
 	PaymentDestinationID      *PaymentMethodID           `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
@@ -5170,6 +5241,7 @@ type ColorSchemeRequest struct {
 	PrimaryColor        *string `json:"primaryColor,omitempty" url:"primaryColor,omitempty"`
 	SecondaryColor      *string `json:"secondaryColor,omitempty" url:"secondaryColor,omitempty"`
 	LogoBackgroundColor *string `json:"logoBackgroundColor,omitempty" url:"logoBackgroundColor,omitempty"`
+	RoundedCorners      *int    `json:"roundedCorners,omitempty" url:"roundedCorners,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -5213,6 +5285,7 @@ type ColorSchemeResponse struct {
 	PrimaryColor        *string `json:"primaryColor,omitempty" url:"primaryColor,omitempty"`
 	SecondaryColor      *string `json:"secondaryColor,omitempty" url:"secondaryColor,omitempty"`
 	LogoBackgroundColor *string `json:"logoBackgroundColor,omitempty" url:"logoBackgroundColor,omitempty"`
+	RoundedCorners      *int    `json:"roundedCorners,omitempty" url:"roundedCorners,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage

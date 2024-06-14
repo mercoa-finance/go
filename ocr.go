@@ -141,10 +141,10 @@ func (o *OcrRequest) String() string {
 }
 
 type OcrResponse struct {
-	Invoice     *InvoiceResponse     `json:"invoice,omitempty" url:"invoice,omitempty"`
-	Vendor      *EntityResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	Check       *CheckResponse       `json:"check,omitempty" url:"check,omitempty"`
-	BankAccount *BankAccountResponse `json:"bankAccount,omitempty" url:"bankAccount,omitempty"`
+	Invoice     *InvoiceResponse      `json:"invoice,omitempty" url:"invoice,omitempty"`
+	Vendor      *CounterpartyResponse `json:"vendor,omitempty" url:"vendor,omitempty"`
+	Check       *CheckResponse        `json:"check,omitempty" url:"check,omitempty"`
+	BankAccount *BankAccountResponse  `json:"bankAccount,omitempty" url:"bankAccount,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
