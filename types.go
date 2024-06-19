@@ -8774,3 +8774,262 @@ func (p *PlaidLinkRequest) String() string {
 	}
 	return fmt.Sprintf("%#v", p)
 }
+
+type CounterpartyWebhook struct {
+	EventType string   `json:"eventType" url:"eventType"`
+	PayeeID   EntityID `json:"payeeId" url:"payeeId"`
+	PayorID   EntityID `json:"payorId" url:"payorId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CounterpartyWebhook) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CounterpartyWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler CounterpartyWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CounterpartyWebhook(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CounterpartyWebhook) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type EntityWebhook struct {
+	EventType string          `json:"eventType" url:"eventType"`
+	Entity    *EntityResponse `json:"entity,omitempty" url:"entity,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityWebhook) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityWebhook(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityWebhook) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type InvoiceEmailWebhook struct {
+	EventType string `json:"eventType" url:"eventType"`
+	// If an invoice was created from the email, this will be present.
+	Invoice *InvoiceResponse `json:"invoice,omitempty" url:"invoice,omitempty"`
+	// If an existing invoice already exists for the email, this will be present.
+	ExistingInvoiceID *InvoiceID `json:"existingInvoiceId,omitempty" url:"existingInvoiceId,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceEmailWebhook) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceEmailWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceEmailWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceEmailWebhook(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceEmailWebhook) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceStatusChangedWebhook struct {
+	EventType      string           `json:"eventType" url:"eventType"`
+	Invoice        *InvoiceResponse `json:"invoice,omitempty" url:"invoice,omitempty"`
+	NewStatus      string           `json:"newStatus" url:"newStatus"`
+	PreviousStatus string           `json:"previousStatus" url:"previousStatus"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceStatusChangedWebhook) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceStatusChangedWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceStatusChangedWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceStatusChangedWebhook(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceStatusChangedWebhook) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceWebhook struct {
+	EventType string           `json:"eventType" url:"eventType"`
+	Invoice   *InvoiceResponse `json:"invoice,omitempty" url:"invoice,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceWebhook) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceWebhook(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceWebhook) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type PaymentMethodWebhook struct {
+	EventType     string                 `json:"eventType" url:"eventType"`
+	EntityID      EntityID               `json:"entityId" url:"entityId"`
+	PaymentMethod *PaymentMethodResponse `json:"paymentMethod,omitempty" url:"paymentMethod,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentMethodWebhook) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PaymentMethodWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentMethodWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentMethodWebhook(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
+	p._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentMethodWebhook) String() string {
+	if len(p._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
