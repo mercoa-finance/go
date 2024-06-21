@@ -524,6 +524,8 @@ type ApprovalPolicyResponse struct {
 	Trigger          []*Trigger       `json:"trigger,omitempty" url:"trigger,omitempty"`
 	Rule             *Rule            `json:"rule,omitempty" url:"rule,omitempty"`
 	UpstreamPolicyID ApprovalPolicyID `json:"upstreamPolicyId" url:"upstreamPolicyId"`
+	CreatedAt        time.Time        `json:"createdAt" url:"createdAt"`
+	UpdatedAt        time.Time        `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -534,12 +536,20 @@ func (a *ApprovalPolicyResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *ApprovalPolicyResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler ApprovalPolicyResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
+	type embed ApprovalPolicyResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*a),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*a = ApprovalPolicyResponse(value)
+	*a = ApprovalPolicyResponse(unmarshaler.embed)
+	a.CreatedAt = unmarshaler.CreatedAt.Time()
+	a.UpdatedAt = unmarshaler.UpdatedAt.Time()
 
 	extraProperties, err := core.ExtractExtraProperties(data, *a)
 	if err != nil {
@@ -549,6 +559,20 @@ func (a *ApprovalPolicyResponse) UnmarshalJSON(data []byte) error {
 
 	a._rawJSON = json.RawMessage(data)
 	return nil
+}
+
+func (a *ApprovalPolicyResponse) MarshalJSON() ([]byte, error) {
+	type embed ApprovalPolicyResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*a),
+		CreatedAt: core.NewDateTime(a.CreatedAt),
+		UpdatedAt: core.NewDateTime(a.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
 }
 
 func (a *ApprovalPolicyResponse) String() string {
@@ -8012,6 +8036,8 @@ type CustomPaymentMethodSchemaRequest struct {
 	IsSource bool `json:"isSource" url:"isSource"`
 	// This payment method can be used as a payment destination for an invoice
 	IsDestination bool `json:"isDestination" url:"isDestination"`
+	// Estimated time in days for this payment method to process a payments. Set as 0 for same-day payment methods, -1 for unknown processing time.
+	EstimatedProcessingTime *int `json:"estimatedProcessingTime,omitempty" url:"estimatedProcessingTime,omitempty"`
 	// List of currencies that this payment method supports. If not provided, the payment method will support only USD.
 	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
@@ -8064,8 +8090,10 @@ type CustomPaymentMethodSchemaResponse struct {
 	// List of currencies that this payment method supports.
 	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
-	CreatedAt           time.Time                         `json:"createdAt" url:"createdAt"`
-	UpdatedAt           time.Time                         `json:"updatedAt" url:"updatedAt"`
+	// Estimated time in days for this payment method to process a payments. 0 is an same-day payment methods, -1 is unknown processing time.
+	EstimatedProcessingTime int       `json:"estimatedProcessingTime" url:"estimatedProcessingTime"`
+	CreatedAt               time.Time `json:"createdAt" url:"createdAt"`
+	UpdatedAt               time.Time `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
