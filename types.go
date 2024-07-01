@@ -4053,7 +4053,7 @@ type InvoiceCreationRequest struct {
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	// Date the invoice was issued.
 	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
-	// Date when funds will be deducted from payer's account.
+	// Date when funds are scheduled to be deducted from payer's account.
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
 	// Date of funds settlement.
 	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
@@ -4085,6 +4085,8 @@ type InvoiceCreationRequest struct {
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
 	// ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
+	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
+	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	// ID of entity who created this invoice.
 	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
 
@@ -4632,7 +4634,7 @@ type InvoiceRequestBase struct {
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	// Date the invoice was issued.
 	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
-	// Date when funds will be deducted from payer's account.
+	// Date when funds are scheduled to be deducted from payer's account.
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
 	// Date of funds settlement.
 	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
@@ -4664,6 +4666,8 @@ type InvoiceRequestBase struct {
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
 	// ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
+	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
+	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -4750,8 +4754,10 @@ type InvoiceResponse struct {
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	// Date the invoice was issued.
 	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
-	// Date when funds will be deducted from payer's account.
+	// Date when funds are scheduled to be deducted from payer's account. The actual deduction date may differ from this date, and will be reflected in the processedAt field.
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// Date when the invoice payment was processed.
+	ProcessedAt *time.Time `json:"processedAt,omitempty" url:"processedAt,omitempty"`
 	// Date of funds settlement.
 	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
 	// Due date of invoice.
@@ -4787,7 +4793,6 @@ type InvoiceResponse struct {
 	CreatorUser *EntityUserResponse `json:"creatorUser,omitempty" url:"creatorUser,omitempty"`
 	// If the invoice failed to be paid, this field will be populated with the type of failure.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
-	ProcessedAt *time.Time          `json:"processedAt,omitempty" url:"processedAt,omitempty"`
 	CreatedAt   time.Time           `json:"createdAt" url:"createdAt"`
 	UpdatedAt   time.Time           `json:"updatedAt" url:"updatedAt"`
 	// Fees associated with this invoice.
@@ -4807,11 +4812,11 @@ func (i *InvoiceResponse) UnmarshalJSON(data []byte) error {
 		embed
 		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
 		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		ProcessedAt      *core.DateTime `json:"processedAt,omitempty"`
 		SettlementDate   *core.DateTime `json:"settlementDate,omitempty"`
 		DueDate          *core.DateTime `json:"dueDate,omitempty"`
 		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
 		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
-		ProcessedAt      *core.DateTime `json:"processedAt,omitempty"`
 		CreatedAt        *core.DateTime `json:"createdAt"`
 		UpdatedAt        *core.DateTime `json:"updatedAt"`
 	}{
@@ -4823,11 +4828,11 @@ func (i *InvoiceResponse) UnmarshalJSON(data []byte) error {
 	*i = InvoiceResponse(unmarshaler.embed)
 	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
 	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.ProcessedAt = unmarshaler.ProcessedAt.TimePtr()
 	i.SettlementDate = unmarshaler.SettlementDate.TimePtr()
 	i.DueDate = unmarshaler.DueDate.TimePtr()
 	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
 	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
-	i.ProcessedAt = unmarshaler.ProcessedAt.TimePtr()
 	i.CreatedAt = unmarshaler.CreatedAt.Time()
 	i.UpdatedAt = unmarshaler.UpdatedAt.Time()
 
@@ -4847,22 +4852,22 @@ func (i *InvoiceResponse) MarshalJSON() ([]byte, error) {
 		embed
 		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
 		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		ProcessedAt      *core.DateTime `json:"processedAt,omitempty"`
 		SettlementDate   *core.DateTime `json:"settlementDate,omitempty"`
 		DueDate          *core.DateTime `json:"dueDate,omitempty"`
 		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
 		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
-		ProcessedAt      *core.DateTime `json:"processedAt,omitempty"`
 		CreatedAt        *core.DateTime `json:"createdAt"`
 		UpdatedAt        *core.DateTime `json:"updatedAt"`
 	}{
 		embed:            embed(*i),
 		InvoiceDate:      core.NewOptionalDateTime(i.InvoiceDate),
 		DeductionDate:    core.NewOptionalDateTime(i.DeductionDate),
+		ProcessedAt:      core.NewOptionalDateTime(i.ProcessedAt),
 		SettlementDate:   core.NewOptionalDateTime(i.SettlementDate),
 		DueDate:          core.NewOptionalDateTime(i.DueDate),
 		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
 		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
-		ProcessedAt:      core.NewOptionalDateTime(i.ProcessedAt),
 		CreatedAt:        core.NewDateTime(i.CreatedAt),
 		UpdatedAt:        core.NewDateTime(i.UpdatedAt),
 	}
@@ -4935,7 +4940,7 @@ type InvoiceUpdateRequest struct {
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	// Date the invoice was issued.
 	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
-	// Date when funds will be deducted from payer's account.
+	// Date when funds are scheduled to be deducted from payer's account.
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
 	// Date of funds settlement.
 	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
@@ -4967,6 +4972,8 @@ type InvoiceUpdateRequest struct {
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
 	// ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
+	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
+	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	// ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 
@@ -7802,6 +7809,31 @@ func (c CurrencyCode) Ptr() *CurrencyCode {
 	return &c
 }
 
+type CustomPaymentMethodFeeType string
+
+const (
+	CustomPaymentMethodFeeTypeNone       CustomPaymentMethodFeeType = "none"
+	CustomPaymentMethodFeeTypeFlat       CustomPaymentMethodFeeType = "flat"
+	CustomPaymentMethodFeeTypePercentage CustomPaymentMethodFeeType = "percentage"
+)
+
+func NewCustomPaymentMethodFeeTypeFromString(s string) (CustomPaymentMethodFeeType, error) {
+	switch s {
+	case "none":
+		return CustomPaymentMethodFeeTypeNone, nil
+	case "flat":
+		return CustomPaymentMethodFeeTypeFlat, nil
+	case "percentage":
+		return CustomPaymentMethodFeeTypePercentage, nil
+	}
+	var t CustomPaymentMethodFeeType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CustomPaymentMethodFeeType) Ptr() *CustomPaymentMethodFeeType {
+	return &c
+}
+
 type CustomPaymentMethodRequest struct {
 	// If true, this payment method will be set as the default source. Only one payment method can be set as the default source. If another payment method is already set as the default source, it will be unset.
 	DefaultSource *bool `json:"defaultSource,omitempty" url:"defaultSource,omitempty"`
@@ -7813,6 +7845,8 @@ type CustomPaymentMethodRequest struct {
 	ForeignID     string  `json:"foreignId" url:"foreignId"`
 	AccountName   *string `json:"accountName,omitempty" url:"accountName,omitempty"`
 	AccountNumber *string `json:"accountNumber,omitempty" url:"accountNumber,omitempty"`
+	// The available balance for this payment method.
+	AvailableBalance *float64 `json:"availableBalance,omitempty" url:"availableBalance,omitempty"`
 	// Payment method schema used for this payment method. Defines the fields that this payment method contains.
 	SchemaID CustomPaymentMethodSchemaID `json:"schemaId" url:"schemaId"`
 	// Object of key/value pairs that matches the keys in the linked payment method schema.
@@ -7871,6 +7905,8 @@ type CustomPaymentMethodResponse struct {
 	ForeignID     string  `json:"foreignId" url:"foreignId"`
 	AccountName   *string `json:"accountName,omitempty" url:"accountName,omitempty"`
 	AccountNumber *string `json:"accountNumber,omitempty" url:"accountNumber,omitempty"`
+	// The available balance for this payment method.
+	AvailableBalance *float64 `json:"availableBalance,omitempty" url:"availableBalance,omitempty"`
 	// Payment method schema used for this payment method. Defines the fields that this payment method contains.
 	SchemaID CustomPaymentMethodSchemaID        `json:"schemaId" url:"schemaId"`
 	Schema   *CustomPaymentMethodSchemaResponse `json:"schema,omitempty" url:"schema,omitempty"`
@@ -7937,6 +7973,49 @@ func (c *CustomPaymentMethodResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+type CustomPaymentMethodSchemaFee struct {
+	Type CustomPaymentMethodFeeType `json:"type" url:"type"`
+	// If type is 'flat', this is the flat amount that will be charged as a fee. For example, if the fee is $2.50, set this to 2.50. If type is 'percentage', this is the percentage of the payment amount that will be charged as a fee. For example, if the fee is 2.5%, set this to 2.5.
+	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CustomPaymentMethodSchemaFee) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CustomPaymentMethodSchemaFee) UnmarshalJSON(data []byte) error {
+	type unmarshaler CustomPaymentMethodSchemaFee
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CustomPaymentMethodSchemaFee(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CustomPaymentMethodSchemaFee) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 type CustomPaymentMethodSchemaField struct {
 	Name        string                             `json:"name" url:"name"`
 	DisplayName *string                            `json:"displayName,omitempty" url:"displayName,omitempty"`
@@ -7991,14 +8070,16 @@ func (c *CustomPaymentMethodSchemaField) String() string {
 type CustomPaymentMethodSchemaFieldType string
 
 const (
-	CustomPaymentMethodSchemaFieldTypeText    CustomPaymentMethodSchemaFieldType = "text"
-	CustomPaymentMethodSchemaFieldTypeNumber  CustomPaymentMethodSchemaFieldType = "number"
-	CustomPaymentMethodSchemaFieldTypeSelect  CustomPaymentMethodSchemaFieldType = "select"
-	CustomPaymentMethodSchemaFieldTypeDate    CustomPaymentMethodSchemaFieldType = "date"
-	CustomPaymentMethodSchemaFieldTypePhone   CustomPaymentMethodSchemaFieldType = "phone"
-	CustomPaymentMethodSchemaFieldTypeEmail   CustomPaymentMethodSchemaFieldType = "email"
-	CustomPaymentMethodSchemaFieldTypeURL     CustomPaymentMethodSchemaFieldType = "url"
-	CustomPaymentMethodSchemaFieldTypeAddress CustomPaymentMethodSchemaFieldType = "address"
+	CustomPaymentMethodSchemaFieldTypeText                CustomPaymentMethodSchemaFieldType = "text"
+	CustomPaymentMethodSchemaFieldTypeNumber              CustomPaymentMethodSchemaFieldType = "number"
+	CustomPaymentMethodSchemaFieldTypeSelect              CustomPaymentMethodSchemaFieldType = "select"
+	CustomPaymentMethodSchemaFieldTypeDate                CustomPaymentMethodSchemaFieldType = "date"
+	CustomPaymentMethodSchemaFieldTypePhone               CustomPaymentMethodSchemaFieldType = "phone"
+	CustomPaymentMethodSchemaFieldTypeEmail               CustomPaymentMethodSchemaFieldType = "email"
+	CustomPaymentMethodSchemaFieldTypeURL                 CustomPaymentMethodSchemaFieldType = "url"
+	CustomPaymentMethodSchemaFieldTypeAddress             CustomPaymentMethodSchemaFieldType = "address"
+	CustomPaymentMethodSchemaFieldTypeUsBankRoutingNumber CustomPaymentMethodSchemaFieldType = "usBankRoutingNumber"
+	CustomPaymentMethodSchemaFieldTypeUsBankAccountNumber CustomPaymentMethodSchemaFieldType = "usBankAccountNumber"
 )
 
 func NewCustomPaymentMethodSchemaFieldTypeFromString(s string) (CustomPaymentMethodSchemaFieldType, error) {
@@ -8019,6 +8100,10 @@ func NewCustomPaymentMethodSchemaFieldTypeFromString(s string) (CustomPaymentMet
 		return CustomPaymentMethodSchemaFieldTypeURL, nil
 	case "address":
 		return CustomPaymentMethodSchemaFieldTypeAddress, nil
+	case "usBankRoutingNumber":
+		return CustomPaymentMethodSchemaFieldTypeUsBankRoutingNumber, nil
+	case "usBankAccountNumber":
+		return CustomPaymentMethodSchemaFieldTypeUsBankAccountNumber, nil
 	}
 	var t CustomPaymentMethodSchemaFieldType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -8036,11 +8121,12 @@ type CustomPaymentMethodSchemaRequest struct {
 	IsSource bool `json:"isSource" url:"isSource"`
 	// This payment method can be used as a payment destination for an invoice
 	IsDestination bool `json:"isDestination" url:"isDestination"`
-	// Estimated time in days for this payment method to process a payments. Set as 0 for same-day payment methods, -1 for unknown processing time.
-	EstimatedProcessingTime *int `json:"estimatedProcessingTime,omitempty" url:"estimatedProcessingTime,omitempty"`
 	// List of currencies that this payment method supports. If not provided, the payment method will support only USD.
 	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
+	// Estimated time in days for this payment method to process a payments. Set as 0 for same-day payment methods, -1 for unknown processing time.
+	EstimatedProcessingTime *int                          `json:"estimatedProcessingTime,omitempty" url:"estimatedProcessingTime,omitempty"`
+	Fees                    *CustomPaymentMethodSchemaFee `json:"fees,omitempty" url:"fees,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -8091,9 +8177,10 @@ type CustomPaymentMethodSchemaResponse struct {
 	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
 	// Estimated time in days for this payment method to process a payments. 0 is an same-day payment methods, -1 is unknown processing time.
-	EstimatedProcessingTime int       `json:"estimatedProcessingTime" url:"estimatedProcessingTime"`
-	CreatedAt               time.Time `json:"createdAt" url:"createdAt"`
-	UpdatedAt               time.Time `json:"updatedAt" url:"updatedAt"`
+	EstimatedProcessingTime int                           `json:"estimatedProcessingTime" url:"estimatedProcessingTime"`
+	Fees                    *CustomPaymentMethodSchemaFee `json:"fees,omitempty" url:"fees,omitempty"`
+	CreatedAt               time.Time                     `json:"createdAt" url:"createdAt"`
+	UpdatedAt               time.Time                     `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -8166,6 +8253,8 @@ type CustomPaymentMethodUpdateRequest struct {
 	ForeignID     *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	AccountName   *string `json:"accountName,omitempty" url:"accountName,omitempty"`
 	AccountNumber *string `json:"accountNumber,omitempty" url:"accountNumber,omitempty"`
+	// The available balance for this payment method.
+	AvailableBalance *float64 `json:"availableBalance,omitempty" url:"availableBalance,omitempty"`
 	// Payment method schema used for this payment method. Defines the fields that this payment method contains.
 	SchemaID *CustomPaymentMethodSchemaID `json:"schemaId,omitempty" url:"schemaId,omitempty"`
 	// Object of key/value pairs that matches the keys in the linked payment method schema.
@@ -9023,6 +9112,7 @@ type PaymentMethodWebhook struct {
 	EventType     string                 `json:"eventType" url:"eventType"`
 	EntityID      EntityID               `json:"entityId" url:"entityId"`
 	PaymentMethod *PaymentMethodResponse `json:"paymentMethod,omitempty" url:"paymentMethod,omitempty"`
+	Entity        *EntityResponse        `json:"entity,omitempty" url:"entity,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage

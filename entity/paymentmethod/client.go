@@ -805,7 +805,7 @@ func (c *Client) CompleteMicroDeposits(
 	return response, nil
 }
 
-// Get the available balance of a payment method. Only bank accounts added with Plaid are supported. This endpoint will return a cached value and will refresh the balance when called.
+// Deprecated. Get the available balance of a payment method. Only bank accounts added with Plaid are supported. This endpoint will return a cached value and will refresh the balance when called.
 func (c *Client) GetBalance(
 	ctx context.Context,
 	entityID mercoafinancego.EntityID,
