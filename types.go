@@ -7842,7 +7842,7 @@ type CustomPaymentMethodRequest struct {
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 	// ID for this payment method in your system
-	ForeignID     string  `json:"foreignId" url:"foreignId"`
+	ForeignID     *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	AccountName   *string `json:"accountName,omitempty" url:"accountName,omitempty"`
 	AccountNumber *string `json:"accountNumber,omitempty" url:"accountNumber,omitempty"`
 	// The available balance for this payment method.
@@ -7902,7 +7902,7 @@ type CustomPaymentMethodResponse struct {
 	CreatedAt                  time.Time `json:"createdAt" url:"createdAt"`
 	UpdatedAt                  time.Time `json:"updatedAt" url:"updatedAt"`
 	// ID for this payment method in your system
-	ForeignID     string  `json:"foreignId" url:"foreignId"`
+	ForeignID     *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	AccountName   *string `json:"accountName,omitempty" url:"accountName,omitempty"`
 	AccountNumber *string `json:"accountNumber,omitempty" url:"accountNumber,omitempty"`
 	// The available balance for this payment method.
