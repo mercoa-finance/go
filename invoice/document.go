@@ -3,6 +3,6 @@
 package invoice
 
 type UploadDocumentRequest struct {
-	// Base64 encoded image or PDF of invoice document. PNG, JPG, and PDF are supported. 10MB max.
+	// Base64 encoded image or PDF of invoice document. PNG, JPG, WEBP, and PDF are supported. 10MB max.
 	Document *string `json:"document,omitempty" url:"-"`
 }

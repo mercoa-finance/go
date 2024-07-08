@@ -7,6 +7,7 @@ import (
 	core "github.com/mercoa-finance/go/core"
 	custompaymentmethodschema "github.com/mercoa-finance/go/custompaymentmethodschema"
 	entityclient "github.com/mercoa-finance/go/entity/client"
+	entitygroupclient "github.com/mercoa-finance/go/entitygroup/client"
 	fees "github.com/mercoa-finance/go/fees"
 	invoiceclient "github.com/mercoa-finance/go/invoice/client"
 	ocr "github.com/mercoa-finance/go/ocr"
@@ -20,6 +21,7 @@ type Client struct {
 	caller  *core.Caller
 	header  http.Header
 
+	EntityGroup               *entitygroupclient.Client
 	Entity                    *entityclient.Client
 	Invoice                   *invoiceclient.Client
 	Organization              *organizationclient.Client
@@ -40,6 +42,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 			},
 		),
 		header:                    options.ToHeader(),
+		EntityGroup:               entitygroupclient.NewClient(opts...),
 		Entity:                    entityclient.NewClient(opts...),
 		Invoice:                   invoiceclient.NewClient(opts...),
 		Organization:              organizationclient.NewClient(opts...),

@@ -408,6 +408,134 @@ func (e *EmailLogResponse) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
+type EntityGroupFindResponse struct {
+	Count   int                    `json:"count" url:"count"`
+	HasMore bool                   `json:"hasMore" url:"hasMore"`
+	Data    []*EntityGroupResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityGroupFindResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityGroupFindResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityGroupFindResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityGroupFindResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityGroupFindResponse) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EntityGroupID = string
+
+type EntityGroupRequest struct {
+	EntityIDs []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityGroupRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityGroupRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityGroupRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityGroupRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityGroupRequest) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EntityGroupResponse struct {
+	ID       EntityGroupID     `json:"id" url:"id"`
+	Entities []*EntityResponse `json:"entities,omitempty" url:"entities,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityGroupResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityGroupResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityGroupResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityGroupResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityGroupResponse) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
 type AccountType string
 
 const (
@@ -4079,7 +4207,7 @@ type InvoiceCreationRequest struct {
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
 	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
-	// Base64 encoded image or PDF of invoice document. PNG, JPG, and PDF are supported. 10MB max. If the invoice already has a document, this will add a new document to the invoice.
+	// Base64 encoded image or PDF of invoice document. PNG, JPG, WEBP, and PDF are supported. 10MB max. If the invoice already has a document, this will add a new document to the invoice.
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
 	// DEPRECATED. Use document field instead.
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
@@ -4660,7 +4788,7 @@ type InvoiceRequestBase struct {
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
 	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
-	// Base64 encoded image or PDF of invoice document. PNG, JPG, and PDF are supported. 10MB max. If the invoice already has a document, this will add a new document to the invoice.
+	// Base64 encoded image or PDF of invoice document. PNG, JPG, WEBP, and PDF are supported. 10MB max. If the invoice already has a document, this will add a new document to the invoice.
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
 	// DEPRECATED. Use document field instead.
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
@@ -4966,7 +5094,7 @@ type InvoiceUpdateRequest struct {
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
 	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
-	// Base64 encoded image or PDF of invoice document. PNG, JPG, and PDF are supported. 10MB max. If the invoice already has a document, this will add a new document to the invoice.
+	// Base64 encoded image or PDF of invoice document. PNG, JPG, WEBP, and PDF are supported. 10MB max. If the invoice already has a document, this will add a new document to the invoice.
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
 	// DEPRECATED. Use document field instead.
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
@@ -8896,6 +9024,8 @@ type CounterpartyWebhook struct {
 	EventType string   `json:"eventType" url:"eventType"`
 	PayeeID   EntityID `json:"payeeId" url:"payeeId"`
 	PayorID   EntityID `json:"payorId" url:"payorId"`
+	// User who initiated the change.
+	User *EntityUserResponse `json:"user,omitempty" url:"user,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -8938,6 +9068,8 @@ func (c *CounterpartyWebhook) String() string {
 type EntityWebhook struct {
 	EventType string          `json:"eventType" url:"eventType"`
 	Entity    *EntityResponse `json:"entity,omitempty" url:"entity,omitempty"`
+	// User who initiated the change.
+	User *EntityUserResponse `json:"user,omitempty" url:"user,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -9023,10 +9155,12 @@ func (i *InvoiceEmailWebhook) String() string {
 }
 
 type InvoiceStatusChangedWebhook struct {
-	EventType      string           `json:"eventType" url:"eventType"`
-	Invoice        *InvoiceResponse `json:"invoice,omitempty" url:"invoice,omitempty"`
-	NewStatus      string           `json:"newStatus" url:"newStatus"`
-	PreviousStatus string           `json:"previousStatus" url:"previousStatus"`
+	EventType string           `json:"eventType" url:"eventType"`
+	Invoice   *InvoiceResponse `json:"invoice,omitempty" url:"invoice,omitempty"`
+	// User who initiated the change.
+	User           *EntityUserResponse `json:"user,omitempty" url:"user,omitempty"`
+	NewStatus      string              `json:"newStatus" url:"newStatus"`
+	PreviousStatus string              `json:"previousStatus" url:"previousStatus"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -9069,6 +9203,8 @@ func (i *InvoiceStatusChangedWebhook) String() string {
 type InvoiceWebhook struct {
 	EventType string           `json:"eventType" url:"eventType"`
 	Invoice   *InvoiceResponse `json:"invoice,omitempty" url:"invoice,omitempty"`
+	// User who initiated the change.
+	User *EntityUserResponse `json:"user,omitempty" url:"user,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -9113,6 +9249,8 @@ type PaymentMethodWebhook struct {
 	EntityID      EntityID               `json:"entityId" url:"entityId"`
 	PaymentMethod *PaymentMethodResponse `json:"paymentMethod,omitempty" url:"paymentMethod,omitempty"`
 	Entity        *EntityResponse        `json:"entity,omitempty" url:"entity,omitempty"`
+	// User who initiated the change.
+	User *EntityUserResponse `json:"user,omitempty" url:"user,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage

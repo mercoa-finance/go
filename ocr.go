@@ -95,7 +95,7 @@ func (o *OcrJobResponse) String() string {
 type OcrRequest struct {
 	// MIME type of the image. Supported types are image/png, image/jpeg, and application/pdf.
 	MimeType string `json:"mimeType" url:"mimeType"`
-	// Base64 encoded image or PDF. PNG, JPG, and PDF are supported. 10MB max.
+	// Base64 encoded image or PDF. PNG, JPG, WEBP, and PDF are supported. 10MB max.
 	Image string `json:"image" url:"image"`
 	// Limit OCR vendor search to a specific network
 	VendorNetwork *VendorNetwork `json:"vendorNetwork,omitempty" url:"vendorNetwork,omitempty"`

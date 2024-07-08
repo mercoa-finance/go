@@ -9,11 +9,8 @@ import (
 	errors "errors"
 	mercoafinancego "github.com/mercoa-finance/go"
 	core "github.com/mercoa-finance/go/core"
-	invoice "github.com/mercoa-finance/go/invoice"
-	approval "github.com/mercoa-finance/go/invoice/approval"
-	comment "github.com/mercoa-finance/go/invoice/comment"
-	document "github.com/mercoa-finance/go/invoice/document"
-	paymentlinks "github.com/mercoa-finance/go/invoice/paymentlinks"
+	entitygroup "github.com/mercoa-finance/go/entitygroup"
+	invoice "github.com/mercoa-finance/go/entitygroup/invoice"
 	option "github.com/mercoa-finance/go/option"
 	io "io"
 	http "net/http"
@@ -24,10 +21,7 @@ type Client struct {
 	caller  *core.Caller
 	header  http.Header
 
-	Approval     *approval.Client
-	Comment      *comment.Client
-	Document     *document.Client
-	PaymentLinks *paymentlinks.Client
+	Invoice *invoice.Client
 }
 
 func NewClient(opts ...option.RequestOption) *Client {
@@ -40,20 +34,17 @@ func NewClient(opts ...option.RequestOption) *Client {
 				MaxAttempts: options.MaxAttempts,
 			},
 		),
-		header:       options.ToHeader(),
-		Approval:     approval.NewClient(opts...),
-		Comment:      comment.NewClient(opts...),
-		Document:     document.NewClient(opts...),
-		PaymentLinks: paymentlinks.NewClient(opts...),
+		header:  options.ToHeader(),
+		Invoice: invoice.NewClient(opts...),
 	}
 }
 
-// Search invoices for all entities in the organization
-func (c *Client) Find(
+// Get all entity groups. If using a JWT, will return all groups the entity is part of. If using an API key, will return all groups for the organization.
+func (c *Client) GetAll(
 	ctx context.Context,
-	request *invoice.GetAllInvoicesRequest,
+	request *entitygroup.EntityGroupFindRequest,
 	opts ...option.RequestOption,
-) (*mercoafinancego.FindInvoiceResponse, error) {
+) (*mercoafinancego.EntityGroupFindResponse, error) {
 	options := core.NewRequestOptions(opts...)
 
 	baseURL := "https://api.mercoa.com"
@@ -63,7 +54,7 @@ func (c *Client) Find(
 	if options.BaseURL != "" {
 		baseURL = options.BaseURL
 	}
-	endpointURL := baseURL + "/invoices"
+	endpointURL := baseURL + "/entityGroups"
 
 	queryParams, err := core.QueryValues(request)
 	if err != nil {
@@ -143,7 +134,7 @@ func (c *Client) Find(
 		return apiError
 	}
 
-	var response *mercoafinancego.FindInvoiceResponse
+	var response *mercoafinancego.EntityGroupFindResponse
 	if err := c.caller.Call(
 		ctx,
 		&core.CallParams{
@@ -161,11 +152,12 @@ func (c *Client) Find(
 	return response, nil
 }
 
+// Create an entity group
 func (c *Client) Create(
 	ctx context.Context,
-	request *mercoafinancego.InvoiceCreationRequest,
+	request *mercoafinancego.EntityGroupRequest,
 	opts ...option.RequestOption,
-) (*mercoafinancego.InvoiceResponse, error) {
+) (*mercoafinancego.EntityGroupResponse, error) {
 	options := core.NewRequestOptions(opts...)
 
 	baseURL := "https://api.mercoa.com"
@@ -175,7 +167,7 @@ func (c *Client) Create(
 	if options.BaseURL != "" {
 		baseURL = options.BaseURL
 	}
-	endpointURL := baseURL + "/invoice"
+	endpointURL := baseURL + "/entityGroup"
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 
@@ -247,7 +239,7 @@ func (c *Client) Create(
 		return apiError
 	}
 
-	var response *mercoafinancego.InvoiceResponse
+	var response *mercoafinancego.EntityGroupResponse
 	if err := c.caller.Call(
 		ctx,
 		&core.CallParams{
@@ -266,11 +258,12 @@ func (c *Client) Create(
 	return response, nil
 }
 
+// Get an entity group
 func (c *Client) Get(
 	ctx context.Context,
-	invoiceID mercoafinancego.InvoiceID,
+	entityGroupID mercoafinancego.EntityGroupID,
 	opts ...option.RequestOption,
-) (*mercoafinancego.InvoiceResponse, error) {
+) (*mercoafinancego.EntityGroupResponse, error) {
 	options := core.NewRequestOptions(opts...)
 
 	baseURL := "https://api.mercoa.com"
@@ -280,7 +273,7 @@ func (c *Client) Get(
 	if options.BaseURL != "" {
 		baseURL = options.BaseURL
 	}
-	endpointURL := core.EncodeURL(baseURL+"/invoice/%v", invoiceID)
+	endpointURL := core.EncodeURL(baseURL+"/entityGroup/%v", entityGroupID)
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 
@@ -352,7 +345,7 @@ func (c *Client) Get(
 		return apiError
 	}
 
-	var response *mercoafinancego.InvoiceResponse
+	var response *mercoafinancego.EntityGroupResponse
 	if err := c.caller.Call(
 		ctx,
 		&core.CallParams{
@@ -370,12 +363,13 @@ func (c *Client) Get(
 	return response, nil
 }
 
+// Update an entity group
 func (c *Client) Update(
 	ctx context.Context,
-	invoiceID mercoafinancego.InvoiceID,
-	request *mercoafinancego.InvoiceUpdateRequest,
+	entityGroupID mercoafinancego.EntityGroupID,
+	request *mercoafinancego.EntityGroupRequest,
 	opts ...option.RequestOption,
-) (*mercoafinancego.InvoiceResponse, error) {
+) (*mercoafinancego.EntityGroupResponse, error) {
 	options := core.NewRequestOptions(opts...)
 
 	baseURL := "https://api.mercoa.com"
@@ -385,7 +379,7 @@ func (c *Client) Update(
 	if options.BaseURL != "" {
 		baseURL = options.BaseURL
 	}
-	endpointURL := core.EncodeURL(baseURL+"/invoice/%v", invoiceID)
+	endpointURL := core.EncodeURL(baseURL+"/entityGroup/%v", entityGroupID)
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 
@@ -457,7 +451,7 @@ func (c *Client) Update(
 		return apiError
 	}
 
-	var response *mercoafinancego.InvoiceResponse
+	var response *mercoafinancego.EntityGroupResponse
 	if err := c.caller.Call(
 		ctx,
 		&core.CallParams{
@@ -476,10 +470,10 @@ func (c *Client) Update(
 	return response, nil
 }
 
-// Only invoices in the DRAFT and NEW status can be deleted.
+// Delete an entity group
 func (c *Client) Delete(
 	ctx context.Context,
-	invoiceID mercoafinancego.InvoiceID,
+	entityGroupID mercoafinancego.EntityGroupID,
 	opts ...option.RequestOption,
 ) error {
 	options := core.NewRequestOptions(opts...)
@@ -491,7 +485,7 @@ func (c *Client) Delete(
 	if options.BaseURL != "" {
 		baseURL = options.BaseURL
 	}
-	endpointURL := core.EncodeURL(baseURL+"/invoice/%v", invoiceID)
+	endpointURL := core.EncodeURL(baseURL+"/entityGroup/%v", entityGroupID)
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 
