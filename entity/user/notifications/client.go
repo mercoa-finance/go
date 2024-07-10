@@ -37,6 +37,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 
 func (c *Client) Find(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	userID mercoafinancego.EntityUserID,
 	request *user.EntityGetNotificationsRequest,
@@ -155,6 +156,7 @@ func (c *Client) Find(
 
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	userID mercoafinancego.EntityUserID,
 	notificationID mercoafinancego.NotificationID,

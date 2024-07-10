@@ -4,11 +4,11 @@ package client
 
 import (
 	banklookup "github.com/mercoa-finance/go/banklookup"
+	calculate "github.com/mercoa-finance/go/calculate"
 	core "github.com/mercoa-finance/go/core"
 	custompaymentmethodschema "github.com/mercoa-finance/go/custompaymentmethodschema"
 	entityclient "github.com/mercoa-finance/go/entity/client"
 	entitygroupclient "github.com/mercoa-finance/go/entitygroup/client"
-	fees "github.com/mercoa-finance/go/fees"
 	invoiceclient "github.com/mercoa-finance/go/invoice/client"
 	ocr "github.com/mercoa-finance/go/ocr"
 	option "github.com/mercoa-finance/go/option"
@@ -26,8 +26,8 @@ type Client struct {
 	Invoice                   *invoiceclient.Client
 	Organization              *organizationclient.Client
 	BankLookup                *banklookup.Client
+	Calculate                 *calculate.Client
 	CustomPaymentMethodSchema *custompaymentmethodschema.Client
-	Fees                      *fees.Client
 	Ocr                       *ocr.Client
 }
 
@@ -47,8 +47,8 @@ func NewClient(opts ...option.RequestOption) *Client {
 		Invoice:                   invoiceclient.NewClient(opts...),
 		Organization:              organizationclient.NewClient(opts...),
 		BankLookup:                banklookup.NewClient(opts...),
+		Calculate:                 calculate.NewClient(opts...),
 		CustomPaymentMethodSchema: custompaymentmethodschema.NewClient(opts...),
-		Fees:                      fees.NewClient(opts...),
 		Ocr:                       ocr.NewClient(opts...),
 	}
 }

@@ -38,6 +38,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Find payee counterparties. This endpoint lets you find vendors linked to the entity.
 func (c *Client) FindPayees(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *entity.FindPayeeCounterpartiesRequest,
 	opts ...option.RequestOption,
@@ -152,6 +153,7 @@ func (c *Client) FindPayees(
 // Find payor counterparties. This endpoint lets you find customers linked to the entity.
 func (c *Client) FindPayors(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *entity.FindPayorCounterpartiesRequest,
 	opts ...option.RequestOption,
@@ -266,6 +268,7 @@ func (c *Client) FindPayors(
 // Create association between Entity and a given list of Payees. If a Payee has previously been archived, unarchive the Payee.
 func (c *Client) AddPayees(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *mercoafinancego.EntityAddPayeesRequest,
 	opts ...option.RequestOption,
@@ -371,6 +374,7 @@ func (c *Client) AddPayees(
 // Marks Payees as unsearchable by Entity via Counterparty search. Invoices associated with these Payees will still be searchable via Invoice search.
 func (c *Client) HidePayees(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *mercoafinancego.EntityHidePayeesRequest,
 	opts ...option.RequestOption,
@@ -476,6 +480,7 @@ func (c *Client) HidePayees(
 // Create association between Entity and a given list of Payors. If a Payor has previously been archived, unarchive the Payor.
 func (c *Client) AddPayors(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *mercoafinancego.EntityAddPayorsRequest,
 	opts ...option.RequestOption,
@@ -581,6 +586,7 @@ func (c *Client) AddPayors(
 // Marks Payors as unsearchable by Entity via Counterparty search. Invoices associated with these Payors will still be searchable via Invoice search.
 func (c *Client) HidePayors(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *mercoafinancego.EntityHidePayorsRequest,
 	opts ...option.RequestOption,

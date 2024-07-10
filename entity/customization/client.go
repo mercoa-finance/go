@@ -37,6 +37,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Get entity customization.
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.EntityCustomizationResponse, error) {
@@ -142,6 +143,7 @@ func (c *Client) Get(
 // Update entity customization. This lets you turn off metadata and payment methods for an entity.
 func (c *Client) Update(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *mercoafinancego.EntityCustomizationRequest,
 	opts ...option.RequestOption,

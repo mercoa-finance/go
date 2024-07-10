@@ -37,6 +37,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Retrieve all metadata options associated with this entity
 func (c *Client) GetAll(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	opts ...option.RequestOption,
 ) ([]*mercoafinancego.EntityMetadataResponse, error) {
@@ -142,6 +143,7 @@ func (c *Client) GetAll(
 // Retrieve metadata associated with a specific key
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	key string,
 	opts ...option.RequestOption,
@@ -252,6 +254,7 @@ func (c *Client) Get(
 // Update metadata associated with a specific key
 func (c *Client) Update(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	key string,
 	request []string,
@@ -364,6 +367,7 @@ func (c *Client) Update(
 // Delete all metadata associated with a specific key
 func (c *Client) Delete(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	key string,
 	opts ...option.RequestOption,

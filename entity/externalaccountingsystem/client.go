@@ -38,6 +38,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Get the external accounting system connected to an entity
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	opts ...option.RequestOption,
 ) (*entity.ExternalAccountingSystemCompanyResponse, error) {
@@ -143,6 +144,7 @@ func (c *Client) Get(
 // Create/Link an entity to an external accounting system like Codat or Rutter. If the entity is already linked to an external accounting system, this will return the existing connection.
 func (c *Client) Create(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *entity.ExternalAccountingSystemCompanyCreationRequest,
 	opts ...option.RequestOption,
@@ -250,6 +252,7 @@ func (c *Client) Create(
 // Get a link to connect an entity to an external accounting system like Quickbooks or Xero
 func (c *Client) Connect(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	opts ...option.RequestOption,
 ) (string, error) {
@@ -355,6 +358,7 @@ func (c *Client) Connect(
 // Sync an entity with an external accounting system. Will sync customers/vendors and invoices.
 func (c *Client) Sync(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *entity.SyncExternalSystemRequest,
 	opts ...option.RequestOption,

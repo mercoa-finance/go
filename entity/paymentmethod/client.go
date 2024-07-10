@@ -37,6 +37,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 
 func (c *Client) GetAll(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *entity.GetAllPaymentMethodsRequest,
 	opts ...option.RequestOption,
@@ -150,6 +151,7 @@ func (c *Client) GetAll(
 
 func (c *Client) Create(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *mercoafinancego.PaymentMethodRequest,
 	opts ...option.RequestOption,
@@ -256,6 +258,7 @@ func (c *Client) Create(
 
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	opts ...option.RequestOption,
@@ -366,6 +369,7 @@ func (c *Client) Get(
 // Only custom payment methods can be updated.
 func (c *Client) Update(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	request *mercoafinancego.PaymentMethodUpdateRequest,
@@ -478,6 +482,7 @@ func (c *Client) Update(
 // Mark a payment method as inactive. This will not remove the payment method from the system, but will prevent it from being used in the future.
 func (c *Client) Delete(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	opts ...option.RequestOption,
@@ -586,6 +591,7 @@ func (c *Client) Delete(
 // Initiate micro deposits for a bank account
 func (c *Client) InitiateMicroDeposits(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	opts ...option.RequestOption,
@@ -696,6 +702,7 @@ func (c *Client) InitiateMicroDeposits(
 // Complete micro deposit verification
 func (c *Client) CompleteMicroDeposits(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	request *entity.CompleteMicroDepositsRequest,
@@ -808,6 +815,7 @@ func (c *Client) CompleteMicroDeposits(
 // Deprecated. Get the available balance of a payment method. Only bank accounts added with Plaid are supported. This endpoint will return a cached value and will refresh the balance when called.
 func (c *Client) GetBalance(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	opts ...option.RequestOption,

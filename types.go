@@ -818,6 +818,8 @@ type BusinessProfileRequest struct {
 	TaxID *TaxID `json:"taxId,omitempty" url:"taxId,omitempty"`
 	// Date of business formation
 	FormationDate *time.Time `json:"formationDate,omitempty" url:"formationDate,omitempty"`
+	// Industry code for the business. Required to collect funds.
+	IndustryCodes *IndustryCodes `json:"industryCodes,omitempty" url:"industryCodes,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -885,8 +887,9 @@ type BusinessProfileResponse struct {
 	Description       *string       `json:"description,omitempty" url:"description,omitempty"`
 	Address           *Address      `json:"address,omitempty" url:"address,omitempty"`
 	// True if all representatives have been provided for this business.
-	OwnersProvided *bool `json:"ownersProvided,omitempty" url:"ownersProvided,omitempty"`
-	TaxIDProvided  bool  `json:"taxIDProvided" url:"taxIDProvided"`
+	OwnersProvided *bool          `json:"ownersProvided,omitempty" url:"ownersProvided,omitempty"`
+	TaxIDProvided  bool           `json:"taxIDProvided" url:"taxIDProvided"`
+	IndustryCodes  *IndustryCodes `json:"industryCodes,omitempty" url:"industryCodes,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2369,6 +2372,47 @@ func (i *IndividualProfileResponse) UnmarshalJSON(data []byte) error {
 }
 
 func (i *IndividualProfileResponse) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type IndustryCodes struct {
+	Mcc *string `json:"mcc,omitempty" url:"mcc,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *IndustryCodes) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *IndustryCodes) UnmarshalJSON(data []byte) error {
+	type unmarshaler IndustryCodes
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = IndustryCodes(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *IndustryCodes) String() string {
 	if len(i._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
 			return value
@@ -4215,6 +4259,8 @@ type InvoiceCreationRequest struct {
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
 	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
+	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
+	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
 	// ID of entity who created this invoice.
 	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
 
@@ -4323,6 +4369,50 @@ func NewInvoiceFailureTypeFromString(s string) (InvoiceFailureType, error) {
 
 func (i InvoiceFailureType) Ptr() *InvoiceFailureType {
 	return &i
+}
+
+type InvoiceFeesRequest struct {
+	// Fee charged to the payer (C2).
+	SourcePlatformMarkupFee float64 `json:"sourcePlatformMarkupFee" url:"sourcePlatformMarkupFee"`
+	// Fee charged to the payee (C3).
+	DestinationPlatformMarkupFee float64 `json:"destinationPlatformMarkupFee" url:"destinationPlatformMarkupFee"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceFeesRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceFeesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceFeesRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceFeesRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceFeesRequest) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
 }
 
 type InvoiceFeesResponse struct {
@@ -4796,6 +4886,8 @@ type InvoiceRequestBase struct {
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
 	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
+	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
+	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -5102,6 +5194,8 @@ type InvoiceUpdateRequest struct {
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
 	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
+	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
+	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
 	// ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 
@@ -5269,6 +5363,7 @@ type BusinessOnboardingOptions struct {
 	Type            *OnboardingOption `json:"type,omitempty" url:"type,omitempty"`
 	DoingBusinessAs *OnboardingOption `json:"doingBusinessAs,omitempty" url:"doingBusinessAs,omitempty"`
 	Ein             *OnboardingOption `json:"ein,omitempty" url:"ein,omitempty"`
+	Mcc             *OnboardingOption `json:"mcc,omitempty" url:"mcc,omitempty"`
 	Address         *OnboardingOption `json:"address,omitempty" url:"address,omitempty"`
 	Phone           *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
 	FormationDate   *OnboardingOption `json:"formationDate,omitempty" url:"formationDate,omitempty"`
@@ -8253,8 +8348,12 @@ type CustomPaymentMethodSchemaRequest struct {
 	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
 	// Estimated time in days for this payment method to process a payments. Set as 0 for same-day payment methods, -1 for unknown processing time.
-	EstimatedProcessingTime *int                          `json:"estimatedProcessingTime,omitempty" url:"estimatedProcessingTime,omitempty"`
-	Fees                    *CustomPaymentMethodSchemaFee `json:"fees,omitempty" url:"fees,omitempty"`
+	EstimatedProcessingTime *int `json:"estimatedProcessingTime,omitempty" url:"estimatedProcessingTime,omitempty"`
+	// The maximum amount that can be transferred from this payment method in a single transaction.
+	MaxAmount *float64 `json:"maxAmount,omitempty" url:"maxAmount,omitempty"`
+	// The minimum amount that can be transferred from this payment method in a single transaction. Default is 1.
+	MinAmount *float64                      `json:"minAmount,omitempty" url:"minAmount,omitempty"`
+	Fees      *CustomPaymentMethodSchemaFee `json:"fees,omitempty" url:"fees,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -8305,10 +8404,14 @@ type CustomPaymentMethodSchemaResponse struct {
 	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
 	// Estimated time in days for this payment method to process a payments. 0 is an same-day payment methods, -1 is unknown processing time.
-	EstimatedProcessingTime int                           `json:"estimatedProcessingTime" url:"estimatedProcessingTime"`
-	Fees                    *CustomPaymentMethodSchemaFee `json:"fees,omitempty" url:"fees,omitempty"`
-	CreatedAt               time.Time                     `json:"createdAt" url:"createdAt"`
-	UpdatedAt               time.Time                     `json:"updatedAt" url:"updatedAt"`
+	EstimatedProcessingTime int `json:"estimatedProcessingTime" url:"estimatedProcessingTime"`
+	// The maximum amount that can be transferred from this payment method in a single transaction.
+	MaxAmount *float64 `json:"maxAmount,omitempty" url:"maxAmount,omitempty"`
+	// The minimum amount that can be transferred from this payment method in a single transaction. Default is 1.
+	MinAmount *float64                      `json:"minAmount,omitempty" url:"minAmount,omitempty"`
+	Fees      *CustomPaymentMethodSchemaFee `json:"fees,omitempty" url:"fees,omitempty"`
+	CreatedAt time.Time                     `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time                     `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage

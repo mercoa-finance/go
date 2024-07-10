@@ -37,6 +37,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Retrieve all notification policies associated with this entity user
 func (c *Client) GetAll(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	userID mercoafinancego.EntityUserID,
 	opts ...option.RequestOption,
@@ -147,6 +148,7 @@ func (c *Client) GetAll(
 // Retrieve notification policy associated with this entity user
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	userID mercoafinancego.EntityUserID,
 	notificationType mercoafinancego.NotificationType,
@@ -259,6 +261,7 @@ func (c *Client) Get(
 // Update notification policy associated with this entity user
 func (c *Client) Update(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	userID mercoafinancego.EntityUserID,
 	notificationType mercoafinancego.NotificationType,

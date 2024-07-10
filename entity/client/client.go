@@ -289,6 +289,7 @@ func (c *Client) Create(
 
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.EntityResponse, error) {
@@ -393,6 +394,7 @@ func (c *Client) Get(
 
 func (c *Client) Update(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *mercoafinancego.EntityUpdateRequest,
 	opts ...option.RequestOption,
@@ -500,6 +502,7 @@ func (c *Client) Update(
 // Will archive the entity. This action cannot be undone, and the entity will no longer be available for use. The foreignId on the entity will be cleared as well.
 func (c *Client) Delete(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	opts ...option.RequestOption,
 ) error {
@@ -603,6 +606,7 @@ func (c *Client) Delete(
 // This endpoint is used to indicate acceptance of Mercoa's terms of service for an entity. Send a request to this endpoint only after the entity has accepted the Mercoa ToS. Entities must accept Mercoa ToS before they can be send or pay invoices using Mercoa's payment rails.
 func (c *Client) AcceptTermsOfService(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	opts ...option.RequestOption,
 ) error {
@@ -708,6 +712,7 @@ func (c *Client) AcceptTermsOfService(
 // all representatives have been added, and all required fields have been filled out.
 func (c *Client) InitiateKyb(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	opts ...option.RequestOption,
 ) error {
@@ -813,6 +818,7 @@ func (c *Client) InitiateKyb(
 // <Warning>We recommend using [this endpoint](/api-reference/entity/user/get-token). This will enable features such as approvals and comments.</Warning>
 func (c *Client) GetToken(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *mercoafinancego.TokenGenerationOptions,
 	opts ...option.RequestOption,
@@ -920,6 +926,7 @@ func (c *Client) GetToken(
 // Get a Plaid link token for an entity. This token can be used to add or update a bank account to the entity using Plaid Link.
 func (c *Client) PlaidLinkToken(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *entity.PlaidLinkTokenRequest,
 	opts ...option.RequestOption,
@@ -1034,6 +1041,7 @@ func (c *Client) PlaidLinkToken(
 // Generate an onboarding link for the entity.
 func (c *Client) GetOnboardingLink(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *entity.GenerateOnboardingLink,
 	opts ...option.RequestOption,
@@ -1148,6 +1156,7 @@ func (c *Client) GetOnboardingLink(
 // Send an email with a onboarding link to the entity. The email will be sent to the email address associated with the entity.
 func (c *Client) SendOnboardingLink(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *entity.SendOnboardingLink,
 	opts ...option.RequestOption,

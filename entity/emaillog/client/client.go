@@ -38,6 +38,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Get all incoming invoice emails for an entity.
 func (c *Client) Find(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *emaillog.EntityEmailLogRequest,
 	opts ...option.RequestOption,
@@ -152,6 +153,7 @@ func (c *Client) Find(
 // Get an email log by ID
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	logID mercoafinancego.EmailLogID,
 	opts ...option.RequestOption,

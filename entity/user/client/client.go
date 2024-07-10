@@ -45,6 +45,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Get all entity users (DEPRECATED, use Search Entity Users)
 func (c *Client) GetAll(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	opts ...option.RequestOption,
 ) ([]*mercoafinancego.EntityUserResponse, error) {
@@ -150,6 +151,7 @@ func (c *Client) GetAll(
 // Search entity users
 func (c *Client) Find(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *user.EntityFindEntityRequest,
 	opts ...option.RequestOption,
@@ -263,6 +265,7 @@ func (c *Client) Find(
 
 func (c *Client) Create(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *mercoafinancego.EntityUserRequest,
 	opts ...option.RequestOption,
@@ -370,6 +373,7 @@ func (c *Client) Create(
 // Get entity user
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	userID mercoafinancego.EntityUserID,
 	opts ...option.RequestOption,
@@ -480,6 +484,7 @@ func (c *Client) Get(
 // Update entity user
 func (c *Client) Update(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	userID mercoafinancego.EntityUserID,
 	request *mercoafinancego.EntityUserRequest,
@@ -592,6 +597,7 @@ func (c *Client) Update(
 // Delete entity user. This will also remove the user from all approval policies. If an approval policy will break as a result of this operation, this request will fail.
 func (c *Client) Delete(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	userID mercoafinancego.EntityUserID,
 	opts ...option.RequestOption,
@@ -700,6 +706,7 @@ func (c *Client) Delete(
 // Generate a JWT token for an entity user with the given options. This token can be used to authenticate the entity and entity user in the Mercoa API and iFrame.
 func (c *Client) GetToken(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	userID mercoafinancego.EntityUserID,
 	request *mercoafinancego.TokenGenerationOptions,

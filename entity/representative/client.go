@@ -37,6 +37,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Get representatives for an entity
 func (c *Client) GetAll(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	opts ...option.RequestOption,
 ) ([]*mercoafinancego.RepresentativeResponse, error) {
@@ -141,6 +142,7 @@ func (c *Client) GetAll(
 
 func (c *Client) Create(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *mercoafinancego.RepresentativeRequest,
 	opts ...option.RequestOption,
@@ -247,6 +249,7 @@ func (c *Client) Create(
 
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	representativeID mercoafinancego.RepresentativeID,
 	opts ...option.RequestOption,
@@ -356,6 +359,7 @@ func (c *Client) Get(
 
 func (c *Client) Delete(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	representativeID mercoafinancego.RepresentativeID,
 	opts ...option.RequestOption,

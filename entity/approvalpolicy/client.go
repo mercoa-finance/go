@@ -37,6 +37,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Retrieve all invoice approval policies associated with an entity
 func (c *Client) GetAll(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	opts ...option.RequestOption,
 ) ([]*mercoafinancego.ApprovalPolicyResponse, error) {
@@ -142,6 +143,7 @@ func (c *Client) GetAll(
 // Create an invoice approval policy associated with an entity
 func (c *Client) Create(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	request *mercoafinancego.ApprovalPolicyRequest,
 	opts ...option.RequestOption,
@@ -249,6 +251,7 @@ func (c *Client) Create(
 // Retrieve an invoice approval policy associated with an entity
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	policyID mercoafinancego.ApprovalPolicyID,
 	opts ...option.RequestOption,
@@ -359,6 +362,7 @@ func (c *Client) Get(
 // Update an invoice approval policy associated with an entity
 func (c *Client) Update(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	policyID mercoafinancego.ApprovalPolicyID,
 	request *mercoafinancego.ApprovalPolicyUpdateRequest,
@@ -471,6 +475,7 @@ func (c *Client) Update(
 // Delete an invoice approval policy associated with Entity. BEWARE: Any approval policy deletion will result in all associated downstream policies also being deleted.
 func (c *Client) Delete(
 	ctx context.Context,
+	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	policyID mercoafinancego.ApprovalPolicyID,
 	opts ...option.RequestOption,
