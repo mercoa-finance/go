@@ -20,4 +20,6 @@ type EntityGetNotificationsRequest struct {
 	StartingAfter *mercoafinancego.NotificationID `json:"-" url:"startingAfter,omitempty"`
 	// The type of notification to filter by.
 	NotificationType []*mercoafinancego.NotificationType `json:"-" url:"notificationType,omitempty"`
+	// The status of the notification to filter by.
+	Status *mercoafinancego.NotificationStatus `json:"-" url:"status,omitempty"`
 }

@@ -13,6 +13,7 @@ import (
 	approvalpolicy "github.com/mercoa-finance/go/entity/approvalpolicy"
 	counterparty "github.com/mercoa-finance/go/entity/counterparty"
 	customization "github.com/mercoa-finance/go/entity/customization"
+	document "github.com/mercoa-finance/go/entity/document"
 	emaillogclient "github.com/mercoa-finance/go/entity/emaillog/client"
 	externalaccountingsystem "github.com/mercoa-finance/go/entity/externalaccountingsystem"
 	invoice "github.com/mercoa-finance/go/entity/invoice"
@@ -36,6 +37,7 @@ type Client struct {
 	ApprovalPolicy           *approvalpolicy.Client
 	Counterparty             *counterparty.Client
 	Customization            *customization.Client
+	Document                 *document.Client
 	ExternalAccountingSystem *externalaccountingsystem.Client
 	Invoice                  *invoice.Client
 	Metadata                 *metadata.Client
@@ -60,6 +62,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		ApprovalPolicy:           approvalpolicy.NewClient(opts...),
 		Counterparty:             counterparty.NewClient(opts...),
 		Customization:            customization.NewClient(opts...),
+		Document:                 document.NewClient(opts...),
 		ExternalAccountingSystem: externalaccountingsystem.NewClient(opts...),
 		Invoice:                  invoice.NewClient(opts...),
 		Metadata:                 metadata.NewClient(opts...),

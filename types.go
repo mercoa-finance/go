@@ -145,6 +145,79 @@ func (b *BirthDate) String() string {
 	return fmt.Sprintf("%#v", b)
 }
 
+type DocumentResponse struct {
+	// ID of the document. If not provided, this is a dynamic document that is generated on the fly.
+	ID       *string      `json:"id,omitempty" url:"id,omitempty"`
+	MimeType string       `json:"mimeType" url:"mimeType"`
+	Type     DocumentType `json:"type" url:"type"`
+	URI      string       `json:"uri" url:"uri"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (d *DocumentResponse) GetExtraProperties() map[string]interface{} {
+	return d.extraProperties
+}
+
+func (d *DocumentResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DocumentResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DocumentResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+
+	d._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DocumentResponse) String() string {
+	if len(d._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(d._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+type DocumentType string
+
+const (
+	DocumentTypeInvoice       DocumentType = "INVOICE"
+	DocumentTypeTenNinetyNine DocumentType = "TEN_NINETY_NINE"
+	DocumentTypeW9            DocumentType = "W9"
+	DocumentTypeCheck         DocumentType = "CHECK"
+)
+
+func NewDocumentTypeFromString(s string) (DocumentType, error) {
+	switch s {
+	case "INVOICE":
+		return DocumentTypeInvoice, nil
+	case "TEN_NINETY_NINE":
+		return DocumentTypeTenNinetyNine, nil
+	case "W9":
+		return DocumentTypeW9, nil
+	case "CHECK":
+		return DocumentTypeCheck, nil
+	}
+	var t DocumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DocumentType) Ptr() *DocumentType {
+	return &d
+}
+
 type FullName struct {
 	FirstName  string  `json:"firstName" url:"firstName"`
 	MiddleName *string `json:"middleName,omitempty" url:"middleName,omitempty"`
@@ -534,6 +607,256 @@ func (e *EntityGroupResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
+}
+
+type EntityGroupUserEntityRequest struct {
+	// List of roles. A role can be any string. For example: "payer", "approver", "viewer"
+	Roles []string `json:"roles,omitempty" url:"roles,omitempty"`
+	// The IDs of the entities that these roles applies to.
+	EntityID EntityID `json:"entityId" url:"entityId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityGroupUserEntityRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityGroupUserEntityRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityGroupUserEntityRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityGroupUserEntityRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityGroupUserEntityRequest) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EntityGroupUserEntityResponse struct {
+	// List of roles. A role can be any string. For example: "payer", "approver", "viewer"
+	Roles []string `json:"roles,omitempty" url:"roles,omitempty"`
+	// The IDs of the entities that these roles applies to.
+	EntityID EntityID     `json:"entityId" url:"entityId"`
+	ID       EntityUserID `json:"id" url:"id"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityGroupUserEntityResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityGroupUserEntityResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityGroupUserEntityResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityGroupUserEntityResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityGroupUserEntityResponse) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EntityGroupUserRequest struct {
+	// The ID used to identify this user in your system. This is a required field and needs to be unique for all users in the group.
+	ForeignID string  `json:"foreignId" url:"foreignId"`
+	Email     *string `json:"email,omitempty" url:"email,omitempty"`
+	Name      *string `json:"name,omitempty" url:"name,omitempty"`
+	// List of roles per entity. By default, the user will have no roles.
+	Entities []*EntityGroupUserEntityRequest `json:"entities,omitempty" url:"entities,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityGroupUserRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityGroupUserRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityGroupUserRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityGroupUserRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityGroupUserRequest) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EntityGroupUserResponse struct {
+	// The ID used to identify this user in your system.
+	ForeignID string  `json:"foreignId" url:"foreignId"`
+	Email     *string `json:"email,omitempty" url:"email,omitempty"`
+	Name      *string `json:"name,omitempty" url:"name,omitempty"`
+	// List of roles per entity.
+	Entities  []*EntityGroupUserEntityResponse `json:"entities,omitempty" url:"entities,omitempty"`
+	CreatedAt time.Time                        `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time                        `json:"updatedAt" url:"updatedAt"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityGroupUserResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityGroupUserResponse) UnmarshalJSON(data []byte) error {
+	type embed EntityGroupUserResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*e),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*e = EntityGroupUserResponse(unmarshaler.embed)
+	e.CreatedAt = unmarshaler.CreatedAt.Time()
+	e.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityGroupUserResponse) MarshalJSON() ([]byte, error) {
+	type embed EntityGroupUserResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*e),
+		CreatedAt: core.NewDateTime(e.CreatedAt),
+		UpdatedAt: core.NewDateTime(e.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (e *EntityGroupUserResponse) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type FindEntityGroupUserResponse struct {
+	// Total number of users for the given filters. This value is not limited by the limit parameter. It is provided so that you can determine how many pages of results are available.
+	Count int `json:"count" url:"count"`
+	// True if there are more users available for the given filters.
+	HasMore bool                       `json:"hasMore" url:"hasMore"`
+	Data    []*EntityGroupUserResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FindEntityGroupUserResponse) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
+}
+
+func (f *FindEntityGroupUserResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler FindEntityGroupUserResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FindEntityGroupUserResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
+	f._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FindEntityGroupUserResponse) String() string {
+	if len(f._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(f._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
 }
 
 type AccountType string
@@ -972,10 +1295,56 @@ func (b BusinessType) Ptr() *BusinessType {
 	return &b
 }
 
+type CounterpartyCustomizationAccount struct {
+	// The ID the counterparty has assigned to this account.
+	AccountID string `json:"accountId" url:"accountId"`
+	// The postal code the counterparty has assigned to this account.
+	PostalCode *string `json:"postalCode,omitempty" url:"postalCode,omitempty"`
+	// The name on the account the counterparty has assigned to this account.
+	NameOnAccount *string `json:"nameOnAccount,omitempty" url:"nameOnAccount,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CounterpartyCustomizationAccount) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CounterpartyCustomizationAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler CounterpartyCustomizationAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CounterpartyCustomizationAccount(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CounterpartyCustomizationAccount) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 type CounterpartyCustomizationRequest struct {
 	CounterpartyID EntityID `json:"counterpartyId" url:"counterpartyId"`
-	// The ID the counterparty has assigned to this account.
-	AccountID *string `json:"accountId,omitempty" url:"accountId,omitempty"`
+	// The list of accounts the entity has with the counterparty.
+	Accounts []*CounterpartyCustomizationAccount `json:"accounts,omitempty" url:"accounts,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -1150,8 +1519,8 @@ type CounterpartyResponse struct {
 	IsNetworkPayee bool      `json:"isNetworkPayee" url:"isNetworkPayee"`
 	CreatedAt      time.Time `json:"createdAt" url:"createdAt"`
 	UpdatedAt      time.Time `json:"updatedAt" url:"updatedAt"`
-	// If the entity searching for counterparties has an Account ID configured in the Payee/Payor relationship, it will be returned
-	AccountID *string `json:"accountId,omitempty" url:"accountId,omitempty"`
+	// If the entity searching for counterparties has any accounts configured in the Payee/Payor relationship, they will be returned
+	Accounts []*CounterpartyCustomizationAccount `json:"accounts,omitempty" url:"accounts,omitempty"`
 	// URL to the entity logo
 	Logo             *string                             `json:"logo,omitempty" url:"logo,omitempty"`
 	PaymentMethods   []*PaymentMethodResponse            `json:"paymentMethods,omitempty" url:"paymentMethods,omitempty"`
@@ -2631,9 +3000,10 @@ func (n *NotificationPolicyResponse) String() string {
 type NotificationResponse struct {
 	ID NotificationID `json:"id" url:"id"`
 	// The invoice ID that this notification is related to. This field is only present for notifications related to invoices.
-	InvoiceID *InvoiceID       `json:"invoiceId,omitempty" url:"invoiceId,omitempty"`
-	Type      NotificationType `json:"type" url:"type"`
-	CreatedAt time.Time        `json:"createdAt" url:"createdAt"`
+	InvoiceID *InvoiceID         `json:"invoiceId,omitempty" url:"invoiceId,omitempty"`
+	Type      NotificationType   `json:"type" url:"type"`
+	Status    NotificationStatus `json:"status" url:"status"`
+	CreatedAt time.Time          `json:"createdAt" url:"createdAt"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2691,6 +3061,34 @@ func (n *NotificationResponse) String() string {
 	return fmt.Sprintf("%#v", n)
 }
 
+type NotificationStatus string
+
+const (
+	NotificationStatusPending NotificationStatus = "PENDING"
+	NotificationStatusSent    NotificationStatus = "SENT"
+	NotificationStatusRead    NotificationStatus = "READ"
+	NotificationStatusFailed  NotificationStatus = "FAILED"
+)
+
+func NewNotificationStatusFromString(s string) (NotificationStatus, error) {
+	switch s {
+	case "PENDING":
+		return NotificationStatusPending, nil
+	case "SENT":
+		return NotificationStatusSent, nil
+	case "READ":
+		return NotificationStatusRead, nil
+	case "FAILED":
+		return NotificationStatusFailed, nil
+	}
+	var t NotificationStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (n NotificationStatus) Ptr() *NotificationStatus {
+	return &n
+}
+
 type NotificationType string
 
 const (
@@ -2735,6 +3133,47 @@ func NewNotificationTypeFromString(s string) (NotificationType, error) {
 
 func (n NotificationType) Ptr() *NotificationType {
 	return &n
+}
+
+type NotificationUpdateRequest struct {
+	Status *NotificationStatus `json:"status,omitempty" url:"status,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (n *NotificationUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return n.extraProperties
+}
+
+func (n *NotificationUpdateRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler NotificationUpdateRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*n = NotificationUpdateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *n)
+	if err != nil {
+		return err
+	}
+	n.extraProperties = extraProperties
+
+	n._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (n *NotificationUpdateRequest) String() string {
+	if len(n._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(n._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(n); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", n)
 }
 
 type PaymentMethodCustomizationRequest struct {
@@ -4128,50 +4567,6 @@ func (c *CommentResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-type DocumentResponse struct {
-	// ID of the document. If not provided, this is a dynamic document that is generated on the fly.
-	ID       *string `json:"id,omitempty" url:"id,omitempty"`
-	MimeType string  `json:"mimeType" url:"mimeType"`
-	URI      string  `json:"uri" url:"uri"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (d *DocumentResponse) GetExtraProperties() map[string]interface{} {
-	return d.extraProperties
-}
-
-func (d *DocumentResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler DocumentResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DocumentResponse(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-
-	d._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DocumentResponse) String() string {
-	if len(d._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(d._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
 type FindInvoiceResponse struct {
 	// Total number of notifications for the given start and end date filters. This value is not limited by the limit parameter. It is provided so that you can determine how many pages of results are available.
 	Count int `json:"count" url:"count"`
@@ -5279,6 +5674,7 @@ type PaymentDestinationOptions struct {
 	Type        string
 	Check       *CheckPaymentDestinationOptions
 	BankAccount *BankAccountPaymentDestinationOptions
+	Utility     *UtilityPaymentDestinationOptions
 }
 
 func (p *PaymentDestinationOptions) UnmarshalJSON(data []byte) error {
@@ -5302,6 +5698,12 @@ func (p *PaymentDestinationOptions) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		p.BankAccount = value
+	case "utility":
+		value := new(UtilityPaymentDestinationOptions)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Utility = value
 	}
 	return nil
 }
@@ -5313,12 +5715,16 @@ func (p PaymentDestinationOptions) MarshalJSON() ([]byte, error) {
 	if p.BankAccount != nil {
 		return core.MarshalJSONWithExtraProperty(p.BankAccount, "type", "bankAccount")
 	}
+	if p.Utility != nil {
+		return core.MarshalJSONWithExtraProperty(p.Utility, "type", "utility")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
 type PaymentDestinationOptionsVisitor interface {
 	VisitCheck(*CheckPaymentDestinationOptions) error
 	VisitBankAccount(*BankAccountPaymentDestinationOptions) error
+	VisitUtility(*UtilityPaymentDestinationOptions) error
 }
 
 func (p *PaymentDestinationOptions) Accept(visitor PaymentDestinationOptionsVisitor) error {
@@ -5328,7 +5734,52 @@ func (p *PaymentDestinationOptions) Accept(visitor PaymentDestinationOptionsVisi
 	if p.BankAccount != nil {
 		return visitor.VisitBankAccount(p.BankAccount)
 	}
+	if p.Utility != nil {
+		return visitor.VisitUtility(p.Utility)
+	}
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
+}
+
+type UtilityPaymentDestinationOptions struct {
+	// The ID for the utility account to pay with. Links to accounts listed on payor/payee relationship.
+	AccountID string `json:"accountId" url:"accountId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (u *UtilityPaymentDestinationOptions) GetExtraProperties() map[string]interface{} {
+	return u.extraProperties
+}
+
+func (u *UtilityPaymentDestinationOptions) UnmarshalJSON(data []byte) error {
+	type unmarshaler UtilityPaymentDestinationOptions
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UtilityPaymentDestinationOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+
+	u._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UtilityPaymentDestinationOptions) String() string {
+	if len(u._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(u._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
 }
 
 type OcrJobStatus string
@@ -8745,6 +9196,7 @@ type PaymentMethodRequest struct {
 	Check       *CheckRequest
 	Custom      *CustomPaymentMethodRequest
 	OffPlatform *PaymentMethodBaseRequest
+	Utility     *UtilityPaymentMethodRequest
 }
 
 func (p *PaymentMethodRequest) UnmarshalJSON(data []byte) error {
@@ -8786,6 +9238,12 @@ func (p *PaymentMethodRequest) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		p.OffPlatform = value
+	case "utility":
+		value := new(UtilityPaymentMethodRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Utility = value
 	}
 	return nil
 }
@@ -8806,6 +9264,9 @@ func (p PaymentMethodRequest) MarshalJSON() ([]byte, error) {
 	if p.OffPlatform != nil {
 		return core.MarshalJSONWithExtraProperty(p.OffPlatform, "type", "offPlatform")
 	}
+	if p.Utility != nil {
+		return core.MarshalJSONWithExtraProperty(p.Utility, "type", "utility")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
@@ -8815,6 +9276,7 @@ type PaymentMethodRequestVisitor interface {
 	VisitCheck(*CheckRequest) error
 	VisitCustom(*CustomPaymentMethodRequest) error
 	VisitOffPlatform(*PaymentMethodBaseRequest) error
+	VisitUtility(*UtilityPaymentMethodRequest) error
 }
 
 func (p *PaymentMethodRequest) Accept(visitor PaymentMethodRequestVisitor) error {
@@ -8833,6 +9295,9 @@ func (p *PaymentMethodRequest) Accept(visitor PaymentMethodRequestVisitor) error
 	if p.OffPlatform != nil {
 		return visitor.VisitOffPlatform(p.OffPlatform)
 	}
+	if p.Utility != nil {
+		return visitor.VisitUtility(p.Utility)
+	}
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
@@ -8843,6 +9308,7 @@ type PaymentMethodResponse struct {
 	Check       *CheckResponse
 	Custom      *CustomPaymentMethodResponse
 	OffPlatform *PaymentMethodBaseResponse
+	Utility     *UtilityPaymentMethodResponse
 }
 
 func (p *PaymentMethodResponse) UnmarshalJSON(data []byte) error {
@@ -8884,6 +9350,12 @@ func (p *PaymentMethodResponse) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		p.OffPlatform = value
+	case "utility":
+		value := new(UtilityPaymentMethodResponse)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Utility = value
 	}
 	return nil
 }
@@ -8904,6 +9376,9 @@ func (p PaymentMethodResponse) MarshalJSON() ([]byte, error) {
 	if p.OffPlatform != nil {
 		return core.MarshalJSONWithExtraProperty(p.OffPlatform, "type", "offPlatform")
 	}
+	if p.Utility != nil {
+		return core.MarshalJSONWithExtraProperty(p.Utility, "type", "utility")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
@@ -8913,6 +9388,7 @@ type PaymentMethodResponseVisitor interface {
 	VisitCheck(*CheckResponse) error
 	VisitCustom(*CustomPaymentMethodResponse) error
 	VisitOffPlatform(*PaymentMethodBaseResponse) error
+	VisitUtility(*UtilityPaymentMethodResponse) error
 }
 
 func (p *PaymentMethodResponse) Accept(visitor PaymentMethodResponseVisitor) error {
@@ -8931,6 +9407,9 @@ func (p *PaymentMethodResponse) Accept(visitor PaymentMethodResponseVisitor) err
 	if p.OffPlatform != nil {
 		return visitor.VisitOffPlatform(p.OffPlatform)
 	}
+	if p.Utility != nil {
+		return visitor.VisitUtility(p.Utility)
+	}
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
@@ -8945,6 +9424,7 @@ const (
 	PaymentMethodTypeBnpl        PaymentMethodType = "bnpl"
 	PaymentMethodTypeVirtualCard PaymentMethodType = "virtualCard"
 	PaymentMethodTypeOffPlatform PaymentMethodType = "offPlatform"
+	PaymentMethodTypeUtility     PaymentMethodType = "utility"
 )
 
 func NewPaymentMethodTypeFromString(s string) (PaymentMethodType, error) {
@@ -8965,6 +9445,8 @@ func NewPaymentMethodTypeFromString(s string) (PaymentMethodType, error) {
 		return PaymentMethodTypeVirtualCard, nil
 	case "offPlatform":
 		return PaymentMethodTypeOffPlatform, nil
+	case "utility":
+		return PaymentMethodTypeUtility, nil
 	}
 	var t PaymentMethodType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -8986,6 +9468,8 @@ type PaymentMethodUpdateRequest struct {
 	Check *PaymentMethodBaseRequest
 	// Only defaultSource and defaultDestination can be updated.
 	OffPlatform *PaymentMethodBaseRequest
+	// Only defaultSource and defaultDestination can be updated.
+	Utility *PaymentMethodBaseRequest
 }
 
 func (p *PaymentMethodUpdateRequest) UnmarshalJSON(data []byte) error {
@@ -9027,6 +9511,12 @@ func (p *PaymentMethodUpdateRequest) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		p.OffPlatform = value
+	case "utility":
+		value := new(PaymentMethodBaseRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Utility = value
 	}
 	return nil
 }
@@ -9047,6 +9537,9 @@ func (p PaymentMethodUpdateRequest) MarshalJSON() ([]byte, error) {
 	if p.OffPlatform != nil {
 		return core.MarshalJSONWithExtraProperty(p.OffPlatform, "type", "offPlatform")
 	}
+	if p.Utility != nil {
+		return core.MarshalJSONWithExtraProperty(p.Utility, "type", "utility")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
@@ -9056,6 +9549,7 @@ type PaymentMethodUpdateRequestVisitor interface {
 	VisitCard(*PaymentMethodBaseRequest) error
 	VisitCheck(*PaymentMethodBaseRequest) error
 	VisitOffPlatform(*PaymentMethodBaseRequest) error
+	VisitUtility(*PaymentMethodBaseRequest) error
 }
 
 func (p *PaymentMethodUpdateRequest) Accept(visitor PaymentMethodUpdateRequestVisitor) error {
@@ -9073,6 +9567,9 @@ func (p *PaymentMethodUpdateRequest) Accept(visitor PaymentMethodUpdateRequestVi
 	}
 	if p.OffPlatform != nil {
 		return visitor.VisitOffPlatform(p.OffPlatform)
+	}
+	if p.Utility != nil {
+		return visitor.VisitUtility(p.Utility)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
@@ -9123,10 +9620,132 @@ func (p *PlaidLinkRequest) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
+type UtilityPaymentMethodRequest struct {
+	// If true, this payment method will be set as the default source. Only one payment method can be set as the default source. If another payment method is already set as the default source, it will be unset.
+	DefaultSource *bool `json:"defaultSource,omitempty" url:"defaultSource,omitempty"`
+	// If true, this payment method will be set as the default destination. Only one payment method can be set as the default destination. If another payment method is already set as the default destination, it will be unset.
+	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// The ID of the utility that this payment method is linked to.
+	UtilityID string `json:"utilityId" url:"utilityId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (u *UtilityPaymentMethodRequest) GetExtraProperties() map[string]interface{} {
+	return u.extraProperties
+}
+
+func (u *UtilityPaymentMethodRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UtilityPaymentMethodRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UtilityPaymentMethodRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+
+	u._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UtilityPaymentMethodRequest) String() string {
+	if len(u._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(u._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+type UtilityPaymentMethodResponse struct {
+	ID PaymentMethodID `json:"id" url:"id"`
+	// Indicates whether this payment method is the default source for the entity
+	IsDefaultSource bool `json:"isDefaultSource" url:"isDefaultSource"`
+	// Indicates whether this payment method is the default destination for the entity
+	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
+	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
+	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
+	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	CreatedAt                  time.Time `json:"createdAt" url:"createdAt"`
+	UpdatedAt                  time.Time `json:"updatedAt" url:"updatedAt"`
+	// The ID of the utility that this payment method is linked to.
+	UtilityID string `json:"utilityId" url:"utilityId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (u *UtilityPaymentMethodResponse) GetExtraProperties() map[string]interface{} {
+	return u.extraProperties
+}
+
+func (u *UtilityPaymentMethodResponse) UnmarshalJSON(data []byte) error {
+	type embed UtilityPaymentMethodResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UtilityPaymentMethodResponse(unmarshaler.embed)
+	u.CreatedAt = unmarshaler.CreatedAt.Time()
+	u.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+
+	u._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UtilityPaymentMethodResponse) MarshalJSON() ([]byte, error) {
+	type embed UtilityPaymentMethodResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*u),
+		CreatedAt: core.NewDateTime(u.CreatedAt),
+		UpdatedAt: core.NewDateTime(u.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (u *UtilityPaymentMethodResponse) String() string {
+	if len(u._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(u._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 type CounterpartyWebhook struct {
-	EventType string   `json:"eventType" url:"eventType"`
-	PayeeID   EntityID `json:"payeeId" url:"payeeId"`
-	PayorID   EntityID `json:"payorId" url:"payorId"`
+	EventType string     `json:"eventType" url:"eventType"`
+	PayeeID   []EntityID `json:"payeeId,omitempty" url:"payeeId,omitempty"`
+	PayorID   []EntityID `json:"payorId,omitempty" url:"payorId,omitempty"`
 	// User who initiated the change.
 	User *EntityUserResponse `json:"user,omitempty" url:"user,omitempty"`
 

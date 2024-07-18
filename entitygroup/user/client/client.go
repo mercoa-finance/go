@@ -9,9 +9,7 @@ import (
 	errors "errors"
 	mercoafinancego "github.com/mercoa-finance/go"
 	core "github.com/mercoa-finance/go/core"
-	entitygroup "github.com/mercoa-finance/go/entitygroup"
-	invoice "github.com/mercoa-finance/go/entitygroup/invoice"
-	userclient "github.com/mercoa-finance/go/entitygroup/user/client"
+	user "github.com/mercoa-finance/go/entitygroup/user"
 	option "github.com/mercoa-finance/go/option"
 	io "io"
 	http "net/http"
@@ -21,9 +19,6 @@ type Client struct {
 	baseURL string
 	caller  *core.Caller
 	header  http.Header
-
-	User    *userclient.Client
-	Invoice *invoice.Client
 }
 
 func NewClient(opts ...option.RequestOption) *Client {
@@ -36,18 +31,18 @@ func NewClient(opts ...option.RequestOption) *Client {
 				MaxAttempts: options.MaxAttempts,
 			},
 		),
-		header:  options.ToHeader(),
-		User:    userclient.NewClient(opts...),
-		Invoice: invoice.NewClient(opts...),
+		header: options.ToHeader(),
 	}
 }
 
-// Get all entity groups. If using a JWT, will return all groups the entity is part of. If using an API key, will return all groups for the organization.
-func (c *Client) GetAll(
+// Search entity group users
+func (c *Client) Find(
 	ctx context.Context,
-	request *entitygroup.EntityGroupFindRequest,
+	// Entity Group ID
+	entityGroupID mercoafinancego.EntityGroupID,
+	request *user.EntityFindEntityRequest,
 	opts ...option.RequestOption,
-) (*mercoafinancego.EntityGroupFindResponse, error) {
+) (*mercoafinancego.FindEntityGroupUserResponse, error) {
 	options := core.NewRequestOptions(opts...)
 
 	baseURL := "https://api.mercoa.com"
@@ -57,7 +52,7 @@ func (c *Client) GetAll(
 	if options.BaseURL != "" {
 		baseURL = options.BaseURL
 	}
-	endpointURL := baseURL + "/entityGroups"
+	endpointURL := core.EncodeURL(baseURL+"/entityGroup/%v/users", entityGroupID)
 
 	queryParams, err := core.QueryValues(request)
 	if err != nil {
@@ -137,7 +132,7 @@ func (c *Client) GetAll(
 		return apiError
 	}
 
-	var response *mercoafinancego.EntityGroupFindResponse
+	var response *mercoafinancego.FindEntityGroupUserResponse
 	if err := c.caller.Call(
 		ctx,
 		&core.CallParams{
@@ -155,12 +150,14 @@ func (c *Client) GetAll(
 	return response, nil
 }
 
-// Create an entity group
+// Create entity user that will be added to all entities in the group.
 func (c *Client) Create(
 	ctx context.Context,
-	request *mercoafinancego.EntityGroupRequest,
+	// Entity Group ID
+	entityGroupID mercoafinancego.EntityGroupID,
+	request *mercoafinancego.EntityGroupUserRequest,
 	opts ...option.RequestOption,
-) (*mercoafinancego.EntityGroupResponse, error) {
+) (*mercoafinancego.EntityGroupUserResponse, error) {
 	options := core.NewRequestOptions(opts...)
 
 	baseURL := "https://api.mercoa.com"
@@ -170,7 +167,7 @@ func (c *Client) Create(
 	if options.BaseURL != "" {
 		baseURL = options.BaseURL
 	}
-	endpointURL := baseURL + "/entityGroup"
+	endpointURL := core.EncodeURL(baseURL+"/entityGroup/%v/user", entityGroupID)
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 
@@ -242,7 +239,7 @@ func (c *Client) Create(
 		return apiError
 	}
 
-	var response *mercoafinancego.EntityGroupResponse
+	var response *mercoafinancego.EntityGroupUserResponse
 	if err := c.caller.Call(
 		ctx,
 		&core.CallParams{
@@ -261,12 +258,15 @@ func (c *Client) Create(
 	return response, nil
 }
 
-// Get an entity group
+// Get entity user from a group
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity Group ID
 	entityGroupID mercoafinancego.EntityGroupID,
+	// ID used to identify user in your system
+	foreignID string,
 	opts ...option.RequestOption,
-) (*mercoafinancego.EntityGroupResponse, error) {
+) (*mercoafinancego.EntityGroupUserResponse, error) {
 	options := core.NewRequestOptions(opts...)
 
 	baseURL := "https://api.mercoa.com"
@@ -276,7 +276,11 @@ func (c *Client) Get(
 	if options.BaseURL != "" {
 		baseURL = options.BaseURL
 	}
-	endpointURL := core.EncodeURL(baseURL+"/entityGroup/%v", entityGroupID)
+	endpointURL := core.EncodeURL(
+		baseURL+"/entityGroup/%v/user/%v",
+		entityGroupID,
+		foreignID,
+	)
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 
@@ -348,7 +352,7 @@ func (c *Client) Get(
 		return apiError
 	}
 
-	var response *mercoafinancego.EntityGroupResponse
+	var response *mercoafinancego.EntityGroupUserResponse
 	if err := c.caller.Call(
 		ctx,
 		&core.CallParams{
@@ -366,13 +370,16 @@ func (c *Client) Get(
 	return response, nil
 }
 
-// Update an entity group
+// Update entity user for all entities in the group.
 func (c *Client) Update(
 	ctx context.Context,
+	// Entity Group ID
 	entityGroupID mercoafinancego.EntityGroupID,
-	request *mercoafinancego.EntityGroupRequest,
+	// ID used to identify user in your system
+	foreignID string,
+	request *mercoafinancego.EntityGroupUserRequest,
 	opts ...option.RequestOption,
-) (*mercoafinancego.EntityGroupResponse, error) {
+) (*mercoafinancego.EntityGroupUserResponse, error) {
 	options := core.NewRequestOptions(opts...)
 
 	baseURL := "https://api.mercoa.com"
@@ -382,7 +389,11 @@ func (c *Client) Update(
 	if options.BaseURL != "" {
 		baseURL = options.BaseURL
 	}
-	endpointURL := core.EncodeURL(baseURL+"/entityGroup/%v", entityGroupID)
+	endpointURL := core.EncodeURL(
+		baseURL+"/entityGroup/%v/user/%v",
+		entityGroupID,
+		foreignID,
+	)
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 
@@ -454,7 +465,7 @@ func (c *Client) Update(
 		return apiError
 	}
 
-	var response *mercoafinancego.EntityGroupResponse
+	var response *mercoafinancego.EntityGroupUserResponse
 	if err := c.caller.Call(
 		ctx,
 		&core.CallParams{
@@ -473,10 +484,13 @@ func (c *Client) Update(
 	return response, nil
 }
 
-// Delete an entity group
+// Delete entity user from all entities in the group. This will also remove the user from all approval policies. If an approval policy will break as a result of this operation, this request will fail.
 func (c *Client) Delete(
 	ctx context.Context,
+	// Entity Group ID
 	entityGroupID mercoafinancego.EntityGroupID,
+	// ID used to identify user in your system
+	foreignID string,
 	opts ...option.RequestOption,
 ) error {
 	options := core.NewRequestOptions(opts...)
@@ -488,7 +502,11 @@ func (c *Client) Delete(
 	if options.BaseURL != "" {
 		baseURL = options.BaseURL
 	}
-	endpointURL := core.EncodeURL(baseURL+"/entityGroup/%v", entityGroupID)
+	endpointURL := core.EncodeURL(
+		baseURL+"/entityGroup/%v/user/%v",
+		entityGroupID,
+		foreignID,
+	)
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 

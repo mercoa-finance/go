@@ -26,6 +26,10 @@ type GetAllInvoicesRequest struct {
 	Search *string `json:"-" url:"search,omitempty"`
 	// Filter invoices by metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
 	Metadata []*mercoafinancego.InvoiceMetadataFilter `json:"-" url:"metadata,omitempty"`
+	// Filter invoices by line item metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
+	LineItemMetadata []*mercoafinancego.InvoiceMetadataFilter `json:"-" url:"lineItemMetadata,omitempty"`
+	// Filter invoices by line item GL account ID. Each filter will be applied as an OR condition. Duplicate keys will be ignored.
+	LineItemGlAccountID []*string `json:"-" url:"lineItemGlAccountId,omitempty"`
 	// Filter invoices by payer ID.
 	PayerID []*mercoafinancego.EntityID `json:"-" url:"payerId,omitempty"`
 	// Filter invoices by vendor ID.
