@@ -64,7 +64,7 @@ func (c *Client) GetAll(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -169,7 +169,7 @@ func (c *Client) Get(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -275,7 +275,7 @@ func (c *Client) Update(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -381,7 +381,7 @@ func (c *Client) Reset(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":

@@ -4641,8 +4641,7 @@ type InvoiceCreationRequest struct {
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	// Set approvers for this invoice.
 	Approvers []*ApprovalSlotAssignment `json:"approvers,omitempty" url:"approvers,omitempty"`
-	LineItems []*InvoiceLineItemRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
-	// Metadata associated with this invoice. You can specify up to 10 keys, with key names up to 40 characters long and values up to 200 characters long.
+	// Metadata associated with this invoice.
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
 	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
@@ -4655,7 +4654,8 @@ type InvoiceCreationRequest struct {
 	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
-	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	Fees      *InvoiceFeesRequest               `json:"fees,omitempty" url:"fees,omitempty"`
+	LineItems []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID of entity who created this invoice.
 	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
 
@@ -4860,16 +4860,11 @@ func (i *InvoiceFeesResponse) String() string {
 
 type InvoiceID = string
 
-type InvoiceLineItemRequest struct {
-	// If provided, will overwrite line item on the invoice with this ID. If not provided, will create a new line item.
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// Total amount of line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
-	Amount float64 `json:"amount" url:"amount"`
+type InvoiceLineItemCreationRequest struct {
 	// Currency code for the amount. Defaults to USD.
-	Currency    *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
-	Description string        `json:"description" url:"description"`
-	Name        *string       `json:"name,omitempty" url:"name,omitempty"`
-	Quantity    *int          `json:"quantity,omitempty" url:"quantity,omitempty"`
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	Name     *string       `json:"name,omitempty" url:"name,omitempty"`
+	Quantity *int          `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
 	UnitPrice        *float64          `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
 	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
@@ -4877,17 +4872,20 @@ type InvoiceLineItemRequest struct {
 	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
+	// Total amount of line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
+	Amount      float64 `json:"amount" url:"amount"`
+	Description string  `json:"description" url:"description"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
 }
 
-func (i *InvoiceLineItemRequest) GetExtraProperties() map[string]interface{} {
+func (i *InvoiceLineItemCreationRequest) GetExtraProperties() map[string]interface{} {
 	return i.extraProperties
 }
 
-func (i *InvoiceLineItemRequest) UnmarshalJSON(data []byte) error {
-	type embed InvoiceLineItemRequest
+func (i *InvoiceLineItemCreationRequest) UnmarshalJSON(data []byte) error {
+	type embed InvoiceLineItemCreationRequest
 	var unmarshaler = struct {
 		embed
 		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
@@ -4898,7 +4896,7 @@ func (i *InvoiceLineItemRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*i = InvoiceLineItemRequest(unmarshaler.embed)
+	*i = InvoiceLineItemCreationRequest(unmarshaler.embed)
 	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
 	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
 
@@ -4912,8 +4910,8 @@ func (i *InvoiceLineItemRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (i *InvoiceLineItemRequest) MarshalJSON() ([]byte, error) {
-	type embed InvoiceLineItemRequest
+func (i *InvoiceLineItemCreationRequest) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLineItemCreationRequest
 	var marshaler = struct {
 		embed
 		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
@@ -4926,7 +4924,151 @@ func (i *InvoiceLineItemRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(marshaler)
 }
 
-func (i *InvoiceLineItemRequest) String() string {
+func (i *InvoiceLineItemCreationRequest) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceLineItemID = string
+
+type InvoiceLineItemIndividualUpdateRequest struct {
+	Name             *string           `json:"name,omitempty" url:"name,omitempty"`
+	Description      *string           `json:"description,omitempty" url:"description,omitempty"`
+	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// ID of general ledger account associated with this line item.
+	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceLineItemIndividualUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceLineItemIndividualUpdateRequest) UnmarshalJSON(data []byte) error {
+	type embed InvoiceLineItemIndividualUpdateRequest
+	var unmarshaler = struct {
+		embed
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceLineItemIndividualUpdateRequest(unmarshaler.embed)
+	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
+	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLineItemIndividualUpdateRequest) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLineItemIndividualUpdateRequest
+	var marshaler = struct {
+		embed
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed:            embed(*i),
+		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceLineItemIndividualUpdateRequest) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceLineItemRequestBase struct {
+	// Currency code for the amount. Defaults to USD.
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	Name     *string       `json:"name,omitempty" url:"name,omitempty"`
+	Quantity *int          `json:"quantity,omitempty" url:"quantity,omitempty"`
+	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
+	UnitPrice        *float64          `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
+	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// ID of general ledger account associated with this line item.
+	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceLineItemRequestBase) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceLineItemRequestBase) UnmarshalJSON(data []byte) error {
+	type embed InvoiceLineItemRequestBase
+	var unmarshaler = struct {
+		embed
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceLineItemRequestBase(unmarshaler.embed)
+	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
+	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLineItemRequestBase) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLineItemRequestBase
+	var marshaler = struct {
+		embed
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed:            embed(*i),
+		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceLineItemRequestBase) String() string {
 	if len(i._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
 			return value
@@ -4939,7 +5081,7 @@ func (i *InvoiceLineItemRequest) String() string {
 }
 
 type InvoiceLineItemResponse struct {
-	ID string `json:"id" url:"id"`
+	ID InvoiceLineItemID `json:"id" url:"id"`
 	// Total amount of line item in major units.
 	Amount      *float64     `json:"amount,omitempty" url:"amount,omitempty"`
 	Currency    CurrencyCode `json:"currency" url:"currency"`
@@ -5013,6 +5155,84 @@ func (i *InvoiceLineItemResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (i *InvoiceLineItemResponse) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceLineItemUpdateRequest struct {
+	// Currency code for the amount. Defaults to USD.
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	Name     *string       `json:"name,omitempty" url:"name,omitempty"`
+	Quantity *int          `json:"quantity,omitempty" url:"quantity,omitempty"`
+	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
+	UnitPrice        *float64          `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
+	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// ID of general ledger account associated with this line item.
+	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
+	// If provided, will overwrite line item on the invoice with this ID. If not provided, will create a new line item.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// Total amount of line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
+	Amount      *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+	Description *string  `json:"description,omitempty" url:"description,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceLineItemUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceLineItemUpdateRequest) UnmarshalJSON(data []byte) error {
+	type embed InvoiceLineItemUpdateRequest
+	var unmarshaler = struct {
+		embed
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceLineItemUpdateRequest(unmarshaler.embed)
+	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
+	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLineItemUpdateRequest) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLineItemUpdateRequest
+	var marshaler = struct {
+		embed
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed:            embed(*i),
+		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceLineItemUpdateRequest) String() string {
 	if len(i._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
 			return value
@@ -5268,8 +5488,7 @@ type InvoiceRequestBase struct {
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	// Set approvers for this invoice.
 	Approvers []*ApprovalSlotAssignment `json:"approvers,omitempty" url:"approvers,omitempty"`
-	LineItems []*InvoiceLineItemRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
-	// Metadata associated with this invoice. You can specify up to 10 keys, with key names up to 40 characters long and values up to 200 characters long.
+	// Metadata associated with this invoice.
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
 	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
@@ -5576,8 +5795,7 @@ type InvoiceUpdateRequest struct {
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	// Set approvers for this invoice.
 	Approvers []*ApprovalSlotAssignment `json:"approvers,omitempty" url:"approvers,omitempty"`
-	LineItems []*InvoiceLineItemRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
-	// Metadata associated with this invoice. You can specify up to 10 keys, with key names up to 40 characters long and values up to 200 characters long.
+	// Metadata associated with this invoice.
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
 	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
@@ -5590,7 +5808,8 @@ type InvoiceUpdateRequest struct {
 	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
-	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	Fees      *InvoiceFeesRequest             `json:"fees,omitempty" url:"fees,omitempty"`
+	LineItems []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 
@@ -7373,6 +7592,10 @@ type BankAccountRequest struct {
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// If true, this payment method will be frozen. Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen *bool `json:"frozen,omitempty" url:"frozen,omitempty"`
+	// Metadata associated with this payment method.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The name of the account. For example "My Checking Account" or "Property XYZ Checking"
 	AccountName *string `json:"accountName,omitempty" url:"accountName,omitempty"`
 	// The name of the bank. This is now automatically set when the bank account is linked.
@@ -7431,15 +7654,19 @@ type BankAccountResponse struct {
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
 	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
-	ExternalAccountingSystemID *string    `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
-	CreatedAt                  time.Time  `json:"createdAt" url:"createdAt"`
-	UpdatedAt                  time.Time  `json:"updatedAt" url:"updatedAt"`
-	AccountName                string     `json:"accountName" url:"accountName"`
-	BankName                   string     `json:"bankName" url:"bankName"`
-	RoutingNumber              string     `json:"routingNumber" url:"routingNumber"`
-	AccountNumber              string     `json:"accountNumber" url:"accountNumber"`
-	AccountType                BankType   `json:"accountType" url:"accountType"`
-	Status                     BankStatus `json:"status" url:"status"`
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen bool `json:"frozen" url:"frozen"`
+	// Metadata associated with this payment method.
+	Metadata      map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	CreatedAt     time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt     time.Time         `json:"updatedAt" url:"updatedAt"`
+	AccountName   string            `json:"accountName" url:"accountName"`
+	BankName      string            `json:"bankName" url:"bankName"`
+	RoutingNumber string            `json:"routingNumber" url:"routingNumber"`
+	AccountNumber string            `json:"accountNumber" url:"accountNumber"`
+	AccountType   BankType          `json:"accountType" url:"accountType"`
+	Status        BankStatus        `json:"status" url:"status"`
 	// If check printing is enabled for the account, will return the check options for this bank account
 	CheckOptions *BankAccountCheckOptions `json:"checkOptions,omitempty" url:"checkOptions,omitempty"`
 
@@ -7510,7 +7737,11 @@ type BankAccountUpdateRequest struct {
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
-	AccountName                *string `json:"accountName,omitempty" url:"accountName,omitempty"`
+	// If true, this payment method will be frozen. Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen *bool `json:"frozen,omitempty" url:"frozen,omitempty"`
+	// Metadata associated with this payment method.
+	Metadata    map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	AccountName *string           `json:"accountName,omitempty" url:"accountName,omitempty"`
 	// If provided, will update a bank account using Plaid Link
 	Plaid *PlaidLinkRequest `json:"plaid,omitempty" url:"plaid,omitempty"`
 	// If this bank account supports check printing, use this to enable check printing and set the check options. Checks will be printed directly from the bank account.
@@ -7644,13 +7875,17 @@ type CardRequest struct {
 	// If true, this payment method will be set as the default destination. Only one payment method can be set as the default destination. If another payment method is already set as the default destination, it will be unset.
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
-	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
-	CardType                   CardType  `json:"cardType" url:"cardType"`
-	CardBrand                  CardBrand `json:"cardBrand" url:"cardBrand"`
-	LastFour                   string    `json:"lastFour" url:"lastFour"`
-	ExpMonth                   string    `json:"expMonth" url:"expMonth"`
-	ExpYear                    string    `json:"expYear" url:"expYear"`
-	Token                      string    `json:"token" url:"token"`
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// If true, this payment method will be frozen. Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen *bool `json:"frozen,omitempty" url:"frozen,omitempty"`
+	// Metadata associated with this payment method.
+	Metadata  map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	CardType  CardType          `json:"cardType" url:"cardType"`
+	CardBrand CardBrand         `json:"cardBrand" url:"cardBrand"`
+	LastFour  string            `json:"lastFour" url:"lastFour"`
+	ExpMonth  string            `json:"expMonth" url:"expMonth"`
+	ExpYear   string            `json:"expYear" url:"expYear"`
+	Token     string            `json:"token" url:"token"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -7698,14 +7933,18 @@ type CardResponse struct {
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
 	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
-	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
-	CreatedAt                  time.Time `json:"createdAt" url:"createdAt"`
-	UpdatedAt                  time.Time `json:"updatedAt" url:"updatedAt"`
-	CardType                   CardType  `json:"cardType" url:"cardType"`
-	CardBrand                  CardBrand `json:"cardBrand" url:"cardBrand"`
-	LastFour                   string    `json:"lastFour" url:"lastFour"`
-	ExpMonth                   string    `json:"expMonth" url:"expMonth"`
-	ExpYear                    string    `json:"expYear" url:"expYear"`
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen bool `json:"frozen" url:"frozen"`
+	// Metadata associated with this payment method.
+	Metadata  map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
+	CardType  CardType          `json:"cardType" url:"cardType"`
+	CardBrand CardBrand         `json:"cardBrand" url:"cardBrand"`
+	LastFour  string            `json:"lastFour" url:"lastFour"`
+	ExpMonth  string            `json:"expMonth" url:"expMonth"`
+	ExpYear   string            `json:"expYear" url:"expYear"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -7802,13 +8041,17 @@ type CheckRequest struct {
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
-	PayToTheOrderOf            string  `json:"payToTheOrderOf" url:"payToTheOrderOf"`
-	AddressLine1               string  `json:"addressLine1" url:"addressLine1"`
-	AddressLine2               *string `json:"addressLine2,omitempty" url:"addressLine2,omitempty"`
-	City                       string  `json:"city" url:"city"`
-	StateOrProvince            string  `json:"stateOrProvince" url:"stateOrProvince"`
-	PostalCode                 string  `json:"postalCode" url:"postalCode"`
-	Country                    string  `json:"country" url:"country"`
+	// If true, this payment method will be frozen. Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen *bool `json:"frozen,omitempty" url:"frozen,omitempty"`
+	// Metadata associated with this payment method.
+	Metadata        map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	PayToTheOrderOf string            `json:"payToTheOrderOf" url:"payToTheOrderOf"`
+	AddressLine1    string            `json:"addressLine1" url:"addressLine1"`
+	AddressLine2    *string           `json:"addressLine2,omitempty" url:"addressLine2,omitempty"`
+	City            string            `json:"city" url:"city"`
+	StateOrProvince string            `json:"stateOrProvince" url:"stateOrProvince"`
+	PostalCode      string            `json:"postalCode" url:"postalCode"`
+	Country         string            `json:"country" url:"country"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -7856,16 +8099,20 @@ type CheckResponse struct {
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
 	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
-	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
-	CreatedAt                  time.Time `json:"createdAt" url:"createdAt"`
-	UpdatedAt                  time.Time `json:"updatedAt" url:"updatedAt"`
-	PayToTheOrderOf            string    `json:"payToTheOrderOf" url:"payToTheOrderOf"`
-	AddressLine1               string    `json:"addressLine1" url:"addressLine1"`
-	AddressLine2               *string   `json:"addressLine2,omitempty" url:"addressLine2,omitempty"`
-	City                       string    `json:"city" url:"city"`
-	StateOrProvince            string    `json:"stateOrProvince" url:"stateOrProvince"`
-	PostalCode                 string    `json:"postalCode" url:"postalCode"`
-	Country                    string    `json:"country" url:"country"`
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen bool `json:"frozen" url:"frozen"`
+	// Metadata associated with this payment method.
+	Metadata        map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	CreatedAt       time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt       time.Time         `json:"updatedAt" url:"updatedAt"`
+	PayToTheOrderOf string            `json:"payToTheOrderOf" url:"payToTheOrderOf"`
+	AddressLine1    string            `json:"addressLine1" url:"addressLine1"`
+	AddressLine2    *string           `json:"addressLine2,omitempty" url:"addressLine2,omitempty"`
+	City            string            `json:"city" url:"city"`
+	StateOrProvince string            `json:"stateOrProvince" url:"stateOrProvince"`
+	PostalCode      string            `json:"postalCode" url:"postalCode"`
+	Country         string            `json:"country" url:"country"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -8515,6 +8762,10 @@ type CustomPaymentMethodRequest struct {
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// If true, this payment method will be frozen. Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen *bool `json:"frozen,omitempty" url:"frozen,omitempty"`
+	// Metadata associated with this payment method.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID for this payment method in your system
 	ForeignID     *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	AccountName   *string `json:"accountName,omitempty" url:"accountName,omitempty"`
@@ -8572,9 +8823,13 @@ type CustomPaymentMethodResponse struct {
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
 	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
-	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
-	CreatedAt                  time.Time `json:"createdAt" url:"createdAt"`
-	UpdatedAt                  time.Time `json:"updatedAt" url:"updatedAt"`
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen bool `json:"frozen" url:"frozen"`
+	// Metadata associated with this payment method.
+	Metadata  map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
 	// ID for this payment method in your system
 	ForeignID     *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	AccountName   *string `json:"accountName,omitempty" url:"accountName,omitempty"`
@@ -8931,6 +9186,10 @@ type CustomPaymentMethodUpdateRequest struct {
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// If true, this payment method will be frozen. Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen *bool `json:"frozen,omitempty" url:"frozen,omitempty"`
+	// Metadata associated with this payment method.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID for this payment method in your system
 	ForeignID     *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	AccountName   *string `json:"accountName,omitempty" url:"accountName,omitempty"`
@@ -9076,6 +9335,10 @@ type PaymentMethodBaseRequest struct {
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// If true, this payment method will be frozen. Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen *bool `json:"frozen,omitempty" url:"frozen,omitempty"`
+	// Metadata associated with this payment method.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -9123,9 +9386,13 @@ type PaymentMethodBaseResponse struct {
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
 	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
-	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
-	CreatedAt                  time.Time `json:"createdAt" url:"createdAt"`
-	UpdatedAt                  time.Time `json:"updatedAt" url:"updatedAt"`
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen bool `json:"frozen" url:"frozen"`
+	// Metadata associated with this payment method.
+	Metadata  map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -9574,6 +9841,48 @@ func (p *PaymentMethodUpdateRequest) Accept(visitor PaymentMethodUpdateRequestVi
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
+type PaymentMethodWithEntityResponse struct {
+	PaymentMethod *PaymentMethodResponse `json:"paymentMethod,omitempty" url:"paymentMethod,omitempty"`
+	Entity        *EntityResponse        `json:"entity,omitempty" url:"entity,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentMethodWithEntityResponse) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PaymentMethodWithEntityResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentMethodWithEntityResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentMethodWithEntityResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
+	p._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentMethodWithEntityResponse) String() string {
+	if len(p._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
 type PlaidLinkRequest struct {
 	// Plaid account ID
 	AccountID string `json:"accountId" url:"accountId"`
@@ -9627,6 +9936,10 @@ type UtilityPaymentMethodRequest struct {
 	DefaultDestination *bool `json:"defaultDestination,omitempty" url:"defaultDestination,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// If true, this payment method will be frozen. Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen *bool `json:"frozen,omitempty" url:"frozen,omitempty"`
+	// Metadata associated with this payment method.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The ID of the utility that this payment method is linked to.
 	UtilityID string `json:"utilityId" url:"utilityId"`
 
@@ -9676,9 +9989,13 @@ type UtilityPaymentMethodResponse struct {
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
 	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
-	ExternalAccountingSystemID *string   `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
-	CreatedAt                  time.Time `json:"createdAt" url:"createdAt"`
-	UpdatedAt                  time.Time `json:"updatedAt" url:"updatedAt"`
+	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
+	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
+	Frozen bool `json:"frozen" url:"frozen"`
+	// Metadata associated with this payment method.
+	Metadata  map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
 	// The ID of the utility that this payment method is linked to.
 	UtilityID string `json:"utilityId" url:"utilityId"`
 

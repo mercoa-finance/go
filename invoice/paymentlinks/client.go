@@ -66,7 +66,7 @@ func (c *Client) GetPayerLink(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -180,7 +180,7 @@ func (c *Client) SendPayerEmail(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -283,7 +283,7 @@ func (c *Client) GetVendorLink(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -388,7 +388,7 @@ func (c *Client) SendVendorEmail(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":

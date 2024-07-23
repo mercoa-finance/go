@@ -76,7 +76,7 @@ func (c *Client) Find(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -191,7 +191,7 @@ func (c *Client) Metrics(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":

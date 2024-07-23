@@ -13,6 +13,7 @@ import (
 	approval "github.com/mercoa-finance/go/invoice/approval"
 	comment "github.com/mercoa-finance/go/invoice/comment"
 	document "github.com/mercoa-finance/go/invoice/document"
+	lineitemclient "github.com/mercoa-finance/go/invoice/lineitem/client"
 	paymentlinks "github.com/mercoa-finance/go/invoice/paymentlinks"
 	option "github.com/mercoa-finance/go/option"
 	io "io"
@@ -24,6 +25,7 @@ type Client struct {
 	caller  *core.Caller
 	header  http.Header
 
+	LineItem     *lineitemclient.Client
 	Approval     *approval.Client
 	Comment      *comment.Client
 	Document     *document.Client
@@ -41,6 +43,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 			},
 		),
 		header:       options.ToHeader(),
+		LineItem:     lineitemclient.NewClient(opts...),
 		Approval:     approval.NewClient(opts...),
 		Comment:      comment.NewClient(opts...),
 		Document:     document.NewClient(opts...),
@@ -87,7 +90,7 @@ func (c *Client) Find(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -191,7 +194,7 @@ func (c *Client) Create(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -296,7 +299,7 @@ func (c *Client) Get(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -401,7 +404,7 @@ func (c *Client) Update(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -507,7 +510,7 @@ func (c *Client) Delete(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":

@@ -76,7 +76,7 @@ func (c *Client) FindPayees(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -191,7 +191,7 @@ func (c *Client) FindPayors(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -298,7 +298,7 @@ func (c *Client) AddPayees(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -404,7 +404,7 @@ func (c *Client) HidePayees(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -510,7 +510,7 @@ func (c *Client) AddPayors(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
@@ -616,7 +616,7 @@ func (c *Client) HidePayors(
 			Content   json.RawMessage `json:"content"`
 		}
 		if err := decoder.Decode(&discriminant); err != nil {
-			return err
+			return apiError
 		}
 		switch discriminant.ErrorName {
 		case "BadRequest":
