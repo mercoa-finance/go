@@ -1506,7 +1506,9 @@ type CounterpartyResponse struct {
 	IsCustomer  bool             `json:"isCustomer" url:"isCustomer"`
 	AccountType AccountType      `json:"accountType" url:"accountType"`
 	Profile     *ProfileResponse `json:"profile,omitempty" url:"profile,omitempty"`
-	Status      EntityStatus     `json:"status" url:"status"`
+	// URL for the entity logo
+	Logo   *string      `json:"logo,omitempty" url:"logo,omitempty"`
+	Status EntityStatus `json:"status" url:"status"`
 	// True if this entity has accepted the terms of service.
 	AcceptedTos bool `json:"acceptedTos" url:"acceptedTos"`
 	// True if this entity can pay invoices.
@@ -1520,9 +1522,7 @@ type CounterpartyResponse struct {
 	CreatedAt      time.Time `json:"createdAt" url:"createdAt"`
 	UpdatedAt      time.Time `json:"updatedAt" url:"updatedAt"`
 	// If the entity searching for counterparties has any accounts configured in the Payee/Payor relationship, they will be returned
-	Accounts []*CounterpartyCustomizationAccount `json:"accounts,omitempty" url:"accounts,omitempty"`
-	// URL to the entity logo
-	Logo             *string                             `json:"logo,omitempty" url:"logo,omitempty"`
+	Accounts         []*CounterpartyCustomizationAccount `json:"accounts,omitempty" url:"accounts,omitempty"`
 	PaymentMethods   []*PaymentMethodResponse            `json:"paymentMethods,omitempty" url:"paymentMethods,omitempty"`
 	CounterpartyType []CounterpartyNetworkType           `json:"counterpartyType,omitempty" url:"counterpartyType,omitempty"`
 	InvoiceMetrics   *CounterpartyInvoiceMetricsResponse `json:"invoiceMetrics,omitempty" url:"invoiceMetrics,omitempty"`
@@ -1974,7 +1974,7 @@ type EntityRequest struct {
 	IsNetworkPayor *bool `json:"isNetworkPayor,omitempty" url:"isNetworkPayor,omitempty"`
 	// Control if this entity should be available as a payee to any entity on your platform. If set to false, this entity will only be available as a payee to entities that have a direct relationship with this entity. Defaults to false.
 	IsNetworkPayee *bool `json:"isNetworkPayee,omitempty" url:"isNetworkPayee,omitempty"`
-	// Base64 encoded PNG image data for the entity logo.
+	// Base64 encoded PNG image data for the entity logo. Max size 100KB.
 	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -2029,7 +2029,9 @@ type EntityResponse struct {
 	IsCustomer  bool             `json:"isCustomer" url:"isCustomer"`
 	AccountType AccountType      `json:"accountType" url:"accountType"`
 	Profile     *ProfileResponse `json:"profile,omitempty" url:"profile,omitempty"`
-	Status      EntityStatus     `json:"status" url:"status"`
+	// URL for the entity logo
+	Logo   *string      `json:"logo,omitempty" url:"logo,omitempty"`
+	Status EntityStatus `json:"status" url:"status"`
 	// True if this entity has accepted the terms of service.
 	AcceptedTos bool `json:"acceptedTos" url:"acceptedTos"`
 	// True if this entity can pay invoices.
@@ -2156,7 +2158,7 @@ type EntityUpdateRequest struct {
 	IsNetworkPayor *bool `json:"isNetworkPayor,omitempty" url:"isNetworkPayor,omitempty"`
 	// Control if this entity should be available as a payee to any entity on your platform. If set to false, this entity will only be available as a payee to entities that have a direct relationship with this entity. Defaults to false.
 	IsNetworkPayee *bool `json:"isNetworkPayee,omitempty" url:"isNetworkPayee,omitempty"`
-	// Base64 encoded PNG image data for the entity logo.
+	// Base64 encoded PNG image data for the entity logo. Max size 100KB.
 	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -2329,7 +2331,9 @@ type EntityWithPaymentMethodResponse struct {
 	IsCustomer  bool             `json:"isCustomer" url:"isCustomer"`
 	AccountType AccountType      `json:"accountType" url:"accountType"`
 	Profile     *ProfileResponse `json:"profile,omitempty" url:"profile,omitempty"`
-	Status      EntityStatus     `json:"status" url:"status"`
+	// URL for the entity logo
+	Logo   *string      `json:"logo,omitempty" url:"logo,omitempty"`
+	Status EntityStatus `json:"status" url:"status"`
 	// True if this entity has accepted the terms of service.
 	AcceptedTos bool `json:"acceptedTos" url:"acceptedTos"`
 	// True if this entity can pay invoices.
@@ -6040,6 +6044,7 @@ type BusinessOnboardingOptions struct {
 	Website         *OnboardingOption `json:"website,omitempty" url:"website,omitempty"`
 	Description     *OnboardingOption `json:"description,omitempty" url:"description,omitempty"`
 	Representatives *OnboardingOption `json:"representatives,omitempty" url:"representatives,omitempty"`
+	Logo            *OnboardingOption `json:"logo,omitempty" url:"logo,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
