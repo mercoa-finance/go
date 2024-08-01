@@ -37,6 +37,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Get all comments associated with this invoice
 func (c *Client) GetAll(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	opts ...option.RequestOption,
 ) ([]*mercoafinancego.CommentResponse, error) {
@@ -142,6 +143,7 @@ func (c *Client) GetAll(
 // Add a comment to this invoice
 func (c *Client) Create(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	request *mercoafinancego.CommentRequest,
 	opts ...option.RequestOption,
@@ -248,6 +250,7 @@ func (c *Client) Create(
 
 func (c *Client) Get(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	commentID mercoafinancego.CommentID,
 	opts ...option.RequestOption,
@@ -358,6 +361,7 @@ func (c *Client) Get(
 // Edit a comment on this invoice
 func (c *Client) Update(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	commentID mercoafinancego.CommentID,
 	request *mercoafinancego.CommentRequest,
@@ -470,6 +474,7 @@ func (c *Client) Update(
 // Delete a comment on this invoice
 func (c *Client) Delete(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	commentID mercoafinancego.CommentID,
 	opts ...option.RequestOption,

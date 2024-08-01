@@ -2917,6 +2917,8 @@ type NotificationPolicyRequest struct {
 	Disabled *bool `json:"disabled,omitempty" url:"disabled,omitempty"`
 	// List of user roles that should receive notifications in addition to the default users for this notification type
 	AdditionalRoles []string `json:"additionalRoles,omitempty" url:"additionalRoles,omitempty"`
+	// Set to true if the selected notification type should be sent to the counterparty
+	NotifyCounterparty *bool `json:"notifyCounterparty,omitempty" url:"notifyCounterparty,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2960,8 +2962,10 @@ type NotificationPolicyResponse struct {
 	// True if the selected notification type is disabled for this entity
 	Disabled bool `json:"disabled" url:"disabled"`
 	// List of user roles that should receive notifications in addition to the default users for this notification type
-	AdditionalRoles []string         `json:"additionalRoles,omitempty" url:"additionalRoles,omitempty"`
-	Type            NotificationType `json:"type" url:"type"`
+	AdditionalRoles []string `json:"additionalRoles,omitempty" url:"additionalRoles,omitempty"`
+	// True if the selected notification type is sent to the counterparty
+	NotifyCounterparty bool             `json:"notifyCounterparty" url:"notifyCounterparty"`
+	Type               NotificationType `json:"type" url:"type"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -4737,6 +4741,40 @@ func (i *InvoiceCreationRequest) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceDateFilter string
+
+const (
+	InvoiceDateFilterInvoiceDate    InvoiceDateFilter = "INVOICE_DATE"
+	InvoiceDateFilterDeductionDate  InvoiceDateFilter = "DEDUCTION_DATE"
+	InvoiceDateFilterDueDate        InvoiceDateFilter = "DUE_DATE"
+	InvoiceDateFilterSettlementDate InvoiceDateFilter = "SETTLEMENT_DATE"
+	InvoiceDateFilterCreatedAt      InvoiceDateFilter = "CREATED_AT"
+	InvoiceDateFilterUpdatedAt      InvoiceDateFilter = "UPDATED_AT"
+)
+
+func NewInvoiceDateFilterFromString(s string) (InvoiceDateFilter, error) {
+	switch s {
+	case "INVOICE_DATE":
+		return InvoiceDateFilterInvoiceDate, nil
+	case "DEDUCTION_DATE":
+		return InvoiceDateFilterDeductionDate, nil
+	case "DUE_DATE":
+		return InvoiceDateFilterDueDate, nil
+	case "SETTLEMENT_DATE":
+		return InvoiceDateFilterSettlementDate, nil
+	case "CREATED_AT":
+		return InvoiceDateFilterCreatedAt, nil
+	case "UPDATED_AT":
+		return InvoiceDateFilterUpdatedAt, nil
+	}
+	var t InvoiceDateFilter
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InvoiceDateFilter) Ptr() *InvoiceDateFilter {
+	return &i
 }
 
 type InvoiceFailureType string

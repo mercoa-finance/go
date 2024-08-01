@@ -271,6 +271,7 @@ func (c *Client) Create(
 
 func (c *Client) Get(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.InvoiceResponse, error) {
@@ -375,6 +376,7 @@ func (c *Client) Get(
 
 func (c *Client) Update(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	request *mercoafinancego.InvoiceUpdateRequest,
 	opts ...option.RequestOption,
@@ -482,6 +484,7 @@ func (c *Client) Update(
 // Only invoices in the DRAFT and NEW status can be deleted.
 func (c *Client) Delete(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	opts ...option.RequestOption,
 ) error {

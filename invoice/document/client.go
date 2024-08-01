@@ -38,6 +38,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Get attachments (scanned/uploaded PDFs and images) associated with this invoice
 func (c *Client) GetAll(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	opts ...option.RequestOption,
 ) ([]*mercoafinancego.DocumentResponse, error) {
@@ -143,6 +144,7 @@ func (c *Client) GetAll(
 // Upload documents (scanned/uploaded PDFs and images) associated with this Invoice
 func (c *Client) Upload(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	request *invoice.UploadDocumentRequest,
 	opts ...option.RequestOption,
@@ -248,6 +250,7 @@ func (c *Client) Upload(
 // Delete an attachment (scanned/uploaded PDFs and images) associated with this invoice
 func (c *Client) Delete(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	documentID string,
 	opts ...option.RequestOption,
@@ -356,6 +359,7 @@ func (c *Client) Delete(
 // Generate a PDF of the invoice. This PDF is generated from the data in the invoice, not from the uploaded documents.
 func (c *Client) GenerateInvoicePdf(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.DocumentResponse, error) {
@@ -461,6 +465,7 @@ func (c *Client) GenerateInvoicePdf(
 // Get a PDF of the check for the invoice. If the invoice does not have check as the disbursement method, an error will be returned. If the disbursement option for the check is set to 'MAIL', a void copy of the check will be returned. If the disbursement option for the check is set to 'PRINT', a printable check will be returned. If the invoice is NOT marked as PAID, the check will be a void copy.
 func (c *Client) GenerateCheckPdf(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.DocumentResponse, error) {
@@ -566,6 +571,7 @@ func (c *Client) GenerateCheckPdf(
 // Get the email subject and body that was used to create this invoice.
 func (c *Client) GetSourceEmail(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.EmailLogResponse, error) {

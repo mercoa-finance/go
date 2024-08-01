@@ -260,6 +260,7 @@ func (c *Client) Get(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// Payment Method ID or Payment Method ForeignID
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.PaymentMethodResponse, error) {
@@ -371,6 +372,7 @@ func (c *Client) Update(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// Payment Method ID or Payment Method ForeignID
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	request *mercoafinancego.PaymentMethodUpdateRequest,
 	opts ...option.RequestOption,
@@ -484,6 +486,7 @@ func (c *Client) Delete(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// Payment Method ID or Payment Method ForeignID
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	opts ...option.RequestOption,
 ) error {
@@ -593,6 +596,7 @@ func (c *Client) InitiateMicroDeposits(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// Payment Method ID or Payment Method ForeignID
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.PaymentMethodResponse, error) {
@@ -704,6 +708,7 @@ func (c *Client) CompleteMicroDeposits(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// Payment Method ID or Payment Method ForeignID
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	request *entity.CompleteMicroDepositsRequest,
 	opts ...option.RequestOption,
@@ -817,6 +822,7 @@ func (c *Client) GetBalance(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// Payment Method ID or Payment Method ForeignID
 	paymentMethodID mercoafinancego.PaymentMethodID,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.PaymentMethodBalanceResponse, error) {

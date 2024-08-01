@@ -37,6 +37,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Adds an approver to the invoice. Will select the first available approver slot that is not already filled and assign the approver to it. If no approver slots are available, an error will be returned. An explicit approver slot can be specified by setting the `approverSlot` field.
 func (c *Client) AddApprover(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	request *mercoafinancego.AddApproverRequest,
 	opts ...option.RequestOption,
@@ -141,6 +142,7 @@ func (c *Client) AddApprover(
 
 func (c *Client) Approve(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	request *mercoafinancego.ApprovalRequest,
 	opts ...option.RequestOption,
@@ -245,6 +247,7 @@ func (c *Client) Approve(
 
 func (c *Client) Reject(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	request *mercoafinancego.ApprovalRequest,
 	opts ...option.RequestOption,

@@ -38,6 +38,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Get temporary link for payer to send payment
 func (c *Client) GetPayerLink(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	opts ...option.RequestOption,
 ) (string, error) {
@@ -143,6 +144,7 @@ func (c *Client) GetPayerLink(
 // Trigger email to payer inviting them to make payment
 func (c *Client) SendPayerEmail(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	request *invoice.SendPayerEmail,
 	opts ...option.RequestOption,
@@ -255,6 +257,7 @@ func (c *Client) SendPayerEmail(
 // Get temporary link for vendor to accept payment
 func (c *Client) GetVendorLink(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	opts ...option.RequestOption,
 ) (string, error) {
@@ -360,6 +363,7 @@ func (c *Client) GetVendorLink(
 // Trigger email to vendor inviting them into the vendor portal
 func (c *Client) SendVendorEmail(
 	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
 	opts ...option.RequestOption,
 ) error {

@@ -12,10 +12,12 @@ type EntityGetInvoicesRequest struct {
 	ExcludePayables *bool `json:"-" url:"excludePayables,omitempty"`
 	// Return only invoices that are payable by the entity.
 	ExcludeReceivables *bool `json:"-" url:"excludeReceivables,omitempty"`
-	// Start date for invoice created on date filter.
+	// Start date filter. Defaults to CREATED_AT unless specified the dateType is specified
 	StartDate *time.Time `json:"-" url:"startDate,omitempty"`
-	// End date for invoice created date filter.
+	// End date filter. Defaults to CREATED_AT unless specified the dateType is specified
 	EndDate *time.Time `json:"-" url:"endDate,omitempty"`
+	// Type of date to filter by if startDate and endDate filters are provided. Defaults to CREATED_AT.
+	DateType *mercoafinancego.InvoiceDateFilter `json:"-" url:"dateType,omitempty"`
 	// Field to order invoices by. Defaults to CREATED_AT.
 	OrderBy *mercoafinancego.InvoiceOrderByField `json:"-" url:"orderBy,omitempty"`
 	// Direction to order invoices by. Defaults to asc.
@@ -65,13 +67,19 @@ type InvoiceMetricsRequest struct {
 	InvoiceID []*mercoafinancego.InvoiceID `json:"-" url:"invoiceId,omitempty"`
 	// Invoice status to filter on
 	Status []*mercoafinancego.InvoiceStatus `json:"-" url:"status,omitempty"`
-	// Start date for invoice dueDate filter.
+	// Start date filter. Defaults to CREATED_AT unless specified the dateType is specified
+	StartDate *time.Time `json:"-" url:"startDate,omitempty"`
+	// End date filter. Defaults to CREATED_AT unless specified the dateType is specified
+	EndDate *time.Time `json:"-" url:"endDate,omitempty"`
+	// Type of date to filter by if startDate and endDate filters are provided. Defaults to CREATED_AT.
+	DateType *mercoafinancego.InvoiceDateFilter `json:"-" url:"dateType,omitempty"`
+	// DEPRECATED. Use startDate, endDate, and dateType instead. Start date for invoice dueDate filter.
 	DueDateStart *time.Time `json:"-" url:"dueDateStart,omitempty"`
-	// End date for invoice dueDate filter.
+	// DEPRECATED. Use startDate, endDate, and dateType instead. End date for invoice dueDate filter.
 	DueDateEnd *time.Time `json:"-" url:"dueDateEnd,omitempty"`
-	// Start date for invoice created on date filter.
+	// DEPRECATED. Use startDate, endDate, and dateType instead. Start date for invoice created on date filter.
 	CreatedDateStart *time.Time `json:"-" url:"createdDateStart,omitempty"`
-	// End date for invoice created date filter.
+	// DEPRECATED. Use startDate, endDate, and dateType instead. End date for invoice created date filter.
 	CreatedDateEnd *time.Time `json:"-" url:"createdDateEnd,omitempty"`
 	// Currency to filter on
 	Currency []*mercoafinancego.CurrencyCode `json:"-" url:"currency,omitempty"`
