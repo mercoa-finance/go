@@ -2917,8 +2917,10 @@ type NotificationPolicyRequest struct {
 	Disabled *bool `json:"disabled,omitempty" url:"disabled,omitempty"`
 	// List of user roles that should receive notifications in addition to the default users for this notification type
 	AdditionalRoles []string `json:"additionalRoles,omitempty" url:"additionalRoles,omitempty"`
-	// Set to true if the selected notification type should be sent to the counterparty
-	NotifyCounterparty *bool `json:"notifyCounterparty,omitempty" url:"notifyCounterparty,omitempty"`
+	// Set to true if the selected notification type should be sent to the counterparty if this is a payable invoice.
+	NotifyPayeeCounterparty *bool `json:"notifyPayeeCounterparty,omitempty" url:"notifyPayeeCounterparty,omitempty"`
+	// Set to true if the selected notification type should be sent to the counterparty if this is a receivable invoice.
+	NotifyPayorCounterparty *bool `json:"notifyPayorCounterparty,omitempty" url:"notifyPayorCounterparty,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2963,9 +2965,11 @@ type NotificationPolicyResponse struct {
 	Disabled bool `json:"disabled" url:"disabled"`
 	// List of user roles that should receive notifications in addition to the default users for this notification type
 	AdditionalRoles []string `json:"additionalRoles,omitempty" url:"additionalRoles,omitempty"`
-	// True if the selected notification type is sent to the counterparty
-	NotifyCounterparty bool             `json:"notifyCounterparty" url:"notifyCounterparty"`
-	Type               NotificationType `json:"type" url:"type"`
+	// True if the selected notification type should be sent to the counterparty if this is a payable invoice.
+	NotifyPayeeCounterparty bool `json:"notifyPayeeCounterparty" url:"notifyPayeeCounterparty"`
+	// True if the selected notification type should be sent to the counterparty if this is a receivable invoice.
+	NotifyPayorCounterparty bool             `json:"notifyPayorCounterparty" url:"notifyPayorCounterparty"`
+	Type                    NotificationType `json:"type" url:"type"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
