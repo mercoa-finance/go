@@ -264,6 +264,7 @@ func (c *Client) Create(
 // Get an entity group
 func (c *Client) Get(
 	ctx context.Context,
+	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.EntityGroupResponse, error) {
@@ -369,6 +370,7 @@ func (c *Client) Get(
 // Update an entity group
 func (c *Client) Update(
 	ctx context.Context,
+	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
 	request *mercoafinancego.EntityGroupRequest,
 	opts ...option.RequestOption,
@@ -476,6 +478,7 @@ func (c *Client) Update(
 // Delete an entity group
 func (c *Client) Delete(
 	ctx context.Context,
+	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
 	opts ...option.RequestOption,
 ) error {

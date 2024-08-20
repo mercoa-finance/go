@@ -46,6 +46,8 @@ type EntityGetInvoicesRequest struct {
 	InvoiceID []*mercoafinancego.InvoiceID `json:"-" url:"invoiceId,omitempty"`
 	// Invoice status to filter on.
 	Status []*mercoafinancego.InvoiceStatus `json:"-" url:"status,omitempty"`
+	// Filter invoices by payment type.
+	PaymentType []mercoafinancego.PaymentType `json:"-" url:"paymentType,omitempty"`
 }
 
 type InvoiceMetricsRequest struct {

@@ -38,6 +38,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Get invoices for an entity group with the given filters.
 func (c *Client) Find(
 	ctx context.Context,
+	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
 	request *entitygroup.EntityGetInvoicesRequest,
 	opts ...option.RequestOption,
@@ -152,6 +153,7 @@ func (c *Client) Find(
 // Get invoice metrics for an entity group with the given filters. Invoices will be grouped by currency. If none of excludePayables, excludeReceivables, payerId, vendorId, or invoiceId status filters are provided, excludeReceivables will be set to true.
 func (c *Client) Metrics(
 	ctx context.Context,
+	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
 	request *entitygroup.GroupInvoiceMetricsRequest,
 	opts ...option.RequestOption,

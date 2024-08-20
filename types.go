@@ -527,7 +527,10 @@ func (e *EntityGroupFindResponse) String() string {
 type EntityGroupID = string
 
 type EntityGroupRequest struct {
-	EntityIDs []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
+	EntityIDs   []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
+	ForeignID   *string    `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	Name        *string    `json:"name,omitempty" url:"name,omitempty"`
+	EmailToName *string    `json:"emailToName,omitempty" url:"emailToName,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -568,8 +571,11 @@ func (e *EntityGroupRequest) String() string {
 }
 
 type EntityGroupResponse struct {
-	ID       EntityGroupID     `json:"id" url:"id"`
-	Entities []*EntityResponse `json:"entities,omitempty" url:"entities,omitempty"`
+	ID          EntityGroupID     `json:"id" url:"id"`
+	ForeignID   *string           `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	Name        *string           `json:"name,omitempty" url:"name,omitempty"`
+	EmailToName *string           `json:"emailToName,omitempty" url:"emailToName,omitempty"`
+	Entities    []*EntityResponse `json:"entities,omitempty" url:"entities,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -1143,6 +1149,12 @@ type BusinessProfileRequest struct {
 	FormationDate *time.Time `json:"formationDate,omitempty" url:"formationDate,omitempty"`
 	// Industry code for the business. Required to collect funds.
 	IndustryCodes *IndustryCodes `json:"industryCodes,omitempty" url:"industryCodes,omitempty"`
+	// Average monthly transaction volume for the business. Required to collect funds.
+	AverageMonthlyTransactionVolume *float64 `json:"averageMonthlyTransactionVolume,omitempty" url:"averageMonthlyTransactionVolume,omitempty"`
+	// Average transaction size for the business. Required to collect funds.
+	AverageTransactionSize *float64 `json:"averageTransactionSize,omitempty" url:"averageTransactionSize,omitempty"`
+	// Maximum transaction size for the business. Required to collect funds.
+	MaxTransactionSize *float64 `json:"maxTransactionSize,omitempty" url:"maxTransactionSize,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -1210,9 +1222,12 @@ type BusinessProfileResponse struct {
 	Description       *string       `json:"description,omitempty" url:"description,omitempty"`
 	Address           *Address      `json:"address,omitempty" url:"address,omitempty"`
 	// True if all representatives have been provided for this business.
-	OwnersProvided *bool          `json:"ownersProvided,omitempty" url:"ownersProvided,omitempty"`
-	TaxIDProvided  bool           `json:"taxIDProvided" url:"taxIDProvided"`
-	IndustryCodes  *IndustryCodes `json:"industryCodes,omitempty" url:"industryCodes,omitempty"`
+	OwnersProvided                  *bool          `json:"ownersProvided,omitempty" url:"ownersProvided,omitempty"`
+	TaxIDProvided                   bool           `json:"taxIDProvided" url:"taxIDProvided"`
+	IndustryCodes                   *IndustryCodes `json:"industryCodes,omitempty" url:"industryCodes,omitempty"`
+	AverageMonthlyTransactionVolume *float64       `json:"averageMonthlyTransactionVolume,omitempty" url:"averageMonthlyTransactionVolume,omitempty"`
+	AverageTransactionSize          *float64       `json:"averageTransactionSize,omitempty" url:"averageTransactionSize,omitempty"`
+	MaxTransactionSize              *float64       `json:"maxTransactionSize,omitempty" url:"maxTransactionSize,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -4579,6 +4594,43 @@ func (c *CommentResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+type DayOfWeek string
+
+const (
+	DayOfWeekSunday    DayOfWeek = "0"
+	DayOfWeekMonday    DayOfWeek = "1"
+	DayOfWeekTuesday   DayOfWeek = "2"
+	DayOfWeekWednesday DayOfWeek = "3"
+	DayOfWeekThursday  DayOfWeek = "4"
+	DayOfWeekFriday    DayOfWeek = "5"
+	DayOfWeekSaturday  DayOfWeek = "6"
+)
+
+func NewDayOfWeekFromString(s string) (DayOfWeek, error) {
+	switch s {
+	case "0":
+		return DayOfWeekSunday, nil
+	case "1":
+		return DayOfWeekMonday, nil
+	case "2":
+		return DayOfWeekTuesday, nil
+	case "3":
+		return DayOfWeekWednesday, nil
+	case "4":
+		return DayOfWeekThursday, nil
+	case "5":
+		return DayOfWeekFriday, nil
+	case "6":
+		return DayOfWeekSaturday, nil
+	}
+	var t DayOfWeek
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DayOfWeek) Ptr() *DayOfWeek {
+	return &d
+}
+
 type FindInvoiceResponse struct {
 	// Total number of notifications for the given start and end date filters. This value is not limited by the limit parameter. It is provided so that you can determine how many pages of results are available.
 	Count int `json:"count" url:"count"`
@@ -4632,7 +4684,7 @@ type InvoiceCreationRequest struct {
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	// Date the invoice was issued.
 	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
-	// Date when funds are scheduled to be deducted from payer's account.
+	// Initial date when funds are scheduled to be deducted from payer's account.
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
 	// Date of funds settlement.
 	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
@@ -4666,8 +4718,10 @@ type InvoiceCreationRequest struct {
 	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
-	Fees      *InvoiceFeesRequest               `json:"fees,omitempty" url:"fees,omitempty"`
-	LineItems []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
+	PaymentSchedule *PaymentSchedule                  `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	LineItems       []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID of entity who created this invoice.
 	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
 
@@ -4750,12 +4804,13 @@ func (i *InvoiceCreationRequest) String() string {
 type InvoiceDateFilter string
 
 const (
-	InvoiceDateFilterInvoiceDate    InvoiceDateFilter = "INVOICE_DATE"
-	InvoiceDateFilterDeductionDate  InvoiceDateFilter = "DEDUCTION_DATE"
-	InvoiceDateFilterDueDate        InvoiceDateFilter = "DUE_DATE"
-	InvoiceDateFilterSettlementDate InvoiceDateFilter = "SETTLEMENT_DATE"
-	InvoiceDateFilterCreatedAt      InvoiceDateFilter = "CREATED_AT"
-	InvoiceDateFilterUpdatedAt      InvoiceDateFilter = "UPDATED_AT"
+	InvoiceDateFilterInvoiceDate     InvoiceDateFilter = "INVOICE_DATE"
+	InvoiceDateFilterDeductionDate   InvoiceDateFilter = "DEDUCTION_DATE"
+	InvoiceDateFilterNextPaymentDate InvoiceDateFilter = "NEXT_PAYMENT_DATE"
+	InvoiceDateFilterDueDate         InvoiceDateFilter = "DUE_DATE"
+	InvoiceDateFilterSettlementDate  InvoiceDateFilter = "SETTLEMENT_DATE"
+	InvoiceDateFilterCreatedAt       InvoiceDateFilter = "CREATED_AT"
+	InvoiceDateFilterUpdatedAt       InvoiceDateFilter = "UPDATED_AT"
 )
 
 func NewInvoiceDateFilterFromString(s string) (InvoiceDateFilter, error) {
@@ -4764,6 +4819,8 @@ func NewInvoiceDateFilterFromString(s string) (InvoiceDateFilter, error) {
 		return InvoiceDateFilterInvoiceDate, nil
 	case "DEDUCTION_DATE":
 		return InvoiceDateFilterDeductionDate, nil
+	case "NEXT_PAYMENT_DATE":
+		return InvoiceDateFilterNextPaymentDate, nil
 	case "DUE_DATE":
 		return InvoiceDateFilterDueDate, nil
 	case "SETTLEMENT_DATE":
@@ -4910,7 +4967,7 @@ type InvoiceLineItemCreationRequest struct {
 	// Currency code for the amount. Defaults to USD.
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	Name     *string       `json:"name,omitempty" url:"name,omitempty"`
-	Quantity *int          `json:"quantity,omitempty" url:"quantity,omitempty"`
+	Quantity *float64      `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
 	UnitPrice        *float64          `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
 	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
@@ -5057,7 +5114,7 @@ type InvoiceLineItemRequestBase struct {
 	// Currency code for the amount. Defaults to USD.
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	Name     *string       `json:"name,omitempty" url:"name,omitempty"`
-	Quantity *int          `json:"quantity,omitempty" url:"quantity,omitempty"`
+	Quantity *float64      `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
 	UnitPrice        *float64          `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
 	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
@@ -5133,7 +5190,7 @@ type InvoiceLineItemResponse struct {
 	Currency    CurrencyCode `json:"currency" url:"currency"`
 	Description *string      `json:"description,omitempty" url:"description,omitempty"`
 	Name        *string      `json:"name,omitempty" url:"name,omitempty"`
-	Quantity    *int         `json:"quantity,omitempty" url:"quantity,omitempty"`
+	Quantity    *float64     `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of line item in major units.
 	UnitPrice        *float64          `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
 	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
@@ -5216,7 +5273,7 @@ type InvoiceLineItemUpdateRequest struct {
 	// Currency code for the amount. Defaults to USD.
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	Name     *string       `json:"name,omitempty" url:"name,omitempty"`
-	Quantity *int          `json:"quantity,omitempty" url:"quantity,omitempty"`
+	Quantity *float64      `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
 	UnitPrice        *float64          `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
 	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
@@ -5335,10 +5392,11 @@ func (i *InvoiceMetadataFilter) String() string {
 type InvoiceMetricsPerDateGroupBy string
 
 const (
-	InvoiceMetricsPerDateGroupByCreationDate  InvoiceMetricsPerDateGroupBy = "CREATION_DATE"
-	InvoiceMetricsPerDateGroupByDueDate       InvoiceMetricsPerDateGroupBy = "DUE_DATE"
-	InvoiceMetricsPerDateGroupByInvoiceDate   InvoiceMetricsPerDateGroupBy = "INVOICE_DATE"
-	InvoiceMetricsPerDateGroupByDeductionDate InvoiceMetricsPerDateGroupBy = "DEDUCTION_DATE"
+	InvoiceMetricsPerDateGroupByCreationDate    InvoiceMetricsPerDateGroupBy = "CREATION_DATE"
+	InvoiceMetricsPerDateGroupByDueDate         InvoiceMetricsPerDateGroupBy = "DUE_DATE"
+	InvoiceMetricsPerDateGroupByInvoiceDate     InvoiceMetricsPerDateGroupBy = "INVOICE_DATE"
+	InvoiceMetricsPerDateGroupByDeductionDate   InvoiceMetricsPerDateGroupBy = "DEDUCTION_DATE"
+	InvoiceMetricsPerDateGroupByNextPaymentDate InvoiceMetricsPerDateGroupBy = "NEXT_PAYMENT_DATE"
 )
 
 func NewInvoiceMetricsPerDateGroupByFromString(s string) (InvoiceMetricsPerDateGroupBy, error) {
@@ -5351,6 +5409,8 @@ func NewInvoiceMetricsPerDateGroupByFromString(s string) (InvoiceMetricsPerDateG
 		return InvoiceMetricsPerDateGroupByInvoiceDate, nil
 	case "DEDUCTION_DATE":
 		return InvoiceMetricsPerDateGroupByDeductionDate, nil
+	case "NEXT_PAYMENT_DATE":
+		return InvoiceMetricsPerDateGroupByNextPaymentDate, nil
 	}
 	var t InvoiceMetricsPerDateGroupBy
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -5471,13 +5531,17 @@ func (i *InvoiceMetricsResponse) String() string {
 type InvoiceOrderByField string
 
 const (
-	InvoiceOrderByFieldAmount        InvoiceOrderByField = "AMOUNT"
-	InvoiceOrderByFieldDueDate       InvoiceOrderByField = "DUE_DATE"
-	InvoiceOrderByFieldCreatedAt     InvoiceOrderByField = "CREATED_AT"
-	InvoiceOrderByFieldUpdatedAt     InvoiceOrderByField = "UPDATED_AT"
-	InvoiceOrderByFieldInvoiceNumber InvoiceOrderByField = "INVOICE_NUMBER"
-	InvoiceOrderByFieldVendorName    InvoiceOrderByField = "VENDOR_NAME"
-	InvoiceOrderByFieldPayerName     InvoiceOrderByField = "PAYER_NAME"
+	InvoiceOrderByFieldAmount          InvoiceOrderByField = "AMOUNT"
+	InvoiceOrderByFieldDueDate         InvoiceOrderByField = "DUE_DATE"
+	InvoiceOrderByFieldCreatedAt       InvoiceOrderByField = "CREATED_AT"
+	InvoiceOrderByFieldUpdatedAt       InvoiceOrderByField = "UPDATED_AT"
+	InvoiceOrderByFieldDeductionDate   InvoiceOrderByField = "DEDUCTION_DATE"
+	InvoiceOrderByFieldInvoiceDate     InvoiceOrderByField = "INVOICE_DATE"
+	InvoiceOrderByFieldSettlementDate  InvoiceOrderByField = "SETTLEMENT_DATE"
+	InvoiceOrderByFieldInvoiceNumber   InvoiceOrderByField = "INVOICE_NUMBER"
+	InvoiceOrderByFieldVendorName      InvoiceOrderByField = "VENDOR_NAME"
+	InvoiceOrderByFieldPayerName       InvoiceOrderByField = "PAYER_NAME"
+	InvoiceOrderByFieldNextPaymentDate InvoiceOrderByField = "NEXT_PAYMENT_DATE"
 )
 
 func NewInvoiceOrderByFieldFromString(s string) (InvoiceOrderByField, error) {
@@ -5490,12 +5554,20 @@ func NewInvoiceOrderByFieldFromString(s string) (InvoiceOrderByField, error) {
 		return InvoiceOrderByFieldCreatedAt, nil
 	case "UPDATED_AT":
 		return InvoiceOrderByFieldUpdatedAt, nil
+	case "DEDUCTION_DATE":
+		return InvoiceOrderByFieldDeductionDate, nil
+	case "INVOICE_DATE":
+		return InvoiceOrderByFieldInvoiceDate, nil
+	case "SETTLEMENT_DATE":
+		return InvoiceOrderByFieldSettlementDate, nil
 	case "INVOICE_NUMBER":
 		return InvoiceOrderByFieldInvoiceNumber, nil
 	case "VENDOR_NAME":
 		return InvoiceOrderByFieldVendorName, nil
 	case "PAYER_NAME":
 		return InvoiceOrderByFieldPayerName, nil
+	case "NEXT_PAYMENT_DATE":
+		return InvoiceOrderByFieldNextPaymentDate, nil
 	}
 	var t InvoiceOrderByField
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -5513,7 +5585,7 @@ type InvoiceRequestBase struct {
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	// Date the invoice was issued.
 	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
-	// Date when funds are scheduled to be deducted from payer's account.
+	// Initial date when funds are scheduled to be deducted from payer's account.
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
 	// Date of funds settlement.
 	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
@@ -5548,6 +5620,8 @@ type InvoiceRequestBase struct {
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
 	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
+	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -5634,8 +5708,10 @@ type InvoiceResponse struct {
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	// Date the invoice was issued.
 	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
-	// Date when funds are scheduled to be deducted from payer's account. The actual deduction date may differ from this date, and will be reflected in the processedAt field.
+	// Initial date when funds are scheduled to be deducted from payer's account. The actual deduction date may differ from this date, and will be reflected in the processedAt field.
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// If this is a recurring invoice, this will be the next date when funds are scheduled to be deducted from payer's account.
+	NextDeductionDate *time.Time `json:"nextDeductionDate,omitempty" url:"nextDeductionDate,omitempty"`
 	// Date when the invoice payment was processed.
 	ProcessedAt *time.Time `json:"processedAt,omitempty" url:"processedAt,omitempty"`
 	// Date of funds settlement.
@@ -5669,6 +5745,8 @@ type InvoiceResponse struct {
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
 	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	// The ID of the entity who created this invoice.
+	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 	// Entity user who created this invoice.
 	CreatorUser *EntityUserResponse `json:"creatorUser,omitempty" url:"creatorUser,omitempty"`
 	// If the invoice failed to be paid, this field will be populated with the type of failure.
@@ -5677,6 +5755,8 @@ type InvoiceResponse struct {
 	UpdatedAt   time.Time           `json:"updatedAt" url:"updatedAt"`
 	// Fees associated with this invoice.
 	Fees *InvoiceFeesResponse `json:"fees,omitempty" url:"fees,omitempty"`
+	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
+	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -5690,15 +5770,16 @@ func (i *InvoiceResponse) UnmarshalJSON(data []byte) error {
 	type embed InvoiceResponse
 	var unmarshaler = struct {
 		embed
-		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
-		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
-		ProcessedAt      *core.DateTime `json:"processedAt,omitempty"`
-		SettlementDate   *core.DateTime `json:"settlementDate,omitempty"`
-		DueDate          *core.DateTime `json:"dueDate,omitempty"`
-		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
-		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
-		CreatedAt        *core.DateTime `json:"createdAt"`
-		UpdatedAt        *core.DateTime `json:"updatedAt"`
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		ProcessedAt       *core.DateTime `json:"processedAt,omitempty"`
+		SettlementDate    *core.DateTime `json:"settlementDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
 	}{
 		embed: embed(*i),
 	}
@@ -5708,6 +5789,7 @@ func (i *InvoiceResponse) UnmarshalJSON(data []byte) error {
 	*i = InvoiceResponse(unmarshaler.embed)
 	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
 	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.NextDeductionDate = unmarshaler.NextDeductionDate.TimePtr()
 	i.ProcessedAt = unmarshaler.ProcessedAt.TimePtr()
 	i.SettlementDate = unmarshaler.SettlementDate.TimePtr()
 	i.DueDate = unmarshaler.DueDate.TimePtr()
@@ -5730,26 +5812,28 @@ func (i *InvoiceResponse) MarshalJSON() ([]byte, error) {
 	type embed InvoiceResponse
 	var marshaler = struct {
 		embed
-		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
-		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
-		ProcessedAt      *core.DateTime `json:"processedAt,omitempty"`
-		SettlementDate   *core.DateTime `json:"settlementDate,omitempty"`
-		DueDate          *core.DateTime `json:"dueDate,omitempty"`
-		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
-		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
-		CreatedAt        *core.DateTime `json:"createdAt"`
-		UpdatedAt        *core.DateTime `json:"updatedAt"`
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		ProcessedAt       *core.DateTime `json:"processedAt,omitempty"`
+		SettlementDate    *core.DateTime `json:"settlementDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
 	}{
-		embed:            embed(*i),
-		InvoiceDate:      core.NewOptionalDateTime(i.InvoiceDate),
-		DeductionDate:    core.NewOptionalDateTime(i.DeductionDate),
-		ProcessedAt:      core.NewOptionalDateTime(i.ProcessedAt),
-		SettlementDate:   core.NewOptionalDateTime(i.SettlementDate),
-		DueDate:          core.NewOptionalDateTime(i.DueDate),
-		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
-		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
-		CreatedAt:        core.NewDateTime(i.CreatedAt),
-		UpdatedAt:        core.NewDateTime(i.UpdatedAt),
+		embed:             embed(*i),
+		InvoiceDate:       core.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:     core.NewOptionalDateTime(i.DeductionDate),
+		NextDeductionDate: core.NewOptionalDateTime(i.NextDeductionDate),
+		ProcessedAt:       core.NewOptionalDateTime(i.ProcessedAt),
+		SettlementDate:    core.NewOptionalDateTime(i.SettlementDate),
+		DueDate:           core.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate:  core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:    core.NewOptionalDateTime(i.ServiceEndDate),
+		CreatedAt:         core.NewDateTime(i.CreatedAt),
+		UpdatedAt:         core.NewDateTime(i.UpdatedAt),
 	}
 	return json.Marshal(marshaler)
 }
@@ -5769,20 +5853,23 @@ func (i *InvoiceResponse) String() string {
 type InvoiceStatus string
 
 const (
-	InvoiceStatusDraft     InvoiceStatus = "DRAFT"
-	InvoiceStatusNew       InvoiceStatus = "NEW"
-	InvoiceStatusApproved  InvoiceStatus = "APPROVED"
-	InvoiceStatusScheduled InvoiceStatus = "SCHEDULED"
-	InvoiceStatusPending   InvoiceStatus = "PENDING"
-	InvoiceStatusPaid      InvoiceStatus = "PAID"
-	InvoiceStatusArchived  InvoiceStatus = "ARCHIVED"
-	InvoiceStatusRefused   InvoiceStatus = "REFUSED"
-	InvoiceStatusCanceled  InvoiceStatus = "CANCELED"
-	InvoiceStatusFailed    InvoiceStatus = "FAILED"
+	InvoiceStatusUnassigned InvoiceStatus = "UNASSIGNED"
+	InvoiceStatusDraft      InvoiceStatus = "DRAFT"
+	InvoiceStatusNew        InvoiceStatus = "NEW"
+	InvoiceStatusApproved   InvoiceStatus = "APPROVED"
+	InvoiceStatusScheduled  InvoiceStatus = "SCHEDULED"
+	InvoiceStatusPending    InvoiceStatus = "PENDING"
+	InvoiceStatusPaid       InvoiceStatus = "PAID"
+	InvoiceStatusArchived   InvoiceStatus = "ARCHIVED"
+	InvoiceStatusRefused    InvoiceStatus = "REFUSED"
+	InvoiceStatusCanceled   InvoiceStatus = "CANCELED"
+	InvoiceStatusFailed     InvoiceStatus = "FAILED"
 )
 
 func NewInvoiceStatusFromString(s string) (InvoiceStatus, error) {
 	switch s {
+	case "UNASSIGNED":
+		return InvoiceStatusUnassigned, nil
 	case "DRAFT":
 		return InvoiceStatusDraft, nil
 	case "NEW":
@@ -5820,7 +5907,7 @@ type InvoiceUpdateRequest struct {
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	// Date the invoice was issued.
 	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
-	// Date when funds are scheduled to be deducted from payer's account.
+	// Initial date when funds are scheduled to be deducted from payer's account.
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
 	// Date of funds settlement.
 	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
@@ -5854,8 +5941,10 @@ type InvoiceUpdateRequest struct {
 	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
-	Fees      *InvoiceFeesRequest             `json:"fees,omitempty" url:"fees,omitempty"`
-	LineItems []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
+	PaymentSchedule *PaymentSchedule                `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	LineItems       []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 
@@ -6005,6 +6094,377 @@ func (p *PaymentDestinationOptions) Accept(visitor PaymentDestinationOptionsVisi
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
+type PaymentMonthRepeatType string
+
+const (
+	PaymentMonthRepeatTypeStart PaymentMonthRepeatType = "start"
+	PaymentMonthRepeatTypeEnd   PaymentMonthRepeatType = "end"
+)
+
+func NewPaymentMonthRepeatTypeFromString(s string) (PaymentMonthRepeatType, error) {
+	switch s {
+	case "start":
+		return PaymentMonthRepeatTypeStart, nil
+	case "end":
+		return PaymentMonthRepeatTypeEnd, nil
+	}
+	var t PaymentMonthRepeatType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentMonthRepeatType) Ptr() *PaymentMonthRepeatType {
+	return &p
+}
+
+type PaymentMonthSchedule struct {
+	// How often to repeat the payments. Defaults to 1. Must be greater than 0. For example, if repeatEvery is set to 2 and this is a daily payment, the payment will be made every other day. If repeatEvery is set to 3 and this is a weekly payment, the payment will be made every third week.
+	RepeatEvery *int `json:"repeatEvery,omitempty" url:"repeatEvery,omitempty"`
+	// When to end the payments, either a number of occurrences or a date. Defaults to never ending if not specified
+	Ends *PaymentScheduleEndCondition `json:"ends,omitempty" url:"ends,omitempty"`
+	// Offset from the start or end of the month to repeat on (0-30). Defaults to 0.
+	DayOffset int `json:"dayOffset" url:"dayOffset"`
+	// Type of offset. If start, will offset from the start of the month (so 10 with an offset of start will be on the 10th of the month). If end, will offset from the end of the month (so 10 with an offset of end will be the 20th).
+	OffsetType *PaymentMonthRepeatType `json:"offsetType,omitempty" url:"offsetType,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentMonthSchedule) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PaymentMonthSchedule) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentMonthSchedule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentMonthSchedule(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
+	p._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentMonthSchedule) String() string {
+	if len(p._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PaymentSchedule struct {
+	Type    string
+	OneTime *PaymentScheduleBase
+	Daily   *PaymentScheduleBase
+	Weekly  *PaymentWeekSchedule
+	Monthly *PaymentMonthSchedule
+	Yearly  *PaymentYearSchedule
+}
+
+func (p *PaymentSchedule) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	p.Type = unmarshaler.Type
+	switch unmarshaler.Type {
+	case "oneTime":
+		value := new(PaymentScheduleBase)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.OneTime = value
+	case "daily":
+		value := new(PaymentScheduleBase)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Daily = value
+	case "weekly":
+		value := new(PaymentWeekSchedule)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Weekly = value
+	case "monthly":
+		value := new(PaymentMonthSchedule)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Monthly = value
+	case "yearly":
+		value := new(PaymentYearSchedule)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Yearly = value
+	}
+	return nil
+}
+
+func (p PaymentSchedule) MarshalJSON() ([]byte, error) {
+	if p.OneTime != nil {
+		return core.MarshalJSONWithExtraProperty(p.OneTime, "type", "oneTime")
+	}
+	if p.Daily != nil {
+		return core.MarshalJSONWithExtraProperty(p.Daily, "type", "daily")
+	}
+	if p.Weekly != nil {
+		return core.MarshalJSONWithExtraProperty(p.Weekly, "type", "weekly")
+	}
+	if p.Monthly != nil {
+		return core.MarshalJSONWithExtraProperty(p.Monthly, "type", "monthly")
+	}
+	if p.Yearly != nil {
+		return core.MarshalJSONWithExtraProperty(p.Yearly, "type", "yearly")
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
+}
+
+type PaymentScheduleVisitor interface {
+	VisitOneTime(*PaymentScheduleBase) error
+	VisitDaily(*PaymentScheduleBase) error
+	VisitWeekly(*PaymentWeekSchedule) error
+	VisitMonthly(*PaymentMonthSchedule) error
+	VisitYearly(*PaymentYearSchedule) error
+}
+
+func (p *PaymentSchedule) Accept(visitor PaymentScheduleVisitor) error {
+	if p.OneTime != nil {
+		return visitor.VisitOneTime(p.OneTime)
+	}
+	if p.Daily != nil {
+		return visitor.VisitDaily(p.Daily)
+	}
+	if p.Weekly != nil {
+		return visitor.VisitWeekly(p.Weekly)
+	}
+	if p.Monthly != nil {
+		return visitor.VisitMonthly(p.Monthly)
+	}
+	if p.Yearly != nil {
+		return visitor.VisitYearly(p.Yearly)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", p)
+}
+
+type PaymentScheduleBase struct {
+	// How often to repeat the payments. Defaults to 1. Must be greater than 0. For example, if repeatEvery is set to 2 and this is a daily payment, the payment will be made every other day. If repeatEvery is set to 3 and this is a weekly payment, the payment will be made every third week.
+	RepeatEvery *int `json:"repeatEvery,omitempty" url:"repeatEvery,omitempty"`
+	// When to end the payments, either a number of occurrences or a date. Defaults to never ending if not specified
+	Ends *PaymentScheduleEndCondition `json:"ends,omitempty" url:"ends,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentScheduleBase) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PaymentScheduleBase) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentScheduleBase
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentScheduleBase(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
+	p._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentScheduleBase) String() string {
+	if len(p._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PaymentScheduleEndCondition struct {
+	Integer  int
+	DateTime time.Time
+}
+
+func (p *PaymentScheduleEndCondition) UnmarshalJSON(data []byte) error {
+	var valueInteger int
+	if err := json.Unmarshal(data, &valueInteger); err == nil {
+		p.Integer = valueInteger
+		return nil
+	}
+	var valueDateTime *core.DateTime
+	if err := json.Unmarshal(data, &valueDateTime); err == nil {
+		p.DateTime = valueDateTime.Time()
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, p)
+}
+
+func (p PaymentScheduleEndCondition) MarshalJSON() ([]byte, error) {
+	if p.Integer != 0 {
+		return json.Marshal(p.Integer)
+	}
+	if !p.DateTime.IsZero() {
+		return json.Marshal(core.NewDateTime(p.DateTime))
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", p)
+}
+
+type PaymentScheduleEndConditionVisitor interface {
+	VisitInteger(int) error
+	VisitDateTime(time.Time) error
+}
+
+func (p *PaymentScheduleEndCondition) Accept(visitor PaymentScheduleEndConditionVisitor) error {
+	if p.Integer != 0 {
+		return visitor.VisitInteger(p.Integer)
+	}
+	if !p.DateTime.IsZero() {
+		return visitor.VisitDateTime(p.DateTime)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", p)
+}
+
+type PaymentType string
+
+const (
+	PaymentTypeOneTime   PaymentType = "oneTime"
+	PaymentTypeRecurring PaymentType = "recurring"
+)
+
+func NewPaymentTypeFromString(s string) (PaymentType, error) {
+	switch s {
+	case "oneTime":
+		return PaymentTypeOneTime, nil
+	case "recurring":
+		return PaymentTypeRecurring, nil
+	}
+	var t PaymentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentType) Ptr() *PaymentType {
+	return &p
+}
+
+type PaymentWeekSchedule struct {
+	// How often to repeat the payments. Defaults to 1. Must be greater than 0. For example, if repeatEvery is set to 2 and this is a daily payment, the payment will be made every other day. If repeatEvery is set to 3 and this is a weekly payment, the payment will be made every third week.
+	RepeatEvery *int `json:"repeatEvery,omitempty" url:"repeatEvery,omitempty"`
+	// When to end the payments, either a number of occurrences or a date. Defaults to never ending if not specified
+	Ends     *PaymentScheduleEndCondition `json:"ends,omitempty" url:"ends,omitempty"`
+	RepeatOn []DayOfWeek                  `json:"repeatOn,omitempty" url:"repeatOn,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentWeekSchedule) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PaymentWeekSchedule) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentWeekSchedule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentWeekSchedule(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
+	p._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentWeekSchedule) String() string {
+	if len(p._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PaymentYearSchedule struct {
+	// How often to repeat the payments. Defaults to 1. Must be greater than 0. For example, if repeatEvery is set to 2 and this is a daily payment, the payment will be made every other day. If repeatEvery is set to 3 and this is a weekly payment, the payment will be made every third week.
+	RepeatEvery *int `json:"repeatEvery,omitempty" url:"repeatEvery,omitempty"`
+	// When to end the payments, either a number of occurrences or a date. Defaults to never ending if not specified
+	Ends *PaymentScheduleEndCondition `json:"ends,omitempty" url:"ends,omitempty"`
+	// Day of the month to repeat on (1-31).
+	RepeatOnDay int `json:"repeatOnDay" url:"repeatOnDay"`
+	// Month to repeat on (1-12).
+	RepeatOnMonth int `json:"repeatOnMonth" url:"repeatOnMonth"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PaymentYearSchedule) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PaymentYearSchedule) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentYearSchedule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentYearSchedule(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
+	p._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentYearSchedule) String() string {
+	if len(p._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
 type UtilityPaymentDestinationOptions struct {
 	// The ID for the utility account to pay with. Links to accounts listed on payor/payee relationship.
 	AccountID string `json:"accountId" url:"accountId"`
@@ -6073,20 +6533,25 @@ func (o OcrJobStatus) Ptr() *OcrJobStatus {
 }
 
 type BusinessOnboardingOptions struct {
-	TermsOfService  *OnboardingOption `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
-	Email           *OnboardingOption `json:"email,omitempty" url:"email,omitempty"`
-	Name            *OnboardingOption `json:"name,omitempty" url:"name,omitempty"`
-	Type            *OnboardingOption `json:"type,omitempty" url:"type,omitempty"`
-	DoingBusinessAs *OnboardingOption `json:"doingBusinessAs,omitempty" url:"doingBusinessAs,omitempty"`
-	Ein             *OnboardingOption `json:"ein,omitempty" url:"ein,omitempty"`
-	Mcc             *OnboardingOption `json:"mcc,omitempty" url:"mcc,omitempty"`
-	Address         *OnboardingOption `json:"address,omitempty" url:"address,omitempty"`
-	Phone           *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
-	FormationDate   *OnboardingOption `json:"formationDate,omitempty" url:"formationDate,omitempty"`
-	Website         *OnboardingOption `json:"website,omitempty" url:"website,omitempty"`
-	Description     *OnboardingOption `json:"description,omitempty" url:"description,omitempty"`
-	Representatives *OnboardingOption `json:"representatives,omitempty" url:"representatives,omitempty"`
-	Logo            *OnboardingOption `json:"logo,omitempty" url:"logo,omitempty"`
+	TermsOfService                  *OnboardingOption `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
+	Email                           *OnboardingOption `json:"email,omitempty" url:"email,omitempty"`
+	Name                            *OnboardingOption `json:"name,omitempty" url:"name,omitempty"`
+	Address                         *OnboardingOption `json:"address,omitempty" url:"address,omitempty"`
+	Phone                           *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
+	TenNinetyNine                   *OnboardingOption `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
+	W9                              *OnboardingOption `json:"w9,omitempty" url:"w9,omitempty"`
+	Type                            *OnboardingOption `json:"type,omitempty" url:"type,omitempty"`
+	DoingBusinessAs                 *OnboardingOption `json:"doingBusinessAs,omitempty" url:"doingBusinessAs,omitempty"`
+	Ein                             *OnboardingOption `json:"ein,omitempty" url:"ein,omitempty"`
+	Mcc                             *OnboardingOption `json:"mcc,omitempty" url:"mcc,omitempty"`
+	FormationDate                   *OnboardingOption `json:"formationDate,omitempty" url:"formationDate,omitempty"`
+	Website                         *OnboardingOption `json:"website,omitempty" url:"website,omitempty"`
+	Description                     *OnboardingOption `json:"description,omitempty" url:"description,omitempty"`
+	Representatives                 *OnboardingOption `json:"representatives,omitempty" url:"representatives,omitempty"`
+	Logo                            *OnboardingOption `json:"logo,omitempty" url:"logo,omitempty"`
+	AverageTransactionSize          *OnboardingOption `json:"averageTransactionSize,omitempty" url:"averageTransactionSize,omitempty"`
+	AverageMonthlyTransactionVolume *OnboardingOption `json:"averageMonthlyTransactionVolume,omitempty" url:"averageMonthlyTransactionVolume,omitempty"`
+	MaxTransactionSize              *OnboardingOption `json:"maxTransactionSize,omitempty" url:"maxTransactionSize,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -6285,6 +6750,53 @@ func (c *ColorSchemeResponse) UnmarshalJSON(data []byte) error {
 }
 
 func (c *ColorSchemeResponse) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CommonOnboardingOptions struct {
+	TermsOfService *OnboardingOption `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
+	Email          *OnboardingOption `json:"email,omitempty" url:"email,omitempty"`
+	Name           *OnboardingOption `json:"name,omitempty" url:"name,omitempty"`
+	Address        *OnboardingOption `json:"address,omitempty" url:"address,omitempty"`
+	Phone          *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
+	TenNinetyNine  *OnboardingOption `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
+	W9             *OnboardingOption `json:"w9,omitempty" url:"w9,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CommonOnboardingOptions) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CommonOnboardingOptions) UnmarshalJSON(data []byte) error {
+	type unmarshaler CommonOnboardingOptions
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CommonOnboardingOptions(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CommonOnboardingOptions) String() string {
 	if len(c._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
 			return value
@@ -6640,10 +7152,12 @@ type IndividualOnboardingOptions struct {
 	TermsOfService *OnboardingOption `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
 	Email          *OnboardingOption `json:"email,omitempty" url:"email,omitempty"`
 	Name           *OnboardingOption `json:"name,omitempty" url:"name,omitempty"`
-	DateOfBirth    *OnboardingOption `json:"dateOfBirth,omitempty" url:"dateOfBirth,omitempty"`
-	Ssn            *OnboardingOption `json:"ssn,omitempty" url:"ssn,omitempty"`
 	Address        *OnboardingOption `json:"address,omitempty" url:"address,omitempty"`
 	Phone          *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
+	TenNinetyNine  *OnboardingOption `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
+	W9             *OnboardingOption `json:"w9,omitempty" url:"w9,omitempty"`
+	DateOfBirth    *OnboardingOption `json:"dateOfBirth,omitempty" url:"dateOfBirth,omitempty"`
+	Ssn            *OnboardingOption `json:"ssn,omitempty" url:"ssn,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage

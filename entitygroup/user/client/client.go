@@ -38,7 +38,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Search entity group users
 func (c *Client) Find(
 	ctx context.Context,
-	// Entity Group ID
+	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
 	request *user.EntityFindEntityRequest,
 	opts ...option.RequestOption,
@@ -153,7 +153,7 @@ func (c *Client) Find(
 // Create entity user that will be added to all entities in the group.
 func (c *Client) Create(
 	ctx context.Context,
-	// Entity Group ID
+	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
 	request *mercoafinancego.EntityGroupUserRequest,
 	opts ...option.RequestOption,
@@ -261,7 +261,7 @@ func (c *Client) Create(
 // Get entity user from a group
 func (c *Client) Get(
 	ctx context.Context,
-	// Entity Group ID
+	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
 	// ID used to identify user in your system
 	foreignID string,
@@ -373,7 +373,7 @@ func (c *Client) Get(
 // Update entity user for all entities in the group.
 func (c *Client) Update(
 	ctx context.Context,
-	// Entity Group ID
+	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
 	// ID used to identify user in your system
 	foreignID string,
@@ -487,7 +487,7 @@ func (c *Client) Update(
 // Delete entity user from all entities in the group. This will also remove the user from all approval policies. If an approval policy will break as a result of this operation, this request will fail.
 func (c *Client) Delete(
 	ctx context.Context,
-	// Entity Group ID
+	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
 	// ID used to identify user in your system
 	foreignID string,
