@@ -1533,9 +1533,11 @@ type CounterpartyResponse struct {
 	// True if this entity is available as a payor to any entity on your platform. Otherwise this entity will only be available as a payor to entities that have a direct relationship with this entity.
 	IsNetworkPayor bool `json:"isNetworkPayor" url:"isNetworkPayor"`
 	// True if this entity is available as a payee to any entity on your platform. Otherwise this entity will only be available as a payee to entities that have a direct relationship with this entity.
-	IsNetworkPayee bool      `json:"isNetworkPayee" url:"isNetworkPayee"`
-	CreatedAt      time.Time `json:"createdAt" url:"createdAt"`
-	UpdatedAt      time.Time `json:"updatedAt" url:"updatedAt"`
+	IsNetworkPayee bool `json:"isNetworkPayee" url:"isNetworkPayee"`
+	// Simple key/value metadata associated with this entity. For more complex metadata, use the Metadata API.
+	Metadata  map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
 	// If the entity searching for counterparties has any accounts configured in the Payee/Payor relationship, they will be returned
 	Accounts         []*CounterpartyCustomizationAccount `json:"accounts,omitempty" url:"accounts,omitempty"`
 	PaymentMethods   []*PaymentMethodResponse            `json:"paymentMethods,omitempty" url:"paymentMethods,omitempty"`
@@ -1991,6 +1993,8 @@ type EntityRequest struct {
 	IsNetworkPayee *bool `json:"isNetworkPayee,omitempty" url:"isNetworkPayee,omitempty"`
 	// Base64 encoded PNG image data for the entity logo. Max size 100KB.
 	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
+	// Simple key/value metadata associated with this entity. For more complex metadata, use the Metadata API.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2056,9 +2060,11 @@ type EntityResponse struct {
 	// True if this entity is available as a payor to any entity on your platform. Otherwise this entity will only be available as a payor to entities that have a direct relationship with this entity.
 	IsNetworkPayor bool `json:"isNetworkPayor" url:"isNetworkPayor"`
 	// True if this entity is available as a payee to any entity on your platform. Otherwise this entity will only be available as a payee to entities that have a direct relationship with this entity.
-	IsNetworkPayee bool      `json:"isNetworkPayee" url:"isNetworkPayee"`
-	CreatedAt      time.Time `json:"createdAt" url:"createdAt"`
-	UpdatedAt      time.Time `json:"updatedAt" url:"updatedAt"`
+	IsNetworkPayee bool `json:"isNetworkPayee" url:"isNetworkPayee"`
+	// Simple key/value metadata associated with this entity. For more complex metadata, use the Metadata API.
+	Metadata  map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2175,6 +2181,8 @@ type EntityUpdateRequest struct {
 	IsNetworkPayee *bool `json:"isNetworkPayee,omitempty" url:"isNetworkPayee,omitempty"`
 	// Base64 encoded PNG image data for the entity logo. Max size 100KB.
 	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
+	// Simple key/value metadata associated with this entity. For more complex metadata, use the Metadata API.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2358,7 +2366,9 @@ type EntityWithPaymentMethodResponse struct {
 	// True if this entity is available as a payor to any entity on your platform. Otherwise this entity will only be available as a payor to entities that have a direct relationship with this entity.
 	IsNetworkPayor bool `json:"isNetworkPayor" url:"isNetworkPayor"`
 	// True if this entity is available as a payee to any entity on your platform. Otherwise this entity will only be available as a payee to entities that have a direct relationship with this entity.
-	IsNetworkPayee bool                     `json:"isNetworkPayee" url:"isNetworkPayee"`
+	IsNetworkPayee bool `json:"isNetworkPayee" url:"isNetworkPayee"`
+	// Simple key/value metadata associated with this entity. For more complex metadata, use the Metadata API.
+	Metadata       map[string]string        `json:"metadata,omitempty" url:"metadata,omitempty"`
 	CreatedAt      time.Time                `json:"createdAt" url:"createdAt"`
 	UpdatedAt      time.Time                `json:"updatedAt" url:"updatedAt"`
 	PaymentMethods []*PaymentMethodResponse `json:"paymentMethods,omitempty" url:"paymentMethods,omitempty"`

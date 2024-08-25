@@ -6,6 +6,11 @@ import (
 	mercoafinancego "github.com/mercoa-finance/go"
 )
 
+type EntityGroupGetRequest struct {
+	// If true, will return simple key/value metadata for entities in the group. For more complex metadata, use the Metadata API.
+	EntityMetadata *bool `json:"-" url:"entityMetadata,omitempty"`
+}
+
 type EntityGroupFindRequest struct {
 	// The maximum number of results to return. Defaults to 1. Max is 10.
 	Limit         *int                           `json:"-" url:"limit,omitempty"`

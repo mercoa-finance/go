@@ -294,6 +294,7 @@ func (c *Client) Get(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	request *entity.EntityGetRequest,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.EntityResponse, error) {
 	options := core.NewRequestOptions(opts...)
@@ -306,6 +307,14 @@ func (c *Client) Get(
 		baseURL = options.BaseURL
 	}
 	endpointURL := core.EncodeURL(baseURL+"/entity/%v", entityID)
+
+	queryParams, err := core.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 

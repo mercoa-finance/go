@@ -31,6 +31,11 @@ type FindEntities struct {
 	StartingAfter *mercoafinancego.EntityID `json:"-" url:"startingAfter,omitempty"`
 }
 
+type EntityGetRequest struct {
+	// If true, will return simple key/value metadata for the entity. For more complex metadata, use the Metadata API.
+	Metadata *bool `json:"-" url:"metadata,omitempty"`
+}
+
 type GenerateOnboardingLink struct {
 	// The type of onboarding link to generate. If not provided, the default is payee. The onboarding options are determined by your organization's onboarding configuration.
 	Type mercoafinancego.EntityOnboardingLinkType `json:"-" url:"type"`
