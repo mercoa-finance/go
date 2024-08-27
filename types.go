@@ -481,6 +481,48 @@ func (e *EmailLogResponse) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
+type EntityGroupEntityUpdateRequest struct {
+	// List of entity IDs or foreign IDs
+	EntityIDs []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityGroupEntityUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityGroupEntityUpdateRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityGroupEntityUpdateRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityGroupEntityUpdateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityGroupEntityUpdateRequest) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
 type EntityGroupFindResponse struct {
 	Count   int                    `json:"count" url:"count"`
 	HasMore bool                   `json:"hasMore" url:"hasMore"`
@@ -527,6 +569,7 @@ func (e *EntityGroupFindResponse) String() string {
 type EntityGroupID = string
 
 type EntityGroupRequest struct {
+	// List of entity IDs or foreign IDs
 	EntityIDs   []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
 	ForeignID   *string    `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	Name        *string    `json:"name,omitempty" url:"name,omitempty"`
@@ -1647,7 +1690,7 @@ func (e *Ein) String() string {
 }
 
 type EntityAddPayeesRequest struct {
-	// List of payee entity IDs to associate with the entity
+	// List of payee entity IDs or foreign IDs to associate with the entity
 	Payees []EntityID `json:"payees,omitempty" url:"payees,omitempty"`
 	// List of customizations to apply to the payees. If the payee is not currently a counterparty of the entity, the counterparty will be created with the provided customizations.
 	Customizations []*CounterpartyCustomizationRequest `json:"customizations,omitempty" url:"customizations,omitempty"`
@@ -1691,7 +1734,7 @@ func (e *EntityAddPayeesRequest) String() string {
 }
 
 type EntityAddPayorsRequest struct {
-	// List of payor entity IDs to associate with the entity
+	// List of payor entity IDs or foreign IDs to associate with the entity
 	Payors []EntityID `json:"payors,omitempty" url:"payors,omitempty"`
 	// List of customizations to apply to the payors. If the payor is not currently a counterparty of the entity, the counterparty will be created with the provided customizations.
 	Customizations []*CounterpartyCustomizationRequest `json:"customizations,omitempty" url:"customizations,omitempty"`
@@ -1823,7 +1866,7 @@ func (e *EntityCustomizationResponse) String() string {
 }
 
 type EntityHidePayeesRequest struct {
-	// List of payee entity IDs to hide
+	// List of payee entity IDs or foreign IDs to hide
 	Payees []EntityID `json:"payees,omitempty" url:"payees,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -1865,7 +1908,7 @@ func (e *EntityHidePayeesRequest) String() string {
 }
 
 type EntityHidePayorsRequest struct {
-	// List of payor entity IDs to hide
+	// List of payor entity IDs or foreign IDs to hide
 	Payors []EntityID `json:"payors,omitempty" url:"payors,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -4705,10 +4748,12 @@ type InvoiceCreationRequest struct {
 	NoteToSelf       *string    `json:"noteToSelf,omitempty" url:"noteToSelf,omitempty"`
 	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
 	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	PayerID          *EntityID  `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// ID or foreign ID of the payer of this invoice.
+	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
 	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
 	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
-	VendorID        *EntityID        `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	// ID or foreign ID of the vendor of this invoice.
+	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
 	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
 	PaymentDestinationID *PaymentMethodID `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
 	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
@@ -5606,10 +5651,12 @@ type InvoiceRequestBase struct {
 	NoteToSelf       *string    `json:"noteToSelf,omitempty" url:"noteToSelf,omitempty"`
 	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
 	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	PayerID          *EntityID  `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// ID or foreign ID of the payer of this invoice.
+	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
 	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
 	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
-	VendorID        *EntityID        `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	// ID or foreign ID of the vendor of this invoice.
+	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
 	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
 	PaymentDestinationID *PaymentMethodID `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
 	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
@@ -5928,10 +5975,12 @@ type InvoiceUpdateRequest struct {
 	NoteToSelf       *string    `json:"noteToSelf,omitempty" url:"noteToSelf,omitempty"`
 	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
 	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	PayerID          *EntityID  `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// ID or foreign ID of the payer of this invoice.
+	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
 	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
 	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
-	VendorID        *EntityID        `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	// ID or foreign ID of the vendor of this invoice.
+	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
 	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
 	PaymentDestinationID *PaymentMethodID `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
 	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
@@ -5955,7 +6004,7 @@ type InvoiceUpdateRequest struct {
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule                `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	LineItems       []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
-	// ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
+	// ID or foreign ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 
 	extraProperties map[string]interface{}

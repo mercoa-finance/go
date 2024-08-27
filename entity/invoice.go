@@ -34,9 +34,9 @@ type EntityGetInvoicesRequest struct {
 	LineItemGlAccountID []*string `json:"-" url:"lineItemGlAccountId,omitempty"`
 	// Find invoices by vendor name, invoice number, or amount. Partial matches are supported.
 	Search *string `json:"-" url:"search,omitempty"`
-	// Filter invoices by payer ID.
+	// Filter invoices by payer ID or payer foreign ID.
 	PayerID []*mercoafinancego.EntityID `json:"-" url:"payerId,omitempty"`
-	// Filter invoices by vendor ID.
+	// Filter invoices by vendor ID or vendor foreign ID.
 	VendorID []*mercoafinancego.EntityID `json:"-" url:"vendorId,omitempty"`
 	// Filter invoices by assigned approver user ID.
 	ApproverID []*mercoafinancego.EntityUserID `json:"-" url:"approverId,omitempty"`
