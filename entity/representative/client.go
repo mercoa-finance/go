@@ -362,7 +362,7 @@ func (c *Client) Update(
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
 	representativeID mercoafinancego.RepresentativeID,
-	request *mercoafinancego.RepresentativeRequest,
+	request *mercoafinancego.RepresentativeUpdateRequest,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.RepresentativeResponse, error) {
 	options := core.NewRequestOptions(opts...)

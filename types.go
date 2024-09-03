@@ -3515,6 +3515,53 @@ func (r *RepresentativeResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
+type RepresentativeUpdateRequest struct {
+	Name             *FullName               `json:"name,omitempty" url:"name,omitempty"`
+	Phone            *PhoneNumber            `json:"phone,omitempty" url:"phone,omitempty"`
+	Email            *string                 `json:"email,omitempty" url:"email,omitempty"`
+	Address          *Address                `json:"address,omitempty" url:"address,omitempty"`
+	BirthDate        *BirthDate              `json:"birthDate,omitempty" url:"birthDate,omitempty"`
+	GovernmentID     *IndividualGovernmentID `json:"governmentID,omitempty" url:"governmentID,omitempty"`
+	Responsibilities *Responsibilities       `json:"responsibilities,omitempty" url:"responsibilities,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (r *RepresentativeUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return r.extraProperties
+}
+
+func (r *RepresentativeUpdateRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler RepresentativeUpdateRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RepresentativeUpdateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+
+	r._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RepresentativeUpdateRequest) String() string {
+	if len(r._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(r._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
 type Responsibilities struct {
 	JobTitle *string `json:"jobTitle,omitempty" url:"jobTitle,omitempty"`
 	// Indicates whether this individual has significant management responsibilities within the business
@@ -5018,16 +5065,52 @@ func (i *InvoiceFeesResponse) String() string {
 
 type InvoiceID = string
 
+type InvoiceLineItemCategory string
+
+const (
+	InvoiceLineItemCategoryExpense  InvoiceLineItemCategory = "EXPENSE"
+	InvoiceLineItemCategoryRevenue  InvoiceLineItemCategory = "REVENUE"
+	InvoiceLineItemCategoryTax      InvoiceLineItemCategory = "TAX"
+	InvoiceLineItemCategoryShipping InvoiceLineItemCategory = "SHIPPING"
+	InvoiceLineItemCategoryDiscount InvoiceLineItemCategory = "DISCOUNT"
+	InvoiceLineItemCategoryOther    InvoiceLineItemCategory = "OTHER"
+)
+
+func NewInvoiceLineItemCategoryFromString(s string) (InvoiceLineItemCategory, error) {
+	switch s {
+	case "EXPENSE":
+		return InvoiceLineItemCategoryExpense, nil
+	case "REVENUE":
+		return InvoiceLineItemCategoryRevenue, nil
+	case "TAX":
+		return InvoiceLineItemCategoryTax, nil
+	case "SHIPPING":
+		return InvoiceLineItemCategoryShipping, nil
+	case "DISCOUNT":
+		return InvoiceLineItemCategoryDiscount, nil
+	case "OTHER":
+		return InvoiceLineItemCategoryOther, nil
+	}
+	var t InvoiceLineItemCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InvoiceLineItemCategory) Ptr() *InvoiceLineItemCategory {
+	return &i
+}
+
 type InvoiceLineItemCreationRequest struct {
 	// Currency code for the amount. Defaults to USD.
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
 	Name     *string       `json:"name,omitempty" url:"name,omitempty"`
 	Quantity *float64      `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
-	UnitPrice        *float64          `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
-	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
-	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	UnitPrice *float64 `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
+	// Category of the line item. Defaults to EXPENSE.
+	Category         *InvoiceLineItemCategory `json:"category,omitempty" url:"category,omitempty"`
+	ServiceStartDate *time.Time               `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time               `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string        `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
 	// Total amount of line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
@@ -5171,10 +5254,12 @@ type InvoiceLineItemRequestBase struct {
 	Name     *string       `json:"name,omitempty" url:"name,omitempty"`
 	Quantity *float64      `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
-	UnitPrice        *float64          `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
-	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
-	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	UnitPrice *float64 `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
+	// Category of the line item. Defaults to EXPENSE.
+	Category         *InvoiceLineItemCategory `json:"category,omitempty" url:"category,omitempty"`
+	ServiceStartDate *time.Time               `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time               `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string        `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
 
@@ -5247,10 +5332,11 @@ type InvoiceLineItemResponse struct {
 	Name        *string      `json:"name,omitempty" url:"name,omitempty"`
 	Quantity    *float64     `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of line item in major units.
-	UnitPrice        *float64          `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
-	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
-	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	UnitPrice        *float64                `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
+	Category         InvoiceLineItemCategory `json:"category" url:"category"`
+	ServiceStartDate *time.Time              `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time              `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string       `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string   `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
 	CreatedAt   time.Time `json:"createdAt" url:"createdAt"`
@@ -5330,10 +5416,12 @@ type InvoiceLineItemUpdateRequest struct {
 	Name     *string       `json:"name,omitempty" url:"name,omitempty"`
 	Quantity *float64      `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
-	UnitPrice        *float64          `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
-	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
-	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	UnitPrice *float64 `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
+	// Category of the line item. Defaults to EXPENSE.
+	Category         *InvoiceLineItemCategory `json:"category,omitempty" url:"category,omitempty"`
+	ServiceStartDate *time.Time               `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time               `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string        `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
 	// If provided, will overwrite line item on the invoice with this ID. If not provided, will create a new line item.
