@@ -375,6 +375,7 @@ func (c *Client) Get(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// User ID or User ForeignID
 	userID mercoafinancego.EntityUserID,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.EntityUserResponse, error) {
@@ -486,6 +487,7 @@ func (c *Client) Update(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// User ID or User ForeignID
 	userID mercoafinancego.EntityUserID,
 	request *mercoafinancego.EntityUserRequest,
 	opts ...option.RequestOption,
@@ -599,6 +601,7 @@ func (c *Client) Delete(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// User ID or User ForeignID
 	userID mercoafinancego.EntityUserID,
 	opts ...option.RequestOption,
 ) error {
@@ -708,6 +711,7 @@ func (c *Client) GetToken(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// User ID or User ForeignID
 	userID mercoafinancego.EntityUserID,
 	request *mercoafinancego.TokenGenerationOptions,
 	opts ...option.RequestOption,

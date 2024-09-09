@@ -7,6 +7,13 @@ import (
 	time "time"
 )
 
+type InvoiceInvoiceGetEventsRequest struct {
+	// Start date filter. If not provided, events from the start of time will be returned.
+	StartDate *time.Time `json:"-" url:"startDate,omitempty"`
+	// End date filter. If not provided, events to the end of time will be returned.
+	EndDate *time.Time `json:"-" url:"endDate,omitempty"`
+}
+
 type GetAllInvoicesRequest struct {
 	// Filter invoices by the ID or foreign ID of the entity that created the invoice.
 	EntityID []*mercoafinancego.EntityID `json:"-" url:"entityId,omitempty"`

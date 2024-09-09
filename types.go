@@ -574,6 +574,8 @@ type EntityGroupRequest struct {
 	ForeignID   *string    `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	Name        *string    `json:"name,omitempty" url:"name,omitempty"`
 	EmailToName *string    `json:"emailToName,omitempty" url:"emailToName,omitempty"`
+	// Metadata key/value pairs to associate with this group. Will overwrite existing metadata.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -619,6 +621,7 @@ type EntityGroupResponse struct {
 	Name        *string           `json:"name,omitempty" url:"name,omitempty"`
 	EmailToName *string           `json:"emailToName,omitempty" url:"emailToName,omitempty"`
 	Entities    []*EntityResponse `json:"entities,omitempty" url:"entities,omitempty"`
+	Metadata    map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -1854,6 +1857,111 @@ func (e *EntityCustomizationResponse) UnmarshalJSON(data []byte) error {
 }
 
 func (e *EntityCustomizationResponse) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EntityEvent struct {
+	WebhookIDs []string        `json:"webhookIds,omitempty" url:"webhookIds,omitempty"`
+	Data       *EntityResponse `json:"data,omitempty" url:"data,omitempty"`
+	CreatedAt  time.Time       `json:"createdAt" url:"createdAt"`
+	// The ID of the user who triggered this event
+	UserID *EntityUserID `json:"userId,omitempty" url:"userId,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityEvent) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityEvent) UnmarshalJSON(data []byte) error {
+	type embed EntityEvent
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+	}{
+		embed: embed(*e),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*e = EntityEvent(unmarshaler.embed)
+	e.CreatedAt = unmarshaler.CreatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityEvent) MarshalJSON() ([]byte, error) {
+	type embed EntityEvent
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+	}{
+		embed:     embed(*e),
+		CreatedAt: core.NewDateTime(e.CreatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (e *EntityEvent) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EntityEventsResponse struct {
+	Data  []*EntityEvent `json:"data,omitempty" url:"data,omitempty"`
+	Count int            `json:"count" url:"count"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityEventsResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityEventsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityEventsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityEventsResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityEventsResponse) String() string {
 	if len(e._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
 			return value
@@ -3392,9 +3500,11 @@ func (p *ProfileResponse) String() string {
 type RepresentativeID = string
 
 type RepresentativeRequest struct {
-	Name             *FullName               `json:"name,omitempty" url:"name,omitempty"`
-	Phone            *PhoneNumber            `json:"phone,omitempty" url:"phone,omitempty"`
-	Email            string                  `json:"email" url:"email"`
+	Name *FullName `json:"name,omitempty" url:"name,omitempty"`
+	// Either phone or email is required.
+	Phone *PhoneNumber `json:"phone,omitempty" url:"phone,omitempty"`
+	// Either phone or email is required.
+	Email            *string                 `json:"email,omitempty" url:"email,omitempty"`
 	Address          *Address                `json:"address,omitempty" url:"address,omitempty"`
 	BirthDate        *BirthDate              `json:"birthDate,omitempty" url:"birthDate,omitempty"`
 	GovernmentID     *IndividualGovernmentID `json:"governmentID,omitempty" url:"governmentID,omitempty"`
@@ -3442,7 +3552,7 @@ type RepresentativeResponse struct {
 	ID                   RepresentativeID  `json:"id" url:"id"`
 	Name                 *FullName         `json:"name,omitempty" url:"name,omitempty"`
 	Phone                *PhoneNumber      `json:"phone,omitempty" url:"phone,omitempty"`
-	Email                string            `json:"email" url:"email"`
+	Email                *string           `json:"email,omitempty" url:"email,omitempty"`
 	Address              *Address          `json:"address,omitempty" url:"address,omitempty"`
 	BirthDateProvided    bool              `json:"birthDateProvided" url:"birthDateProvided"`
 	GovernmentIDProvided bool              `json:"governmentIDProvided" url:"governmentIDProvided"`
@@ -4940,6 +5050,111 @@ func (i InvoiceDateFilter) Ptr() *InvoiceDateFilter {
 	return &i
 }
 
+type InvoiceEvent struct {
+	WebhookIDs []string         `json:"webhookIds,omitempty" url:"webhookIds,omitempty"`
+	Data       *InvoiceResponse `json:"data,omitempty" url:"data,omitempty"`
+	// The ID of the user who triggered this event
+	UserID    *EntityUserID `json:"userId,omitempty" url:"userId,omitempty"`
+	CreatedAt time.Time     `json:"createdAt" url:"createdAt"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceEvent) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceEvent) UnmarshalJSON(data []byte) error {
+	type embed InvoiceEvent
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceEvent(unmarshaler.embed)
+	i.CreatedAt = unmarshaler.CreatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceEvent) MarshalJSON() ([]byte, error) {
+	type embed InvoiceEvent
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+	}{
+		embed:     embed(*i),
+		CreatedAt: core.NewDateTime(i.CreatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceEvent) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceEventsResponse struct {
+	Data  []*InvoiceEvent `json:"data,omitempty" url:"data,omitempty"`
+	Count int             `json:"count" url:"count"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceEventsResponse) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceEventsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceEventsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceEventsResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceEventsResponse) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
 type InvoiceFailureType string
 
 const (
@@ -5180,11 +5395,13 @@ func (i *InvoiceLineItemCreationRequest) String() string {
 type InvoiceLineItemID = string
 
 type InvoiceLineItemIndividualUpdateRequest struct {
-	Name             *string           `json:"name,omitempty" url:"name,omitempty"`
-	Description      *string           `json:"description,omitempty" url:"description,omitempty"`
-	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
-	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Name        *string `json:"name,omitempty" url:"name,omitempty"`
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Category of the line item. Defaults to EXPENSE.
+	Category         *InvoiceLineItemCategory `json:"category,omitempty" url:"category,omitempty"`
+	ServiceStartDate *time.Time               `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time               `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string        `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
 

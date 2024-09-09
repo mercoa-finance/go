@@ -39,6 +39,7 @@ func (c *Client) Find(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// User ID or User ForeignID
 	userID mercoafinancego.EntityUserID,
 	request *user.EntityGetNotificationsRequest,
 	opts ...option.RequestOption,
@@ -158,6 +159,7 @@ func (c *Client) Get(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// User ID or User ForeignID
 	userID mercoafinancego.EntityUserID,
 	notificationID mercoafinancego.NotificationID,
 	opts ...option.RequestOption,
@@ -271,6 +273,7 @@ func (c *Client) Update(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID
 	entityID mercoafinancego.EntityID,
+	// User ID or User ForeignID
 	userID mercoafinancego.EntityUserID,
 	notificationID mercoafinancego.NotificationID,
 	request *mercoafinancego.NotificationUpdateRequest,

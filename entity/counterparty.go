@@ -17,6 +17,8 @@ type FindPayeeCounterpartiesRequest struct {
 	InvoiceMetrics *bool `json:"-" url:"invoiceMetrics,omitempty"`
 	// Filter by counterparty ids (Foreign ID is supported)
 	CounterpartyID []*mercoafinancego.EntityID `json:"-" url:"counterpartyId,omitempty"`
+	// If true, will return simple key/value metadata for the counterparties.
+	ReturnMetadata *bool `json:"-" url:"returnMetadata,omitempty"`
 	// Number of counterparties to return. Limit can range between 1 and 100, and the default is 10.
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// The ID of the counterparties to start after. If not provided, the first page of counterparties will be returned.
@@ -34,6 +36,8 @@ type FindPayorCounterpartiesRequest struct {
 	InvoiceMetrics *bool `json:"-" url:"invoiceMetrics,omitempty"`
 	// Filter by counterparty ids (Foreign ID is supported)
 	CounterpartyID []*mercoafinancego.EntityID `json:"-" url:"counterpartyId,omitempty"`
+	// If true, will return simple key/value metadata for the counterparties.
+	ReturnMetadata *bool `json:"-" url:"returnMetadata,omitempty"`
 	// Number of counterparties to return. Limit can range between 1 and 100, and the default is 10.
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// The ID of the counterparties to start after. If not provided, the first page of counterparties will be returned.

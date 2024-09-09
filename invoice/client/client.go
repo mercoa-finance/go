@@ -584,3 +584,118 @@ func (c *Client) Delete(
 	}
 	return nil
 }
+
+// Get all events for an invoice
+func (c *Client) Events(
+	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
+	invoiceID mercoafinancego.InvoiceID,
+	request *invoice.InvoiceInvoiceGetEventsRequest,
+	opts ...option.RequestOption,
+) (*mercoafinancego.InvoiceEventsResponse, error) {
+	options := core.NewRequestOptions(opts...)
+
+	baseURL := "https://api.mercoa.com"
+	if c.baseURL != "" {
+		baseURL = c.baseURL
+	}
+	if options.BaseURL != "" {
+		baseURL = options.BaseURL
+	}
+	endpointURL := core.EncodeURL(baseURL+"/invoice/%v/events", invoiceID)
+
+	queryParams, err := core.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
+
+	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
+
+	errorDecoder := func(statusCode int, body io.Reader) error {
+		raw, err := io.ReadAll(body)
+		if err != nil {
+			return err
+		}
+		apiError := core.NewAPIError(statusCode, errors.New(string(raw)))
+		decoder := json.NewDecoder(bytes.NewReader(raw))
+		var discriminant struct {
+			ErrorName string          `json:"errorName"`
+			Content   json.RawMessage `json:"content"`
+		}
+		if err := decoder.Decode(&discriminant); err != nil {
+			return apiError
+		}
+		switch discriminant.ErrorName {
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Unauthorized":
+			value := new(mercoafinancego.Unauthorized)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Forbidden":
+			value := new(mercoafinancego.Forbidden)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "NotFound":
+			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Unimplemented":
+			value := new(mercoafinancego.Unimplemented)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		}
+		return apiError
+	}
+
+	var response *mercoafinancego.InvoiceEventsResponse
+	if err := c.caller.Call(
+		ctx,
+		&core.CallParams{
+			URL:          endpointURL,
+			Method:       http.MethodGet,
+			MaxAttempts:  options.MaxAttempts,
+			Headers:      headers,
+			Client:       options.HTTPClient,
+			Response:     &response,
+			ErrorDecoder: errorDecoder,
+		},
+	); err != nil {
+		return nil, err
+	}
+	return response, nil
+}

@@ -7,7 +7,15 @@ import (
 	fmt "fmt"
 	mercoafinancego "github.com/mercoa-finance/go"
 	core "github.com/mercoa-finance/go/core"
+	time "time"
 )
+
+type EntityEntityGetEventsRequest struct {
+	// Start date filter. If not provided, events from the start of time will be returned.
+	StartDate *time.Time `json:"-" url:"startDate,omitempty"`
+	// End date filter. If not provided, events to the end of time will be returned.
+	EndDate *time.Time `json:"-" url:"endDate,omitempty"`
+}
 
 type FindEntities struct {
 	// If true, will include entity payment methods as part of the response
@@ -25,6 +33,8 @@ type FindEntities struct {
 	IsPayor *bool `json:"-" url:"isPayor,omitempty"`
 	// Filter entities by name. Partial matches are supported.
 	Name *string `json:"-" url:"name,omitempty"`
+	// If true, will return simple key/value metadata for the entity. For more complex metadata, use the Metadata API.
+	ReturnMetadata *bool `json:"-" url:"returnMetadata,omitempty"`
 	// Number of entities to return. Limit can range between 1 and 100, and the default is 10.
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// The ID of the entity to start after. If not provided, the first page of entities will be returned.
@@ -33,7 +43,7 @@ type FindEntities struct {
 
 type EntityGetRequest struct {
 	// If true, will return simple key/value metadata for the entity. For more complex metadata, use the Metadata API.
-	Metadata *bool `json:"-" url:"metadata,omitempty"`
+	ReturnMetadata *bool `json:"-" url:"returnMetadata,omitempty"`
 }
 
 type GenerateOnboardingLink struct {
