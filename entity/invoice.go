@@ -27,9 +27,9 @@ type EntityGetInvoicesRequest struct {
 	// The ID of the invoice to start after. If not provided, the first page of invoices will be returned.
 	StartingAfter *mercoafinancego.InvoiceID `json:"-" url:"startingAfter,omitempty"`
 	// Filter invoices by metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
-	Metadata []*mercoafinancego.InvoiceMetadataFilter `json:"-" url:"metadata,omitempty"`
+	Metadata []*mercoafinancego.MetadataFilter `json:"-" url:"metadata,omitempty"`
 	// Filter invoices by line item metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
-	LineItemMetadata []*mercoafinancego.InvoiceMetadataFilter `json:"-" url:"lineItemMetadata,omitempty"`
+	LineItemMetadata []*mercoafinancego.MetadataFilter `json:"-" url:"lineItemMetadata,omitempty"`
 	// Filter invoices by line item GL account ID. Each filter will be applied as an OR condition. Duplicate keys will be ignored.
 	LineItemGlAccountID []*string `json:"-" url:"lineItemGlAccountId,omitempty"`
 	// Find invoices by vendor name, invoice number, or amount. Partial matches are supported.
@@ -59,6 +59,10 @@ type InvoiceMetricsRequest struct {
 	ExcludeReceivables *bool `json:"-" url:"excludeReceivables,omitempty"`
 	// Return invoice metrics grouped by date.
 	ReturnByDate *mercoafinancego.InvoiceMetricsPerDateGroupBy `json:"-" url:"returnByDate,omitempty"`
+	// Return invoice metrics grouped by date. Defaults to daily.
+	ReturnByDateFrequency *mercoafinancego.InvoiceMetricsPerDateFrequency `json:"-" url:"returnByDateFrequency,omitempty"`
+	// Return invoice metrics grouped by.
+	GroupBy []*mercoafinancego.InvoiceMetricsGroupBy `json:"-" url:"groupBy,omitempty"`
 	// Filter invoices by payer ID.
 	PayerID []*mercoafinancego.EntityID `json:"-" url:"payerId,omitempty"`
 	// Filter invoices by vendor ID.
@@ -75,14 +79,6 @@ type InvoiceMetricsRequest struct {
 	EndDate *time.Time `json:"-" url:"endDate,omitempty"`
 	// Type of date to filter by if startDate and endDate filters are provided. Defaults to CREATED_AT.
 	DateType *mercoafinancego.InvoiceDateFilter `json:"-" url:"dateType,omitempty"`
-	// DEPRECATED. Use startDate, endDate, and dateType instead. Start date for invoice dueDate filter.
-	DueDateStart *time.Time `json:"-" url:"dueDateStart,omitempty"`
-	// DEPRECATED. Use startDate, endDate, and dateType instead. End date for invoice dueDate filter.
-	DueDateEnd *time.Time `json:"-" url:"dueDateEnd,omitempty"`
-	// DEPRECATED. Use startDate, endDate, and dateType instead. Start date for invoice created on date filter.
-	CreatedDateStart *time.Time `json:"-" url:"createdDateStart,omitempty"`
-	// DEPRECATED. Use startDate, endDate, and dateType instead. End date for invoice created date filter.
-	CreatedDateEnd *time.Time `json:"-" url:"createdDateEnd,omitempty"`
 	// Currency to filter on
 	Currency []*mercoafinancego.CurrencyCode `json:"-" url:"currency,omitempty"`
 }

@@ -150,7 +150,7 @@ func (c *Client) Find(
 	return response, nil
 }
 
-// Get invoice metrics for an entity with the given filters. Invoices will be grouped by currency. If none of excludePayables, excludeReceivables, payerId, vendorId, or invoiceId status filters are provided, excludeReceivables will be set to true.
+// Get invoice metrics for an entity with the given filters. Invoices will always be grouped by currency. If none of excludePayables, excludeReceivables, payerId, vendorId, or invoiceId status filters are provided, excludeReceivables will be set to true.
 func (c *Client) Metrics(
 	ctx context.Context,
 	// Entity ID or Entity ForeignID

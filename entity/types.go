@@ -33,7 +33,9 @@ type FindEntities struct {
 	IsPayor *bool `json:"-" url:"isPayor,omitempty"`
 	// Filter entities by name. Partial matches are supported.
 	Name *string `json:"-" url:"name,omitempty"`
-	// If true, will return simple key/value metadata for the entity. For more complex metadata, use the Metadata API.
+	// Filter entities by simple key/value metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
+	Metadata *mercoafinancego.MetadataFilter `json:"-" url:"metadata,omitempty"`
+	// If true, will return simple key/value metadata for the entities. For more complex metadata, use the Metadata API.
 	ReturnMetadata *bool `json:"-" url:"returnMetadata,omitempty"`
 	// Number of entities to return. Limit can range between 1 and 100, and the default is 10.
 	Limit *int `json:"-" url:"limit,omitempty"`

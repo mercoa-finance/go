@@ -34,9 +34,9 @@ type GetAllInvoicesRequest struct {
 	// Find invoices by vendor name, invoice number, or amount. Partial matches are supported.
 	Search *string `json:"-" url:"search,omitempty"`
 	// Filter invoices by metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
-	Metadata []*mercoafinancego.InvoiceMetadataFilter `json:"-" url:"metadata,omitempty"`
+	Metadata []*mercoafinancego.MetadataFilter `json:"-" url:"metadata,omitempty"`
 	// Filter invoices by line item metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
-	LineItemMetadata []*mercoafinancego.InvoiceMetadataFilter `json:"-" url:"lineItemMetadata,omitempty"`
+	LineItemMetadata []*mercoafinancego.MetadataFilter `json:"-" url:"lineItemMetadata,omitempty"`
 	// Filter invoices by line item GL account ID. Each filter will be applied as an OR condition. Duplicate keys will be ignored.
 	LineItemGlAccountID []*string `json:"-" url:"lineItemGlAccountId,omitempty"`
 	// Filter invoices by payer ID or payer foreign ID.

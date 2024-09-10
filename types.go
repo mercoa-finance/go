@@ -368,6 +368,50 @@ func (p *PhoneNumber) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
+type StringOrStringArray struct {
+	String     string
+	StringList []string
+}
+
+func (s *StringOrStringArray) UnmarshalJSON(data []byte) error {
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		s.String = valueString
+		return nil
+	}
+	var valueStringList []string
+	if err := json.Unmarshal(data, &valueStringList); err == nil {
+		s.StringList = valueStringList
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, s)
+}
+
+func (s StringOrStringArray) MarshalJSON() ([]byte, error) {
+	if s.String != "" {
+		return json.Marshal(s.String)
+	}
+	if s.StringList != nil {
+		return json.Marshal(s.StringList)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", s)
+}
+
+type StringOrStringArrayVisitor interface {
+	VisitString(string) error
+	VisitStringList([]string) error
+}
+
+func (s *StringOrStringArray) Accept(visitor StringOrStringArrayVisitor) error {
+	if s.String != "" {
+		return visitor.VisitString(s.String)
+	}
+	if s.StringList != nil {
+		return visitor.VisitStringList(s.StringList)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", s)
+}
+
 type EmailLog struct {
 	ID        EmailLogID `json:"id" url:"id"`
 	Subject   string     `json:"subject" url:"subject"`
@@ -5707,46 +5751,51 @@ func (i *InvoiceLineItemUpdateRequest) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-type InvoiceMetadataFilter struct {
-	Key   string `json:"key" url:"key"`
-	Value string `json:"value" url:"value"`
+type InvoiceMetricsGroupBy string
 
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+const (
+	InvoiceMetricsGroupByStatus InvoiceMetricsGroupBy = "STATUS"
+)
+
+func NewInvoiceMetricsGroupByFromString(s string) (InvoiceMetricsGroupBy, error) {
+	switch s {
+	case "STATUS":
+		return InvoiceMetricsGroupByStatus, nil
+	}
+	var t InvoiceMetricsGroupBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (i *InvoiceMetadataFilter) GetExtraProperties() map[string]interface{} {
-	return i.extraProperties
+func (i InvoiceMetricsGroupBy) Ptr() *InvoiceMetricsGroupBy {
+	return &i
 }
 
-func (i *InvoiceMetadataFilter) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceMetadataFilter
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InvoiceMetadataFilter(value)
+type InvoiceMetricsPerDateFrequency string
 
-	extraProperties, err := core.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
+const (
+	InvoiceMetricsPerDateFrequencyDaily   InvoiceMetricsPerDateFrequency = "DAILY"
+	InvoiceMetricsPerDateFrequencyWeekly  InvoiceMetricsPerDateFrequency = "WEEKLY"
+	InvoiceMetricsPerDateFrequencyMonthly InvoiceMetricsPerDateFrequency = "MONTHLY"
+	InvoiceMetricsPerDateFrequencyYearly  InvoiceMetricsPerDateFrequency = "YEARLY"
+)
 
-	i._rawJSON = json.RawMessage(data)
-	return nil
+func NewInvoiceMetricsPerDateFrequencyFromString(s string) (InvoiceMetricsPerDateFrequency, error) {
+	switch s {
+	case "DAILY":
+		return InvoiceMetricsPerDateFrequencyDaily, nil
+	case "WEEKLY":
+		return InvoiceMetricsPerDateFrequencyWeekly, nil
+	case "MONTHLY":
+		return InvoiceMetricsPerDateFrequencyMonthly, nil
+	case "YEARLY":
+		return InvoiceMetricsPerDateFrequencyYearly, nil
+	}
+	var t InvoiceMetricsPerDateFrequency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (i *InvoiceMetadataFilter) String() string {
-	if len(i._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
+func (i InvoiceMetricsPerDateFrequency) Ptr() *InvoiceMetricsPerDateFrequency {
+	return &i
 }
 
 type InvoiceMetricsPerDateGroupBy string
@@ -5781,11 +5830,13 @@ func (i InvoiceMetricsPerDateGroupBy) Ptr() *InvoiceMetricsPerDateGroupBy {
 }
 
 type InvoiceMetricsPerDateResponse struct {
-	Date          time.Time    `json:"date" url:"date"`
-	TotalAmount   float64      `json:"totalAmount" url:"totalAmount"`
-	TotalCount    int          `json:"totalCount" url:"totalCount"`
-	AverageAmount float64      `json:"averageAmount" url:"averageAmount"`
-	Currency      CurrencyCode `json:"currency" url:"currency"`
+	// If groupBy is provided, this will be the group by value.
+	Group         []map[string]string `json:"group,omitempty" url:"group,omitempty"`
+	Date          time.Time           `json:"date" url:"date"`
+	TotalAmount   float64             `json:"totalAmount" url:"totalAmount"`
+	TotalCount    int                 `json:"totalCount" url:"totalCount"`
+	AverageAmount float64             `json:"averageAmount" url:"averageAmount"`
+	Currency      CurrencyCode        `json:"currency" url:"currency"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -5844,6 +5895,8 @@ func (i *InvoiceMetricsPerDateResponse) String() string {
 }
 
 type InvoiceMetricsResponse struct {
+	// If groupBy is provided, this will be the group by value.
+	Group         []map[string]string                       `json:"group,omitempty" url:"group,omitempty"`
 	TotalAmount   float64                                   `json:"totalAmount" url:"totalAmount"`
 	TotalCount    int                                       `json:"totalCount" url:"totalCount"`
 	AverageAmount float64                                   `json:"averageAmount" url:"averageAmount"`
@@ -6386,6 +6439,49 @@ func (i *InvoiceUpdateRequest) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", i)
+}
+
+type MetadataFilter struct {
+	Key string `json:"key" url:"key"`
+	// If multiple values are provided, the filter will match if any of the values match (OR filter)
+	Value *StringOrStringArray `json:"value,omitempty" url:"value,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (m *MetadataFilter) GetExtraProperties() map[string]interface{} {
+	return m.extraProperties
+}
+
+func (m *MetadataFilter) UnmarshalJSON(data []byte) error {
+	type unmarshaler MetadataFilter
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MetadataFilter(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+
+	m._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MetadataFilter) String() string {
+	if len(m._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(m._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
 }
 
 type PaymentDestinationOptions struct {
