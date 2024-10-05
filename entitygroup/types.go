@@ -7,8 +7,8 @@ import (
 )
 
 type EntityGroupGetRequest struct {
-	// If true, will return simple key/value metadata for entities in the group. For more complex metadata, use the Metadata API.
-	ReturnEntityMetadata *bool `json:"-" url:"returnEntityMetadata,omitempty"`
+	// Return simple key/value metadata for the specified keys for the entities in the group. For more complex metadata, use the Metadata API.
+	ReturnEntityMetadata []*string `json:"-" url:"returnEntityMetadata,omitempty"`
 }
 
 type EntityGroupFindRequest struct {

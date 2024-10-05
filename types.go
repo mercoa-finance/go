@@ -1736,6 +1736,131 @@ func (e *Ein) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
+type EmailTemplateID = string
+
+type EmailTemplateRequest struct {
+	TemplateType EmailTemplateType `json:"templateType" url:"templateType"`
+	// The name of the email template.
+	Name string `json:"name" url:"name"`
+	// The subject of the email template.
+	Subject string `json:"subject" url:"subject"`
+	// The HTML content of the email template.
+	Content string `json:"content" url:"content"`
+	// If true, this email template will be used as the default template for new invoices.
+	IsDefault *bool `json:"isDefault,omitempty" url:"isDefault,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EmailTemplateRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EmailTemplateRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailTemplateRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailTemplateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailTemplateRequest) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EmailTemplateResponse struct {
+	ID EmailTemplateID `json:"id" url:"id"`
+	// The ID of the entity that this email template is associated with.
+	EntityID     EntityID          `json:"entityId" url:"entityId"`
+	TemplateType EmailTemplateType `json:"templateType" url:"templateType"`
+	// The name of the email template.
+	Name string `json:"name" url:"name"`
+	// The subject of the email template.
+	Subject string `json:"subject" url:"subject"`
+	// The HTML content of the email template.
+	Content string `json:"content" url:"content"`
+	// True if this email template is the default template for new invoices.
+	IsDefault bool `json:"isDefault" url:"isDefault"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EmailTemplateResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EmailTemplateResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailTemplateResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailTemplateResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailTemplateResponse) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EmailTemplateType string
+
+const (
+	EmailTemplateTypePayment      EmailTemplateType = "PAYMENT"
+	EmailTemplateTypeDisbursement EmailTemplateType = "DISBURSEMENT"
+)
+
+func NewEmailTemplateTypeFromString(s string) (EmailTemplateType, error) {
+	switch s {
+	case "PAYMENT":
+		return EmailTemplateTypePayment, nil
+	case "DISBURSEMENT":
+		return EmailTemplateTypeDisbursement, nil
+	}
+	var t EmailTemplateType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailTemplateType) Ptr() *EmailTemplateType {
+	return &e
+}
+
 type EntityAddPayeesRequest struct {
 	// List of payee entity IDs or foreign IDs to associate with the entity
 	Payees []EntityID `json:"payees,omitempty" url:"payees,omitempty"`
@@ -2378,6 +2503,8 @@ type EntityUpdateRequest struct {
 	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
 	// Simple key/value metadata associated with this entity. For more complex metadata, use the Metadata API.
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// The ID of the entity that this entity is connected to. This is used to trigger notifications to the connected entity when this entity is updated.
+	ConnectedEntityID *EntityID `json:"connectedEntityId,omitempty" url:"connectedEntityId,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -3137,6 +3264,8 @@ type NotificationPolicyRequest struct {
 	Disabled *bool `json:"disabled,omitempty" url:"disabled,omitempty"`
 	// List of user roles that should receive notifications in addition to the default users for this notification type
 	AdditionalRoles []string `json:"additionalRoles,omitempty" url:"additionalRoles,omitempty"`
+	// List of user IDs that should receive notifications in addition to the default users for this notification type
+	AdditionalUsers []EntityUserID `json:"additionalUsers,omitempty" url:"additionalUsers,omitempty"`
 	// Set to true if the selected notification type should be sent to the counterparty if this is a payable invoice.
 	NotifyPayeeCounterparty *bool `json:"notifyPayeeCounterparty,omitempty" url:"notifyPayeeCounterparty,omitempty"`
 	// Set to true if the selected notification type should be sent to the counterparty if this is a receivable invoice.
@@ -3185,6 +3314,8 @@ type NotificationPolicyResponse struct {
 	Disabled bool `json:"disabled" url:"disabled"`
 	// List of user roles that should receive notifications in addition to the default users for this notification type
 	AdditionalRoles []string `json:"additionalRoles,omitempty" url:"additionalRoles,omitempty"`
+	// List of user IDs that should receive notifications in addition to the default users for this notification type
+	AdditionalUsers []EntityUserID `json:"additionalUsers,omitempty" url:"additionalUsers,omitempty"`
 	// True if the selected notification type should be sent to the counterparty if this is a payable invoice.
 	NotifyPayeeCounterparty bool `json:"notifyPayeeCounterparty" url:"notifyPayeeCounterparty"`
 	// True if the selected notification type should be sent to the counterparty if this is a receivable invoice.
@@ -3324,16 +3455,17 @@ func (n NotificationStatus) Ptr() *NotificationStatus {
 type NotificationType string
 
 const (
-	NotificationTypeInvoiceApprovalNeeded NotificationType = "INVOICE_APPROVAL_NEEDED"
-	NotificationTypeInvoiceApproved       NotificationType = "INVOICE_APPROVED"
-	NotificationTypeInvoiceRejected       NotificationType = "INVOICE_REJECTED"
-	NotificationTypeInvoiceScheduled      NotificationType = "INVOICE_SCHEDULED"
-	NotificationTypeInvoicePending        NotificationType = "INVOICE_PENDING"
-	NotificationTypeInvoicePaid           NotificationType = "INVOICE_PAID"
-	NotificationTypeInvoiceCanceled       NotificationType = "INVOICE_CANCELED"
-	NotificationTypeInvoiceCreated        NotificationType = "INVOICE_CREATED"
-	NotificationTypeInvoiceEmailed        NotificationType = "INVOICE_EMAILED"
-	NotificationTypeInvoiceFailed         NotificationType = "INVOICE_FAILED"
+	NotificationTypeInvoiceApprovalNeeded           NotificationType = "INVOICE_APPROVAL_NEEDED"
+	NotificationTypeInvoiceApproved                 NotificationType = "INVOICE_APPROVED"
+	NotificationTypeInvoiceRejected                 NotificationType = "INVOICE_REJECTED"
+	NotificationTypeInvoiceScheduled                NotificationType = "INVOICE_SCHEDULED"
+	NotificationTypeInvoicePending                  NotificationType = "INVOICE_PENDING"
+	NotificationTypeInvoicePaid                     NotificationType = "INVOICE_PAID"
+	NotificationTypeInvoiceCanceled                 NotificationType = "INVOICE_CANCELED"
+	NotificationTypeInvoiceCreated                  NotificationType = "INVOICE_CREATED"
+	NotificationTypeInvoiceEmailed                  NotificationType = "INVOICE_EMAILED"
+	NotificationTypeInvoiceFailed                   NotificationType = "INVOICE_FAILED"
+	NotificationTypeCounterpartyOnboardingCompleted NotificationType = "COUNTERPARTY_ONBOARDING_COMPLETED"
 )
 
 func NewNotificationTypeFromString(s string) (NotificationType, error) {
@@ -3358,6 +3490,8 @@ func NewNotificationTypeFromString(s string) (NotificationType, error) {
 		return NotificationTypeInvoiceEmailed, nil
 	case "INVOICE_FAILED":
 		return NotificationTypeInvoiceFailed, nil
+	case "COUNTERPARTY_ONBOARDING_COMPLETED":
+		return NotificationTypeCounterpartyOnboardingCompleted, nil
 	}
 	var t NotificationType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4931,6 +5065,50 @@ func (f *FindInvoiceResponse) String() string {
 }
 
 type InvoiceCreationRequest struct {
+	InvoiceCreationWithEntityRequest      *InvoiceCreationWithEntityRequest
+	InvoiceCreationWithEntityGroupRequest *InvoiceCreationWithEntityGroupRequest
+}
+
+func (i *InvoiceCreationRequest) UnmarshalJSON(data []byte) error {
+	valueInvoiceCreationWithEntityRequest := new(InvoiceCreationWithEntityRequest)
+	if err := json.Unmarshal(data, &valueInvoiceCreationWithEntityRequest); err == nil {
+		i.InvoiceCreationWithEntityRequest = valueInvoiceCreationWithEntityRequest
+		return nil
+	}
+	valueInvoiceCreationWithEntityGroupRequest := new(InvoiceCreationWithEntityGroupRequest)
+	if err := json.Unmarshal(data, &valueInvoiceCreationWithEntityGroupRequest); err == nil {
+		i.InvoiceCreationWithEntityGroupRequest = valueInvoiceCreationWithEntityGroupRequest
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, i)
+}
+
+func (i InvoiceCreationRequest) MarshalJSON() ([]byte, error) {
+	if i.InvoiceCreationWithEntityRequest != nil {
+		return json.Marshal(i.InvoiceCreationWithEntityRequest)
+	}
+	if i.InvoiceCreationWithEntityGroupRequest != nil {
+		return json.Marshal(i.InvoiceCreationWithEntityGroupRequest)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", i)
+}
+
+type InvoiceCreationRequestVisitor interface {
+	VisitInvoiceCreationWithEntityRequest(*InvoiceCreationWithEntityRequest) error
+	VisitInvoiceCreationWithEntityGroupRequest(*InvoiceCreationWithEntityGroupRequest) error
+}
+
+func (i *InvoiceCreationRequest) Accept(visitor InvoiceCreationRequestVisitor) error {
+	if i.InvoiceCreationWithEntityRequest != nil {
+		return visitor.VisitInvoiceCreationWithEntityRequest(i.InvoiceCreationWithEntityRequest)
+	}
+	if i.InvoiceCreationWithEntityGroupRequest != nil {
+		return visitor.VisitInvoiceCreationWithEntityGroupRequest(i.InvoiceCreationWithEntityGroupRequest)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", i)
+}
+
+type InvoiceCreationWithEntityGroupRequest struct {
 	Status *InvoiceStatus `json:"status,omitempty" url:"status,omitempty"`
 	// Total amount of invoice in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
 	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
@@ -4978,19 +5156,19 @@ type InvoiceCreationRequest struct {
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule                  `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	LineItems       []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
-	// ID of entity who created this invoice.
-	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
+	// ID of the entity group who created this invoice.
+	CreatorEntityGroupID EntityGroupID `json:"creatorEntityGroupId" url:"creatorEntityGroupId"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
 }
 
-func (i *InvoiceCreationRequest) GetExtraProperties() map[string]interface{} {
+func (i *InvoiceCreationWithEntityGroupRequest) GetExtraProperties() map[string]interface{} {
 	return i.extraProperties
 }
 
-func (i *InvoiceCreationRequest) UnmarshalJSON(data []byte) error {
-	type embed InvoiceCreationRequest
+func (i *InvoiceCreationWithEntityGroupRequest) UnmarshalJSON(data []byte) error {
+	type embed InvoiceCreationWithEntityGroupRequest
 	var unmarshaler = struct {
 		embed
 		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
@@ -5005,7 +5183,7 @@ func (i *InvoiceCreationRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*i = InvoiceCreationRequest(unmarshaler.embed)
+	*i = InvoiceCreationWithEntityGroupRequest(unmarshaler.embed)
 	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
 	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
 	i.SettlementDate = unmarshaler.SettlementDate.TimePtr()
@@ -5023,8 +5201,8 @@ func (i *InvoiceCreationRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (i *InvoiceCreationRequest) MarshalJSON() ([]byte, error) {
-	type embed InvoiceCreationRequest
+func (i *InvoiceCreationWithEntityGroupRequest) MarshalJSON() ([]byte, error) {
+	type embed InvoiceCreationWithEntityGroupRequest
 	var marshaler = struct {
 		embed
 		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
@@ -5045,7 +5223,134 @@ func (i *InvoiceCreationRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(marshaler)
 }
 
-func (i *InvoiceCreationRequest) String() string {
+func (i *InvoiceCreationWithEntityGroupRequest) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceCreationWithEntityRequest struct {
+	Status *InvoiceStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Total amount of invoice in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
+	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+	// Currency code for the amount. Defaults to USD.
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	// Date the invoice was issued.
+	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
+	// Initial date when funds are scheduled to be deducted from payer's account.
+	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// Date of funds settlement.
+	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
+	// Due date of invoice.
+	DueDate       *time.Time `json:"dueDate,omitempty" url:"dueDate,omitempty"`
+	InvoiceNumber *string    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
+	// Note to self or memo on invoice.
+	NoteToSelf       *string    `json:"noteToSelf,omitempty" url:"noteToSelf,omitempty"`
+	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	// ID or foreign ID of the payer of this invoice.
+	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
+	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	// ID or foreign ID of the vendor of this invoice.
+	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
+	PaymentDestinationID *PaymentMethodID `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
+	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	// Set approvers for this invoice.
+	Approvers []*ApprovalSlotAssignment `json:"approvers,omitempty" url:"approvers,omitempty"`
+	// Metadata associated with this invoice.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
+	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	// Base64 encoded image or PDF of invoice document. PNG, JPG, WEBP, and PDF are supported. 10MB max. If the invoice already has a document, this will add a new document to the invoice.
+	Document *string `json:"document,omitempty" url:"document,omitempty"`
+	// DEPRECATED. Use document field instead.
+	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
+	// ID of entity user who created this invoice.
+	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
+	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
+	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
+	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
+	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
+	PaymentSchedule *PaymentSchedule                  `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	LineItems       []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	// ID of the entity who created this invoice.
+	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceCreationWithEntityRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceCreationWithEntityRequest) UnmarshalJSON(data []byte) error {
+	type embed InvoiceCreationWithEntityRequest
+	var unmarshaler = struct {
+		embed
+		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		SettlementDate   *core.DateTime `json:"settlementDate,omitempty"`
+		DueDate          *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceCreationWithEntityRequest(unmarshaler.embed)
+	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
+	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.SettlementDate = unmarshaler.SettlementDate.TimePtr()
+	i.DueDate = unmarshaler.DueDate.TimePtr()
+	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
+	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceCreationWithEntityRequest) MarshalJSON() ([]byte, error) {
+	type embed InvoiceCreationWithEntityRequest
+	var marshaler = struct {
+		embed
+		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		SettlementDate   *core.DateTime `json:"settlementDate,omitempty"`
+		DueDate          *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed:            embed(*i),
+		InvoiceDate:      core.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:    core.NewOptionalDateTime(i.DeductionDate),
+		SettlementDate:   core.NewOptionalDateTime(i.SettlementDate),
+		DueDate:          core.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceCreationWithEntityRequest) String() string {
 	if len(i._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
 			return value
@@ -7269,8 +7574,9 @@ func (c *CommonOnboardingOptions) String() string {
 }
 
 type EmailProviderRequest struct {
-	Sender      *EmailSenderRequest `json:"sender,omitempty" url:"sender,omitempty"`
-	InboxDomain string              `json:"inboxDomain" url:"inboxDomain"`
+	Sender                  *EmailSenderRequest `json:"sender,omitempty" url:"sender,omitempty"`
+	InboxDomain             string              `json:"inboxDomain" url:"inboxDomain"`
+	AlternativeInboxDomains []string            `json:"alternativeInboxDomains,omitempty" url:"alternativeInboxDomains,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -7311,8 +7617,9 @@ func (e *EmailProviderRequest) String() string {
 }
 
 type EmailProviderResponse struct {
-	Sender      *EmailSenderResponse `json:"sender,omitempty" url:"sender,omitempty"`
-	InboxDomain string               `json:"inboxDomain" url:"inboxDomain"`
+	Sender                  *EmailSenderResponse `json:"sender,omitempty" url:"sender,omitempty"`
+	InboxDomain             string               `json:"inboxDomain" url:"inboxDomain"`
+	AlternativeInboxDomains []string             `json:"alternativeInboxDomains,omitempty" url:"alternativeInboxDomains,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -10904,29 +11211,27 @@ func (p *PaymentMethodWithEntityResponse) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-type PlaidLinkRequest struct {
+type PlaidAccessTokenRequest struct {
 	// Plaid account ID
 	AccountID string `json:"accountId" url:"accountId"`
-	// Public token received from Plaid Link. Use this if linking the account using the Plaid Link frontend component.
-	PublicToken *string `json:"publicToken,omitempty" url:"publicToken,omitempty"`
 	// Plaid access token for the account. If you already have an access token for the account (for example, you have linked the account to your app already), use this instead of publicToken.
-	AccessToken *string `json:"accessToken,omitempty" url:"accessToken,omitempty"`
+	AccessToken string `json:"accessToken" url:"accessToken"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
 }
 
-func (p *PlaidLinkRequest) GetExtraProperties() map[string]interface{} {
+func (p *PlaidAccessTokenRequest) GetExtraProperties() map[string]interface{} {
 	return p.extraProperties
 }
 
-func (p *PlaidLinkRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler PlaidLinkRequest
+func (p *PlaidAccessTokenRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlaidAccessTokenRequest
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PlaidLinkRequest(value)
+	*p = PlaidAccessTokenRequest(value)
 
 	extraProperties, err := core.ExtractExtraProperties(data, *p)
 	if err != nil {
@@ -10938,7 +11243,150 @@ func (p *PlaidLinkRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (p *PlaidLinkRequest) String() string {
+func (p *PlaidAccessTokenRequest) String() string {
+	if len(p._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PlaidLinkRequest struct {
+	PlaidProcessorTokenRequest *PlaidProcessorTokenRequest
+	PlaidPublicTokenRequest    *PlaidPublicTokenRequest
+	PlaidAccessTokenRequest    *PlaidAccessTokenRequest
+}
+
+func (p *PlaidLinkRequest) UnmarshalJSON(data []byte) error {
+	valuePlaidProcessorTokenRequest := new(PlaidProcessorTokenRequest)
+	if err := json.Unmarshal(data, &valuePlaidProcessorTokenRequest); err == nil {
+		p.PlaidProcessorTokenRequest = valuePlaidProcessorTokenRequest
+		return nil
+	}
+	valuePlaidPublicTokenRequest := new(PlaidPublicTokenRequest)
+	if err := json.Unmarshal(data, &valuePlaidPublicTokenRequest); err == nil {
+		p.PlaidPublicTokenRequest = valuePlaidPublicTokenRequest
+		return nil
+	}
+	valuePlaidAccessTokenRequest := new(PlaidAccessTokenRequest)
+	if err := json.Unmarshal(data, &valuePlaidAccessTokenRequest); err == nil {
+		p.PlaidAccessTokenRequest = valuePlaidAccessTokenRequest
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, p)
+}
+
+func (p PlaidLinkRequest) MarshalJSON() ([]byte, error) {
+	if p.PlaidProcessorTokenRequest != nil {
+		return json.Marshal(p.PlaidProcessorTokenRequest)
+	}
+	if p.PlaidPublicTokenRequest != nil {
+		return json.Marshal(p.PlaidPublicTokenRequest)
+	}
+	if p.PlaidAccessTokenRequest != nil {
+		return json.Marshal(p.PlaidAccessTokenRequest)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", p)
+}
+
+type PlaidLinkRequestVisitor interface {
+	VisitPlaidProcessorTokenRequest(*PlaidProcessorTokenRequest) error
+	VisitPlaidPublicTokenRequest(*PlaidPublicTokenRequest) error
+	VisitPlaidAccessTokenRequest(*PlaidAccessTokenRequest) error
+}
+
+func (p *PlaidLinkRequest) Accept(visitor PlaidLinkRequestVisitor) error {
+	if p.PlaidProcessorTokenRequest != nil {
+		return visitor.VisitPlaidProcessorTokenRequest(p.PlaidProcessorTokenRequest)
+	}
+	if p.PlaidPublicTokenRequest != nil {
+		return visitor.VisitPlaidPublicTokenRequest(p.PlaidPublicTokenRequest)
+	}
+	if p.PlaidAccessTokenRequest != nil {
+		return visitor.VisitPlaidAccessTokenRequest(p.PlaidAccessTokenRequest)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", p)
+}
+
+type PlaidProcessorTokenRequest struct {
+	// Plaid processor token for the account. If you already have a processor token for the account (for example, you have linked the account to your app already), use this instead of publicToken.
+	ProcessorToken string `json:"processorToken" url:"processorToken"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PlaidProcessorTokenRequest) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PlaidProcessorTokenRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlaidProcessorTokenRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlaidProcessorTokenRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
+	p._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlaidProcessorTokenRequest) String() string {
+	if len(p._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PlaidPublicTokenRequest struct {
+	// Plaid account ID
+	AccountID string `json:"accountId" url:"accountId"`
+	// Public token received from Plaid Link. Use this if linking the account using the Plaid Link frontend component.
+	PublicToken string `json:"publicToken" url:"publicToken"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PlaidPublicTokenRequest) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PlaidPublicTokenRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlaidPublicTokenRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlaidPublicTokenRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
+	p._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlaidPublicTokenRequest) String() string {
 	if len(p._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
 			return value
@@ -11078,6 +11526,51 @@ func (u *UtilityPaymentMethodResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+type CounterpartyEventWebhook struct {
+	EventType string `json:"eventType" url:"eventType"`
+	// The ID of the entity that owns the counterparty relationship
+	EntityID EntityID `json:"entityId" url:"entityId"`
+	// The ID of the counterparty
+	CounterpartyID EntityID `json:"counterpartyId" url:"counterpartyId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CounterpartyEventWebhook) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CounterpartyEventWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler CounterpartyEventWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CounterpartyEventWebhook(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CounterpartyEventWebhook) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 type CounterpartyWebhook struct {

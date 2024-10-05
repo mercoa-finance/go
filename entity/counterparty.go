@@ -20,7 +20,7 @@ type FindPayeeCounterpartiesRequest struct {
 	// Filter counterparties by simple key/value metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
 	Metadata []*mercoafinancego.MetadataFilter `json:"-" url:"metadata,omitempty"`
 	// If true, will return simple key/value metadata for the counterparties. For more complex metadata, use the Metadata API.
-	ReturnMetadata *bool `json:"-" url:"returnMetadata,omitempty"`
+	ReturnMetadata []*string `json:"-" url:"returnMetadata,omitempty"`
 	// Number of counterparties to return. Limit can range between 1 and 100, and the default is 10.
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// The ID of the counterparties to start after. If not provided, the first page of counterparties will be returned.
@@ -41,7 +41,7 @@ type FindPayorCounterpartiesRequest struct {
 	// Filter counterparties by simple key/value metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
 	Metadata []*mercoafinancego.MetadataFilter `json:"-" url:"metadata,omitempty"`
 	// If true, will return simple key/value metadata for the counterparties. For more complex metadata, use the Metadata API.
-	ReturnMetadata *bool `json:"-" url:"returnMetadata,omitempty"`
+	ReturnMetadata []*string `json:"-" url:"returnMetadata,omitempty"`
 	// Number of counterparties to return. Limit can range between 1 and 100, and the default is 10.
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// The ID of the counterparties to start after. If not provided, the first page of counterparties will be returned.

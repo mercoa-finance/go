@@ -35,8 +35,8 @@ type FindEntities struct {
 	Name *string `json:"-" url:"name,omitempty"`
 	// Filter entities by simple key/value metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
 	Metadata *mercoafinancego.MetadataFilter `json:"-" url:"metadata,omitempty"`
-	// If true, will return simple key/value metadata for the entities. For more complex metadata, use the Metadata API.
-	ReturnMetadata *bool `json:"-" url:"returnMetadata,omitempty"`
+	// Return simple key/value metadata for the specified keys for the entities. For more complex metadata, use the Metadata API.
+	ReturnMetadata []*string `json:"-" url:"returnMetadata,omitempty"`
 	// Number of entities to return. Limit can range between 1 and 100, and the default is 10.
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// The ID of the entity to start after. If not provided, the first page of entities will be returned.
@@ -44,8 +44,8 @@ type FindEntities struct {
 }
 
 type EntityGetRequest struct {
-	// If true, will return simple key/value metadata for the entity. For more complex metadata, use the Metadata API.
-	ReturnMetadata *bool `json:"-" url:"returnMetadata,omitempty"`
+	// Return simple key/value metadata for the specified keys for the entities. For more complex metadata, use the Metadata API.
+	ReturnMetadata []*string `json:"-" url:"returnMetadata,omitempty"`
 }
 
 type GenerateOnboardingLink struct {

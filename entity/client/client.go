@@ -15,6 +15,7 @@ import (
 	customization "github.com/mercoa-finance/go/entity/customization"
 	document "github.com/mercoa-finance/go/entity/document"
 	emaillogclient "github.com/mercoa-finance/go/entity/emaillog/client"
+	emailtemplate "github.com/mercoa-finance/go/entity/emailtemplate"
 	externalaccountingsystem "github.com/mercoa-finance/go/entity/externalaccountingsystem"
 	invoice "github.com/mercoa-finance/go/entity/invoice"
 	metadata "github.com/mercoa-finance/go/entity/metadata"
@@ -38,6 +39,7 @@ type Client struct {
 	Counterparty             *counterparty.Client
 	Customization            *customization.Client
 	Document                 *document.Client
+	EmailTemplate            *emailtemplate.Client
 	ExternalAccountingSystem *externalaccountingsystem.Client
 	Invoice                  *invoice.Client
 	Metadata                 *metadata.Client
@@ -63,6 +65,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		Counterparty:             counterparty.NewClient(opts...),
 		Customization:            customization.NewClient(opts...),
 		Document:                 document.NewClient(opts...),
+		EmailTemplate:            emailtemplate.NewClient(opts...),
 		ExternalAccountingSystem: externalaccountingsystem.NewClient(opts...),
 		Invoice:                  invoice.NewClient(opts...),
 		Metadata:                 metadata.NewClient(opts...),
