@@ -158,7 +158,7 @@ func (c *Client) GetAll(
 // Create an entity group
 func (c *Client) Create(
 	ctx context.Context,
-	request *mercoafinancego.EntityGroupRequest,
+	request *mercoafinancego.EntityGroupCreateRequest,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.EntityGroupResponse, error) {
 	options := core.NewRequestOptions(opts...)
@@ -381,7 +381,7 @@ func (c *Client) Update(
 	ctx context.Context,
 	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
-	request *mercoafinancego.EntityGroupRequest,
+	request *mercoafinancego.EntityGroupUpdateRequest,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.EntityGroupResponse, error) {
 	options := core.NewRequestOptions(opts...)
@@ -703,7 +703,7 @@ func (c *Client) AddEntities(
 	ctx context.Context,
 	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
-	request *mercoafinancego.EntityGroupEntityUpdateRequest,
+	request *mercoafinancego.EntityGroupAddEntitiesRequest,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.EntityGroupResponse, error) {
 	options := core.NewRequestOptions(opts...)
@@ -811,7 +811,7 @@ func (c *Client) RemoveEntities(
 	ctx context.Context,
 	// Entity Group ID or Entity Group ForeignID
 	entityGroupID mercoafinancego.EntityGroupID,
-	request *mercoafinancego.EntityGroupEntityUpdateRequest,
+	request *mercoafinancego.EntityGroupRemoveEntitiesRequest,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.EntityGroupResponse, error) {
 	options := core.NewRequestOptions(opts...)

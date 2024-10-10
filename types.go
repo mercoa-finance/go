@@ -525,25 +525,33 @@ func (e *EmailLogResponse) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-type EntityGroupEntityUpdateRequest struct {
-	// List of entity IDs or foreign IDs
+type EntityGroupAddEntitiesRequest struct {
+	// List of entity IDs or foreign IDs to add to the group
 	EntityIDs []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
+	// Entity ID / foreign ID of an entity currently in the group to copy users and roles from OR a boolean defining if users should be copied to the new entities.
+	//
+	// If false, users and roles will not be copied.
+	// If not provided or true, users and roles will be copied from the first entity the group.
+	// If a valid ID is provided, users and roles will be copied from the corresponding provided entity in the group.
+	//
+	// Note: If users and roles are copied, any preexisting users will be removed from each of the entities set to be added to the group.
+	CopyUsersFrom *EntityIDOrBoolean `json:"copyUsersFrom,omitempty" url:"copyUsersFrom,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
 }
 
-func (e *EntityGroupEntityUpdateRequest) GetExtraProperties() map[string]interface{} {
+func (e *EntityGroupAddEntitiesRequest) GetExtraProperties() map[string]interface{} {
 	return e.extraProperties
 }
 
-func (e *EntityGroupEntityUpdateRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler EntityGroupEntityUpdateRequest
+func (e *EntityGroupAddEntitiesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityGroupAddEntitiesRequest
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*e = EntityGroupEntityUpdateRequest(value)
+	*e = EntityGroupAddEntitiesRequest(value)
 
 	extraProperties, err := core.ExtractExtraProperties(data, *e)
 	if err != nil {
@@ -555,7 +563,54 @@ func (e *EntityGroupEntityUpdateRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e *EntityGroupEntityUpdateRequest) String() string {
+func (e *EntityGroupAddEntitiesRequest) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EntityGroupCreateRequest struct {
+	ForeignID   *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	Name        *string `json:"name,omitempty" url:"name,omitempty"`
+	EmailToName *string `json:"emailToName,omitempty" url:"emailToName,omitempty"`
+	// Metadata key/value pairs to associate with this group. Will overwrite existing metadata.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// List of entity IDs or foreign IDs
+	EntityIDs []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityGroupCreateRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityGroupCreateRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityGroupCreateRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityGroupCreateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityGroupCreateRequest) String() string {
 	if len(e._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
 			return value
@@ -612,30 +667,25 @@ func (e *EntityGroupFindResponse) String() string {
 
 type EntityGroupID = string
 
-type EntityGroupRequest struct {
-	// List of entity IDs or foreign IDs
-	EntityIDs   []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
-	ForeignID   *string    `json:"foreignId,omitempty" url:"foreignId,omitempty"`
-	Name        *string    `json:"name,omitempty" url:"name,omitempty"`
-	EmailToName *string    `json:"emailToName,omitempty" url:"emailToName,omitempty"`
-	// Metadata key/value pairs to associate with this group. Will overwrite existing metadata.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+type EntityGroupRemoveEntitiesRequest struct {
+	// List of entity IDs or foreign IDs to remove from the group
+	EntityIDs []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
 }
 
-func (e *EntityGroupRequest) GetExtraProperties() map[string]interface{} {
+func (e *EntityGroupRemoveEntitiesRequest) GetExtraProperties() map[string]interface{} {
 	return e.extraProperties
 }
 
-func (e *EntityGroupRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler EntityGroupRequest
+func (e *EntityGroupRemoveEntitiesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityGroupRemoveEntitiesRequest
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*e = EntityGroupRequest(value)
+	*e = EntityGroupRemoveEntitiesRequest(value)
 
 	extraProperties, err := core.ExtractExtraProperties(data, *e)
 	if err != nil {
@@ -647,7 +697,7 @@ func (e *EntityGroupRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e *EntityGroupRequest) String() string {
+func (e *EntityGroupRemoveEntitiesRequest) String() string {
 	if len(e._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
 			return value
@@ -694,6 +744,51 @@ func (e *EntityGroupResponse) UnmarshalJSON(data []byte) error {
 }
 
 func (e *EntityGroupResponse) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EntityGroupUpdateRequest struct {
+	ForeignID   *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	Name        *string `json:"name,omitempty" url:"name,omitempty"`
+	EmailToName *string `json:"emailToName,omitempty" url:"emailToName,omitempty"`
+	// Metadata key/value pairs to associate with this group. Will overwrite existing metadata.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityGroupUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityGroupUpdateRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityGroupUpdateRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityGroupUpdateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityGroupUpdateRequest) String() string {
 	if len(e._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
 			return value
@@ -908,6 +1003,50 @@ func (e *EntityGroupUserResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
+}
+
+type EntityIDOrBoolean struct {
+	Boolean  bool
+	EntityID EntityID
+}
+
+func (e *EntityIDOrBoolean) UnmarshalJSON(data []byte) error {
+	var valueBoolean bool
+	if err := json.Unmarshal(data, &valueBoolean); err == nil {
+		e.Boolean = valueBoolean
+		return nil
+	}
+	var valueEntityID EntityID
+	if err := json.Unmarshal(data, &valueEntityID); err == nil {
+		e.EntityID = valueEntityID
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, e)
+}
+
+func (e EntityIDOrBoolean) MarshalJSON() ([]byte, error) {
+	if e.Boolean != false {
+		return json.Marshal(e.Boolean)
+	}
+	if e.EntityID != "" {
+		return json.Marshal(e.EntityID)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", e)
+}
+
+type EntityIDOrBooleanVisitor interface {
+	VisitBoolean(bool) error
+	VisitEntityID(EntityID) error
+}
+
+func (e *EntityIDOrBoolean) Accept(visitor EntityIDOrBooleanVisitor) error {
+	if e.Boolean != false {
+		return visitor.VisitBoolean(e.Boolean)
+	}
+	if e.EntityID != "" {
+		return visitor.VisitEntityID(e.EntityID)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", e)
 }
 
 type FindEntityGroupUserResponse struct {
@@ -1314,6 +1453,7 @@ type BusinessProfileResponse struct {
 	// True if all representatives have been provided for this business.
 	OwnersProvided                  *bool          `json:"ownersProvided,omitempty" url:"ownersProvided,omitempty"`
 	TaxIDProvided                   bool           `json:"taxIDProvided" url:"taxIDProvided"`
+	TaxID                           *TaxID         `json:"taxId,omitempty" url:"taxId,omitempty"`
 	IndustryCodes                   *IndustryCodes `json:"industryCodes,omitempty" url:"industryCodes,omitempty"`
 	AverageMonthlyTransactionVolume *float64       `json:"averageMonthlyTransactionVolume,omitempty" url:"averageMonthlyTransactionVolume,omitempty"`
 	AverageTransactionSize          *float64       `json:"averageTransactionSize,omitempty" url:"averageTransactionSize,omitempty"`
@@ -4476,7 +4616,8 @@ func (v *VendorTrigger) String() string {
 type AddApproverRequest struct {
 	// The identifier for the approval slot this user is assigned to.
 	ApprovalSlotID *ApprovalSlotID `json:"approvalSlotId,omitempty" url:"approvalSlotId,omitempty"`
-	UserID         EntityUserID    `json:"userId" url:"userId"`
+	// The ID or the Foreign ID of the user to add to the approval slot.
+	UserID EntityUserID `json:"userId" url:"userId"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -4518,7 +4659,8 @@ func (a *AddApproverRequest) String() string {
 
 type ApprovalRequest struct {
 	// Comment associated with this approval action.
-	Text   *string      `json:"text,omitempty" url:"text,omitempty"`
+	Text *string `json:"text,omitempty" url:"text,omitempty"`
+	// The ID or the Foreign ID of the user
 	UserID EntityUserID `json:"userId" url:"userId"`
 
 	extraProperties map[string]interface{}
@@ -4872,7 +5014,8 @@ func (c *CheckPaymentDestinationOptions) String() string {
 type CommentID = string
 
 type CommentRequest struct {
-	Text   string        `json:"text" url:"text"`
+	Text string `json:"text" url:"text"`
+	// The ID or the Foreign ID of the user who created the comment.
 	UserID *EntityUserID `json:"userId,omitempty" url:"userId,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -5147,7 +5290,7 @@ type InvoiceCreationWithEntityGroupRequest struct {
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
 	// DEPRECATED. Use document field instead.
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
-	// ID of entity user who created this invoice.
+	// User ID or Foreign ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
 	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
@@ -5274,7 +5417,7 @@ type InvoiceCreationWithEntityRequest struct {
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
 	// DEPRECATED. Use document field instead.
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
-	// ID of entity user who created this invoice.
+	// User ID or Foreign ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
 	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
@@ -6334,7 +6477,7 @@ type InvoiceRequestBase struct {
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
 	// DEPRECATED. Use document field instead.
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
-	// ID of entity user who created this invoice.
+	// User ID or Foreign ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
 	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
@@ -6658,7 +6801,7 @@ type InvoiceUpdateRequest struct {
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
 	// DEPRECATED. Use document field instead.
 	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
-	// ID of entity user who created this invoice.
+	// User ID or Foreign ID of entity user who created this invoice.
 	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
 	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
