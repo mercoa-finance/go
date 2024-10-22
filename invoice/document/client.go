@@ -40,6 +40,7 @@ func (c *Client) GetAll(
 	ctx context.Context,
 	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
+	request *invoice.GetDocumentsRequest,
 	opts ...option.RequestOption,
 ) ([]*mercoafinancego.DocumentResponse, error) {
 	options := core.NewRequestOptions(opts...)
@@ -52,6 +53,14 @@ func (c *Client) GetAll(
 		baseURL = options.BaseURL
 	}
 	endpointURL := core.EncodeURL(baseURL+"/invoice/%v/documents", invoiceID)
+
+	queryParams, err := core.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 

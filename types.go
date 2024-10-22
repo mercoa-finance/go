@@ -310,6 +310,7 @@ const (
 	DocumentTypeTenNinetyNine DocumentType = "TEN_NINETY_NINE"
 	DocumentTypeW9            DocumentType = "W9"
 	DocumentTypeCheck         DocumentType = "CHECK"
+	DocumentTypeOther         DocumentType = "OTHER"
 )
 
 func NewDocumentTypeFromString(s string) (DocumentType, error) {
@@ -322,6 +323,8 @@ func NewDocumentTypeFromString(s string) (DocumentType, error) {
 		return DocumentTypeW9, nil
 	case "CHECK":
 		return DocumentTypeCheck, nil
+	case "OTHER":
+		return DocumentTypeOther, nil
 	}
 	var t DocumentType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
