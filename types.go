@@ -54,6 +54,119 @@ func (b *BankAddress) String() string {
 	return fmt.Sprintf("%#v", b)
 }
 
+type EstimatedTiming struct {
+	// Date the payment is scheduled to be deducted from the payer's account. Use this field if the payment has not yet been deducted.
+	EstimatedDeductionDate *time.Time `json:"estimatedDeductionDate,omitempty" url:"estimatedDeductionDate,omitempty"`
+	// Date the payment was processed. Use this field if the payment has already been deducted.
+	ProcessedAt *time.Time `json:"processedAt,omitempty" url:"processedAt,omitempty"`
+	// ID of payment source.
+	PaymentSourceID PaymentMethodID `json:"paymentSourceId" url:"paymentSourceId"`
+	// ID of payment destination.
+	PaymentDestinationID PaymentMethodID `json:"paymentDestinationId" url:"paymentDestinationId"`
+	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EstimatedTiming) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EstimatedTiming) UnmarshalJSON(data []byte) error {
+	type embed EstimatedTiming
+	var unmarshaler = struct {
+		embed
+		EstimatedDeductionDate *core.DateTime `json:"estimatedDeductionDate,omitempty"`
+		ProcessedAt            *core.DateTime `json:"processedAt,omitempty"`
+	}{
+		embed: embed(*e),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*e = EstimatedTiming(unmarshaler.embed)
+	e.EstimatedDeductionDate = unmarshaler.EstimatedDeductionDate.TimePtr()
+	e.ProcessedAt = unmarshaler.ProcessedAt.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EstimatedTiming) MarshalJSON() ([]byte, error) {
+	type embed EstimatedTiming
+	var marshaler = struct {
+		embed
+		EstimatedDeductionDate *core.DateTime `json:"estimatedDeductionDate,omitempty"`
+		ProcessedAt            *core.DateTime `json:"processedAt,omitempty"`
+	}{
+		embed:                  embed(*e),
+		EstimatedDeductionDate: core.NewOptionalDateTime(e.EstimatedDeductionDate),
+		ProcessedAt:            core.NewOptionalDateTime(e.ProcessedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (e *EstimatedTiming) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type InvoiceTiming struct {
+	InvoiceID InvoiceID `json:"invoiceId" url:"invoiceId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceTiming) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceTiming) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceTiming
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceTiming(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceTiming) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
 type Address struct {
 	AddressLine1 string  `json:"addressLine1" url:"addressLine1"`
 	AddressLine2 *string `json:"addressLine2,omitempty" url:"addressLine2,omitempty"`
@@ -530,11 +643,11 @@ type EntityGroupAddEntitiesRequest struct {
 	EntityIDs []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
 	// Entity ID / foreign ID of an entity currently in the group to copy users and roles from OR a boolean defining if users should be copied to the new entities.
 	//
-	// If false, users and roles will not be copied.
-	// If not provided or true, users and roles will be copied from the first entity the group.
+	// If not provided or false, users and roles will not be copied.
+	// If true, users and roles will be copied from the first entity the group.
 	// If a valid ID is provided, users and roles will be copied from the corresponding provided entity in the group.
 	//
-	// Note: If users and roles are copied, any preexisting users will be removed from each of the entities set to be added to the group.
+	// Note: If users copied, any preexisting users will be left alone, and users with the same foreign ID will not be copied.
 	CopyUsersFrom *EntityIDOrBoolean `json:"copyUsersFrom,omitempty" url:"copyUsersFrom,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -1092,6 +1205,94 @@ func (f *FindEntityGroupUserResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", f)
+}
+
+type AccelerationFundsBalanceResponse struct {
+	Amount   float64      `json:"amount" url:"amount"`
+	Currency CurrencyCode `json:"currency" url:"currency"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *AccelerationFundsBalanceResponse) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
+}
+
+func (a *AccelerationFundsBalanceResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccelerationFundsBalanceResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccelerationFundsBalanceResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
+	a._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccelerationFundsBalanceResponse) String() string {
+	if len(a._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(a._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+type AccelerationFundsResponse struct {
+	// The ID of the entity that these acceleration funds belong to.
+	EntityID EntityID `json:"entityId" url:"entityId"`
+	// The ID of the payment method that the acceleration funds were accessed through.
+	PaymentMethodID  PaymentMethodID                   `json:"paymentMethodId" url:"paymentMethodId"`
+	AvailableBalance *AccelerationFundsBalanceResponse `json:"availableBalance,omitempty" url:"availableBalance,omitempty"`
+	PendingBalance   *AccelerationFundsBalanceResponse `json:"pendingBalance,omitempty" url:"pendingBalance,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *AccelerationFundsResponse) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
+}
+
+func (a *AccelerationFundsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccelerationFundsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccelerationFundsResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
+	a._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccelerationFundsResponse) String() string {
+	if len(a._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(a._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
 }
 
 type AccountType string
@@ -4928,8 +5129,9 @@ func (b *BankAccountPaymentDestinationOptions) String() string {
 type BankDeliveryMethod string
 
 const (
-	BankDeliveryMethodAchStandard BankDeliveryMethod = "ACH_STANDARD"
-	BankDeliveryMethodAchSameDay  BankDeliveryMethod = "ACH_SAME_DAY"
+	BankDeliveryMethodAchStandard    BankDeliveryMethod = "ACH_STANDARD"
+	BankDeliveryMethodAchSameDay     BankDeliveryMethod = "ACH_SAME_DAY"
+	BankDeliveryMethodAchAccelerated BankDeliveryMethod = "ACH_ACCELERATED"
 )
 
 func NewBankDeliveryMethodFromString(s string) (BankDeliveryMethod, error) {
@@ -4938,6 +5140,8 @@ func NewBankDeliveryMethodFromString(s string) (BankDeliveryMethod, error) {
 		return BankDeliveryMethodAchStandard, nil
 	case "ACH_SAME_DAY":
 		return BankDeliveryMethodAchSameDay, nil
+	case "ACH_ACCELERATED":
+		return BankDeliveryMethodAchAccelerated, nil
 	}
 	var t BankDeliveryMethod
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -8497,6 +8701,98 @@ func (n *NotificationConfigurationResponse) Accept(visitor NotificationConfigura
 	return fmt.Errorf("type %T does not define a non-empty union type", n)
 }
 
+type NotificationEmailTemplateRequest struct {
+	BackgroundStyle *string `json:"backgroundStyle,omitempty" url:"backgroundStyle,omitempty"`
+	Header          *string `json:"header,omitempty" url:"header,omitempty"`
+	Body            *string `json:"body,omitempty" url:"body,omitempty"`
+	Signature       *string `json:"signature,omitempty" url:"signature,omitempty"`
+	Footer          *string `json:"footer,omitempty" url:"footer,omitempty"`
+	Button          *string `json:"button,omitempty" url:"button,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (n *NotificationEmailTemplateRequest) GetExtraProperties() map[string]interface{} {
+	return n.extraProperties
+}
+
+func (n *NotificationEmailTemplateRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler NotificationEmailTemplateRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*n = NotificationEmailTemplateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *n)
+	if err != nil {
+		return err
+	}
+	n.extraProperties = extraProperties
+
+	n._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (n *NotificationEmailTemplateRequest) String() string {
+	if len(n._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(n._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(n); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", n)
+}
+
+type NotificationEmailTemplateResponse struct {
+	BackgroundStyle *string `json:"backgroundStyle,omitempty" url:"backgroundStyle,omitempty"`
+	Header          *string `json:"header,omitempty" url:"header,omitempty"`
+	Body            *string `json:"body,omitempty" url:"body,omitempty"`
+	Signature       *string `json:"signature,omitempty" url:"signature,omitempty"`
+	Footer          *string `json:"footer,omitempty" url:"footer,omitempty"`
+	Button          *string `json:"button,omitempty" url:"button,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (n *NotificationEmailTemplateResponse) GetExtraProperties() map[string]interface{} {
+	return n.extraProperties
+}
+
+func (n *NotificationEmailTemplateResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler NotificationEmailTemplateResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*n = NotificationEmailTemplateResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *n)
+	if err != nil {
+		return err
+	}
+	n.extraProperties = extraProperties
+
+	n._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (n *NotificationEmailTemplateResponse) String() string {
+	if len(n._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(n._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(n); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", n)
+}
+
 type OnboardingOption struct {
 	Show     bool `json:"show" url:"show"`
 	Edit     bool `json:"edit" url:"edit"`
@@ -8644,6 +8940,7 @@ type OrganizationRequest struct {
 	PayeeOnboardingOptions           *OnboardingOptionsRequest                `json:"payeeOnboardingOptions,omitempty" url:"payeeOnboardingOptions,omitempty"`
 	PayorOnboardingOptions           *OnboardingOptionsRequest                `json:"payorOnboardingOptions,omitempty" url:"payorOnboardingOptions,omitempty"`
 	MetadataSchema                   []*MetadataSchema                        `json:"metadataSchema,omitempty" url:"metadataSchema,omitempty"`
+	NotificationEmailTemplate        *NotificationEmailTemplateRequest        `json:"notificationEmailTemplate,omitempty" url:"notificationEmailTemplate,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -8697,6 +8994,7 @@ type OrganizationResponse struct {
 	PayeeOnboardingOptions           *OnboardingOptionsResponse                `json:"payeeOnboardingOptions,omitempty" url:"payeeOnboardingOptions,omitempty"`
 	PayorOnboardingOptions           *OnboardingOptionsResponse                `json:"payorOnboardingOptions,omitempty" url:"payorOnboardingOptions,omitempty"`
 	MetadataSchema                   []*MetadataSchema                         `json:"metadataSchema,omitempty" url:"metadataSchema,omitempty"`
+	NotificationEmailTemplate        *NotificationEmailTemplateResponse        `json:"notificationEmailTemplate,omitempty" url:"notificationEmailTemplate,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -10708,95 +11006,6 @@ func (c *CustomPaymentMethodUpdateRequest) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
-}
-
-type PaymentMethodBalanceResponse struct {
-	AvailableBalance float64      `json:"availableBalance" url:"availableBalance"`
-	Currency         CurrencyCode `json:"currency" url:"currency"`
-	// If the status is UNAVAILABLE, the account does not support this operation. If the status is ERROR, the account may need to be re-linked with Plaid.
-	Status PaymentMethodBalanceStatus `json:"status" url:"status"`
-	// The time the balance was last updated. Will be null if the balance has never been updated.
-	UpdatedAt *time.Time `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (p *PaymentMethodBalanceResponse) GetExtraProperties() map[string]interface{} {
-	return p.extraProperties
-}
-
-func (p *PaymentMethodBalanceResponse) UnmarshalJSON(data []byte) error {
-	type embed PaymentMethodBalanceResponse
-	var unmarshaler = struct {
-		embed
-		UpdatedAt *core.DateTime `json:"updatedAt,omitempty"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PaymentMethodBalanceResponse(unmarshaler.embed)
-	p.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
-
-	extraProperties, err := core.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-
-	p._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentMethodBalanceResponse) MarshalJSON() ([]byte, error) {
-	type embed PaymentMethodBalanceResponse
-	var marshaler = struct {
-		embed
-		UpdatedAt *core.DateTime `json:"updatedAt,omitempty"`
-	}{
-		embed:     embed(*p),
-		UpdatedAt: core.NewOptionalDateTime(p.UpdatedAt),
-	}
-	return json.Marshal(marshaler)
-}
-
-func (p *PaymentMethodBalanceResponse) String() string {
-	if len(p._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-type PaymentMethodBalanceStatus string
-
-const (
-	PaymentMethodBalanceStatusAvailable   PaymentMethodBalanceStatus = "AVAILABLE"
-	PaymentMethodBalanceStatusUnavailable PaymentMethodBalanceStatus = "UNAVAILABLE"
-	PaymentMethodBalanceStatusError       PaymentMethodBalanceStatus = "ERROR"
-)
-
-func NewPaymentMethodBalanceStatusFromString(s string) (PaymentMethodBalanceStatus, error) {
-	switch s {
-	case "AVAILABLE":
-		return PaymentMethodBalanceStatusAvailable, nil
-	case "UNAVAILABLE":
-		return PaymentMethodBalanceStatusUnavailable, nil
-	case "ERROR":
-		return PaymentMethodBalanceStatusError, nil
-	}
-	var t PaymentMethodBalanceStatus
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PaymentMethodBalanceStatus) Ptr() *PaymentMethodBalanceStatus {
-	return &p
 }
 
 type PaymentMethodBaseRequest struct {

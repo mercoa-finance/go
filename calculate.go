@@ -60,75 +60,47 @@ func (c *CalculateFeesRequest) String() string {
 }
 
 type CalculatePaymentTimingRequest struct {
-	// Date the payment is scheduled to be deducted from the payer's account. Use this field if the payment has not yet been deducted.
-	EstimatedDeductionDate *time.Time `json:"estimatedDeductionDate,omitempty" url:"estimatedDeductionDate,omitempty"`
-	// Date the payment was processed. Use this field if the payment has already been deducted.
-	ProcessedAt *time.Time `json:"processedAt,omitempty" url:"processedAt,omitempty"`
-	// ID of payment source.
-	PaymentSourceID PaymentMethodID `json:"paymentSourceId" url:"paymentSourceId"`
-	// ID of payment destination.
-	PaymentDestinationID PaymentMethodID `json:"paymentDestinationId" url:"paymentDestinationId"`
-	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
-	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (c *CalculatePaymentTimingRequest) GetExtraProperties() map[string]interface{} {
-	return c.extraProperties
+	EstimatedTiming *EstimatedTiming
+	InvoiceTiming   *InvoiceTiming
 }
 
 func (c *CalculatePaymentTimingRequest) UnmarshalJSON(data []byte) error {
-	type embed CalculatePaymentTimingRequest
-	var unmarshaler = struct {
-		embed
-		EstimatedDeductionDate *core.DateTime `json:"estimatedDeductionDate,omitempty"`
-		ProcessedAt            *core.DateTime `json:"processedAt,omitempty"`
-	}{
-		embed: embed(*c),
+	valueEstimatedTiming := new(EstimatedTiming)
+	if err := json.Unmarshal(data, &valueEstimatedTiming); err == nil {
+		c.EstimatedTiming = valueEstimatedTiming
+		return nil
 	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
+	valueInvoiceTiming := new(InvoiceTiming)
+	if err := json.Unmarshal(data, &valueInvoiceTiming); err == nil {
+		c.InvoiceTiming = valueInvoiceTiming
+		return nil
 	}
-	*c = CalculatePaymentTimingRequest(unmarshaler.embed)
-	c.EstimatedDeductionDate = unmarshaler.EstimatedDeductionDate.TimePtr()
-	c.ProcessedAt = unmarshaler.ProcessedAt.TimePtr()
-
-	extraProperties, err := core.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-
-	c._rawJSON = json.RawMessage(data)
-	return nil
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
 }
 
-func (c *CalculatePaymentTimingRequest) MarshalJSON() ([]byte, error) {
-	type embed CalculatePaymentTimingRequest
-	var marshaler = struct {
-		embed
-		EstimatedDeductionDate *core.DateTime `json:"estimatedDeductionDate,omitempty"`
-		ProcessedAt            *core.DateTime `json:"processedAt,omitempty"`
-	}{
-		embed:                  embed(*c),
-		EstimatedDeductionDate: core.NewOptionalDateTime(c.EstimatedDeductionDate),
-		ProcessedAt:            core.NewOptionalDateTime(c.ProcessedAt),
+func (c CalculatePaymentTimingRequest) MarshalJSON() ([]byte, error) {
+	if c.EstimatedTiming != nil {
+		return json.Marshal(c.EstimatedTiming)
 	}
-	return json.Marshal(marshaler)
+	if c.InvoiceTiming != nil {
+		return json.Marshal(c.InvoiceTiming)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
 }
 
-func (c *CalculatePaymentTimingRequest) String() string {
-	if len(c._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
-			return value
-		}
+type CalculatePaymentTimingRequestVisitor interface {
+	VisitEstimatedTiming(*EstimatedTiming) error
+	VisitInvoiceTiming(*InvoiceTiming) error
+}
+
+func (c *CalculatePaymentTimingRequest) Accept(visitor CalculatePaymentTimingRequestVisitor) error {
+	if c.EstimatedTiming != nil {
+		return visitor.VisitEstimatedTiming(c.EstimatedTiming)
 	}
-	if value, err := core.StringifyJSON(c); err == nil {
-		return value
+	if c.InvoiceTiming != nil {
+		return visitor.VisitInvoiceTiming(c.InvoiceTiming)
 	}
-	return fmt.Sprintf("%#v", c)
+	return fmt.Errorf("type %T does not include a non-empty union type", c)
 }
 
 type CalculatePaymentTimingResponse struct {

@@ -30,4 +30,6 @@ type GetOrganizationRequest struct {
 	PayorOnboardingOptions *bool `json:"-" url:"payorOnboardingOptions,omitempty"`
 	// include metadata schema in response
 	MetadataSchema *bool `json:"-" url:"metadataSchema,omitempty"`
+	// include notification-email-template in response
+	NotificationEmailTemplate *bool `json:"-" url:"notificationEmailTemplate,omitempty"`
 }
