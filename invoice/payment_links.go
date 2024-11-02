@@ -2,6 +2,16 @@
 
 package invoice
 
+type PayerLinkRequest struct {
+	// Expressed in seconds or a string describing a time span. The default is 30d.
+	ExpiresIn *string `json:"-" url:"expiresIn,omitempty"`
+}
+
+type VendorLinkRequest struct {
+	// Expressed in seconds or a string describing a time span. The default is 30d.
+	ExpiresIn *string `json:"-" url:"expiresIn,omitempty"`
+}
+
 type SendPayerEmail struct {
 	// Whether to attach the invoice to the email
 	AttachInvoice *bool `json:"-" url:"attachInvoice,omitempty"`

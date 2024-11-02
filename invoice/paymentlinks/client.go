@@ -40,6 +40,7 @@ func (c *Client) GetPayerLink(
 	ctx context.Context,
 	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
+	request *invoice.PayerLinkRequest,
 	opts ...option.RequestOption,
 ) (string, error) {
 	options := core.NewRequestOptions(opts...)
@@ -52,6 +53,14 @@ func (c *Client) GetPayerLink(
 		baseURL = options.BaseURL
 	}
 	endpointURL := core.EncodeURL(baseURL+"/invoice/%v/payerLink", invoiceID)
+
+	queryParams, err := core.QueryValues(request)
+	if err != nil {
+		return "", err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 
@@ -259,6 +268,7 @@ func (c *Client) GetVendorLink(
 	ctx context.Context,
 	// Invoice ID or Invoice ForeignID
 	invoiceID mercoafinancego.InvoiceID,
+	request *invoice.VendorLinkRequest,
 	opts ...option.RequestOption,
 ) (string, error) {
 	options := core.NewRequestOptions(opts...)
@@ -271,6 +281,14 @@ func (c *Client) GetVendorLink(
 		baseURL = options.BaseURL
 	}
 	endpointURL := core.EncodeURL(baseURL+"/invoice/%v/vendorLink", invoiceID)
+
+	queryParams, err := core.QueryValues(request)
+	if err != nil {
+		return "", err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 

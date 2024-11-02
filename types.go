@@ -5503,6 +5503,8 @@ type InvoiceCreationWithEntityGroupRequest struct {
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
 	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
+	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule                  `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	LineItems       []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
@@ -5630,6 +5632,8 @@ type InvoiceCreationWithEntityRequest struct {
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
 	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
+	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule                  `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	LineItems       []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
@@ -6690,6 +6694,8 @@ type InvoiceRequestBase struct {
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
 	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
+	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 
@@ -6803,6 +6809,8 @@ type InvoiceResponse struct {
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	// True if the payment destination has been confirmed by the vendor. False if the payment destination has been set (for example, a check to an address) but has not been confirmed by the vendor.
 	PaymentDestinationConfirmed bool `json:"paymentDestinationConfirmed" url:"paymentDestinationConfirmed"`
+	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
+	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// True if the invoice has documents attached.
 	HasDocuments bool `json:"hasDocuments" url:"hasDocuments"`
 	// True if the invoice was created by an incoming email.
@@ -7014,6 +7022,8 @@ type InvoiceUpdateRequest struct {
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
 	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
+	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule                `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	LineItems       []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
@@ -8998,6 +9008,7 @@ type OrganizationResponse struct {
 	PayorOnboardingOptions           *OnboardingOptionsResponse                `json:"payorOnboardingOptions,omitempty" url:"payorOnboardingOptions,omitempty"`
 	MetadataSchema                   []*MetadataSchema                         `json:"metadataSchema,omitempty" url:"metadataSchema,omitempty"`
 	NotificationEmailTemplate        *NotificationEmailTemplateResponse        `json:"notificationEmailTemplate,omitempty" url:"notificationEmailTemplate,omitempty"`
+	OrganizationEntityID             *EntityID                                 `json:"organizationEntityId,omitempty" url:"organizationEntityId,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
