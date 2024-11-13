@@ -10,6 +10,7 @@ import (
 	entityclient "github.com/mercoa-finance/go/entity/client"
 	entitygroupclient "github.com/mercoa-finance/go/entitygroup/client"
 	invoiceclient "github.com/mercoa-finance/go/invoice/client"
+	invoicetemplateclient "github.com/mercoa-finance/go/invoicetemplate/client"
 	ocr "github.com/mercoa-finance/go/ocr"
 	option "github.com/mercoa-finance/go/option"
 	organizationclient "github.com/mercoa-finance/go/organization/client"
@@ -24,6 +25,7 @@ type Client struct {
 
 	EntityGroup               *entitygroupclient.Client
 	Entity                    *entityclient.Client
+	InvoiceTemplate           *invoicetemplateclient.Client
 	Invoice                   *invoiceclient.Client
 	Organization              *organizationclient.Client
 	BankLookup                *banklookup.Client
@@ -46,6 +48,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		header:                    options.ToHeader(),
 		EntityGroup:               entitygroupclient.NewClient(opts...),
 		Entity:                    entityclient.NewClient(opts...),
+		InvoiceTemplate:           invoicetemplateclient.NewClient(opts...),
 		Invoice:                   invoiceclient.NewClient(opts...),
 		Organization:              organizationclient.NewClient(opts...),
 		BankLookup:                banklookup.NewClient(opts...),

@@ -11,7 +11,7 @@ import (
 	core "github.com/mercoa-finance/go/core"
 	entity "github.com/mercoa-finance/go/entity"
 	approvalpolicy "github.com/mercoa-finance/go/entity/approvalpolicy"
-	counterparty "github.com/mercoa-finance/go/entity/counterparty"
+	counterpartyclient "github.com/mercoa-finance/go/entity/counterparty/client"
 	customization "github.com/mercoa-finance/go/entity/customization"
 	document "github.com/mercoa-finance/go/entity/document"
 	emaillogclient "github.com/mercoa-finance/go/entity/emaillog/client"
@@ -33,11 +33,11 @@ type Client struct {
 	caller  *core.Caller
 	header  http.Header
 
+	Counterparty             *counterpartyclient.Client
 	EmailLog                 *emaillogclient.Client
 	PaymentMethod            *paymentmethodclient.Client
 	User                     *userclient.Client
 	ApprovalPolicy           *approvalpolicy.Client
-	Counterparty             *counterparty.Client
 	Customization            *customization.Client
 	Document                 *document.Client
 	EmailTemplate            *emailtemplate.Client
@@ -59,11 +59,11 @@ func NewClient(opts ...option.RequestOption) *Client {
 			},
 		),
 		header:                   options.ToHeader(),
+		Counterparty:             counterpartyclient.NewClient(opts...),
 		EmailLog:                 emaillogclient.NewClient(opts...),
 		PaymentMethod:            paymentmethodclient.NewClient(opts...),
 		User:                     userclient.NewClient(opts...),
 		ApprovalPolicy:           approvalpolicy.NewClient(opts...),
-		Counterparty:             counterparty.NewClient(opts...),
 		Customization:            customization.NewClient(opts...),
 		Document:                 document.NewClient(opts...),
 		EmailTemplate:            emailtemplate.NewClient(opts...),

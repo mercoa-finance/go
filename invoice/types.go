@@ -53,4 +53,6 @@ type GetAllInvoicesRequest struct {
 	Status []*mercoafinancego.InvoiceStatus `json:"-" url:"status,omitempty"`
 	// Filter invoices by recurring status
 	PaymentType []mercoafinancego.PaymentType `json:"-" url:"paymentType,omitempty"`
+	// Filter invoice by invoice template ID
+	InvoiceTemplateID []*mercoafinancego.InvoiceTemplateID `json:"-" url:"invoiceTemplateId,omitempty"`
 }

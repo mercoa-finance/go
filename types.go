@@ -310,6 +310,7 @@ const (
 	DocumentTypeTenNinetyNine DocumentType = "TEN_NINETY_NINE"
 	DocumentTypeW9            DocumentType = "W9"
 	DocumentTypeCheck         DocumentType = "CHECK"
+	DocumentTypeBankStatement DocumentType = "BANK_STATEMENT"
 	DocumentTypeOther         DocumentType = "OTHER"
 )
 
@@ -323,6 +324,8 @@ func NewDocumentTypeFromString(s string) (DocumentType, error) {
 		return DocumentTypeW9, nil
 	case "CHECK":
 		return DocumentTypeCheck, nil
+	case "BANK_STATEMENT":
+		return DocumentTypeBankStatement, nil
 	case "OTHER":
 		return DocumentTypeOther, nil
 	}
@@ -5414,6 +5417,51 @@ func (f *FindInvoiceResponse) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
+type FindInvoiceTemplateResponse struct {
+	// Total number of invoice templates for the given filters. This value is not limited by the limit parameter. It is provided so that you can determine how many pages of results are available.
+	Count int `json:"count" url:"count"`
+	// True if there are more invoice templates available for the given filters.
+	HasMore bool                       `json:"hasMore" url:"hasMore"`
+	Data    []*InvoiceTemplateResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FindInvoiceTemplateResponse) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
+}
+
+func (f *FindInvoiceTemplateResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler FindInvoiceTemplateResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FindInvoiceTemplateResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
+	f._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FindInvoiceTemplateResponse) String() string {
+	if len(f._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(f._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
 type InvoiceCreationRequest struct {
 	InvoiceCreationWithEntityRequest      *InvoiceCreationWithEntityRequest
 	InvoiceCreationWithEntityGroupRequest *InvoiceCreationWithEntityGroupRequest
@@ -5847,6 +5895,50 @@ func (i *InvoiceEventsResponse) UnmarshalJSON(data []byte) error {
 }
 
 func (i *InvoiceEventsResponse) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceFailureReason struct {
+	// The failure reason code.
+	Code *string `json:"code,omitempty" url:"code,omitempty"`
+	// The failure reason description.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceFailureReason) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceFailureReason) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceFailureReason
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceFailureReason(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceFailureReason) String() string {
 	if len(i._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
 			return value
@@ -6776,7 +6868,6 @@ func (i *InvoiceRequestBase) String() string {
 }
 
 type InvoiceResponse struct {
-	ID     InvoiceID     `json:"id" url:"id"`
 	Status InvoiceStatus `json:"status" url:"status"`
 	// Total amount of invoice in major units
 	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
@@ -6788,10 +6879,6 @@ type InvoiceResponse struct {
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
 	// If this is a recurring invoice, this will be the next date when funds are scheduled to be deducted from payer's account.
 	NextDeductionDate *time.Time `json:"nextDeductionDate,omitempty" url:"nextDeductionDate,omitempty"`
-	// Date when the invoice payment was processed.
-	ProcessedAt *time.Time `json:"processedAt,omitempty" url:"processedAt,omitempty"`
-	// Date of funds settlement.
-	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
 	// Due date of invoice.
 	DueDate                   *time.Time                 `json:"dueDate,omitempty" url:"dueDate,omitempty"`
 	InvoiceNumber             *string                    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
@@ -6815,26 +6902,33 @@ type InvoiceResponse struct {
 	HasDocuments bool `json:"hasDocuments" url:"hasDocuments"`
 	// True if the invoice was created by an incoming email.
 	HasSourceEmail bool                       `json:"hasSourceEmail" url:"hasSourceEmail"`
-	Comments       []*CommentResponse         `json:"comments,omitempty" url:"comments,omitempty"`
 	LineItems      []*InvoiceLineItemResponse `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	Approvers      []*ApprovalSlot            `json:"approvers,omitempty" url:"approvers,omitempty"`
 	ApprovalPolicy []*ApprovalPolicyResponse  `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
 	// Metadata associated with this invoice.
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
-	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	// The ID of the entity who created this invoice.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 	// Entity user who created this invoice.
 	CreatorUser *EntityUserResponse `json:"creatorUser,omitempty" url:"creatorUser,omitempty"`
-	// If the invoice failed to be paid, this field will be populated with the type of failure.
-	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
 	CreatedAt   time.Time           `json:"createdAt" url:"createdAt"`
 	UpdatedAt   time.Time           `json:"updatedAt" url:"updatedAt"`
+	Comments    []*CommentResponse  `json:"comments,omitempty" url:"comments,omitempty"`
 	// Fees associated with this invoice.
 	Fees *InvoiceFeesResponse `json:"fees,omitempty" url:"fees,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	ID              InvoiceID        `json:"id" url:"id"`
+	// Date when the invoice payment was processed.
+	ProcessedAt *time.Time `json:"processedAt,omitempty" url:"processedAt,omitempty"`
+	// Date of funds settlement.
+	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
+	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
+	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	// If the invoice failed to be paid, this field will be populated with the type of failure.
+	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
+	// If the invoice failed to be paid, this field will be populated with the reason of failure.
+	FailureReason *InvoiceFailureReason `json:"failureReason,omitempty" url:"failureReason,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -6851,13 +6945,13 @@ func (i *InvoiceResponse) UnmarshalJSON(data []byte) error {
 		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
 		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
 		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
-		ProcessedAt       *core.DateTime `json:"processedAt,omitempty"`
-		SettlementDate    *core.DateTime `json:"settlementDate,omitempty"`
 		DueDate           *core.DateTime `json:"dueDate,omitempty"`
 		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
 		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
 		CreatedAt         *core.DateTime `json:"createdAt"`
 		UpdatedAt         *core.DateTime `json:"updatedAt"`
+		ProcessedAt       *core.DateTime `json:"processedAt,omitempty"`
+		SettlementDate    *core.DateTime `json:"settlementDate,omitempty"`
 	}{
 		embed: embed(*i),
 	}
@@ -6868,13 +6962,13 @@ func (i *InvoiceResponse) UnmarshalJSON(data []byte) error {
 	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
 	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
 	i.NextDeductionDate = unmarshaler.NextDeductionDate.TimePtr()
-	i.ProcessedAt = unmarshaler.ProcessedAt.TimePtr()
-	i.SettlementDate = unmarshaler.SettlementDate.TimePtr()
 	i.DueDate = unmarshaler.DueDate.TimePtr()
 	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
 	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
 	i.CreatedAt = unmarshaler.CreatedAt.Time()
 	i.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	i.ProcessedAt = unmarshaler.ProcessedAt.TimePtr()
+	i.SettlementDate = unmarshaler.SettlementDate.TimePtr()
 
 	extraProperties, err := core.ExtractExtraProperties(data, *i)
 	if err != nil {
@@ -6893,8 +6987,146 @@ func (i *InvoiceResponse) MarshalJSON() ([]byte, error) {
 		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
 		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
 		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
 		ProcessedAt       *core.DateTime `json:"processedAt,omitempty"`
 		SettlementDate    *core.DateTime `json:"settlementDate,omitempty"`
+	}{
+		embed:             embed(*i),
+		InvoiceDate:       core.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:     core.NewOptionalDateTime(i.DeductionDate),
+		NextDeductionDate: core.NewOptionalDateTime(i.NextDeductionDate),
+		DueDate:           core.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate:  core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:    core.NewOptionalDateTime(i.ServiceEndDate),
+		CreatedAt:         core.NewDateTime(i.CreatedAt),
+		UpdatedAt:         core.NewDateTime(i.UpdatedAt),
+		ProcessedAt:       core.NewOptionalDateTime(i.ProcessedAt),
+		SettlementDate:    core.NewOptionalDateTime(i.SettlementDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceResponse) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceResponseBase struct {
+	Status InvoiceStatus `json:"status" url:"status"`
+	// Total amount of invoice in major units
+	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+	// Currency code for the amount. Defaults to USD.
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	// Date the invoice was issued.
+	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
+	// Initial date when funds are scheduled to be deducted from payer's account. The actual deduction date may differ from this date, and will be reflected in the processedAt field.
+	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// If this is a recurring invoice, this will be the next date when funds are scheduled to be deducted from payer's account.
+	NextDeductionDate *time.Time `json:"nextDeductionDate,omitempty" url:"nextDeductionDate,omitempty"`
+	// Due date of invoice.
+	DueDate                   *time.Time                 `json:"dueDate,omitempty" url:"dueDate,omitempty"`
+	InvoiceNumber             *string                    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
+	NoteToSelf                *string                    `json:"noteToSelf,omitempty" url:"noteToSelf,omitempty"`
+	ServiceStartDate          *time.Time                 `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate            *time.Time                 `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	PayerID                   *EntityID                  `json:"payerId,omitempty" url:"payerId,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	PaymentSourceID           *PaymentMethodID           `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	VendorID                  *EntityID                  `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	PaymentDestinationID      *PaymentMethodID           `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	// True if the payment destination has been confirmed by the vendor. False if the payment destination has been set (for example, a check to an address) but has not been confirmed by the vendor.
+	PaymentDestinationConfirmed bool `json:"paymentDestinationConfirmed" url:"paymentDestinationConfirmed"`
+	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
+	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
+	// True if the invoice has documents attached.
+	HasDocuments bool `json:"hasDocuments" url:"hasDocuments"`
+	// True if the invoice was created by an incoming email.
+	HasSourceEmail bool                       `json:"hasSourceEmail" url:"hasSourceEmail"`
+	LineItems      []*InvoiceLineItemResponse `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	Approvers      []*ApprovalSlot            `json:"approvers,omitempty" url:"approvers,omitempty"`
+	ApprovalPolicy []*ApprovalPolicyResponse  `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
+	// Metadata associated with this invoice.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// The ID of the entity who created this invoice.
+	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
+	// Entity user who created this invoice.
+	CreatorUser *EntityUserResponse `json:"creatorUser,omitempty" url:"creatorUser,omitempty"`
+	CreatedAt   time.Time           `json:"createdAt" url:"createdAt"`
+	UpdatedAt   time.Time           `json:"updatedAt" url:"updatedAt"`
+	Comments    []*CommentResponse  `json:"comments,omitempty" url:"comments,omitempty"`
+	// Fees associated with this invoice.
+	Fees *InvoiceFeesResponse `json:"fees,omitempty" url:"fees,omitempty"`
+	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
+	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceResponseBase) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceResponseBase) UnmarshalJSON(data []byte) error {
+	type embed InvoiceResponseBase
+	var unmarshaler = struct {
+		embed
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceResponseBase(unmarshaler.embed)
+	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
+	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.NextDeductionDate = unmarshaler.NextDeductionDate.TimePtr()
+	i.DueDate = unmarshaler.DueDate.TimePtr()
+	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
+	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+	i.CreatedAt = unmarshaler.CreatedAt.Time()
+	i.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceResponseBase) MarshalJSON() ([]byte, error) {
+	type embed InvoiceResponseBase
+	var marshaler = struct {
+		embed
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
 		DueDate           *core.DateTime `json:"dueDate,omitempty"`
 		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
 		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
@@ -6905,8 +7137,6 @@ func (i *InvoiceResponse) MarshalJSON() ([]byte, error) {
 		InvoiceDate:       core.NewOptionalDateTime(i.InvoiceDate),
 		DeductionDate:     core.NewOptionalDateTime(i.DeductionDate),
 		NextDeductionDate: core.NewOptionalDateTime(i.NextDeductionDate),
-		ProcessedAt:       core.NewOptionalDateTime(i.ProcessedAt),
-		SettlementDate:    core.NewOptionalDateTime(i.SettlementDate),
 		DueDate:           core.NewOptionalDateTime(i.DueDate),
 		ServiceStartDate:  core.NewOptionalDateTime(i.ServiceStartDate),
 		ServiceEndDate:    core.NewOptionalDateTime(i.ServiceEndDate),
@@ -6916,7 +7146,7 @@ func (i *InvoiceResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(marshaler)
 }
 
-func (i *InvoiceResponse) String() string {
+func (i *InvoiceResponseBase) String() string {
 	if len(i._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
 			return value
@@ -6975,6 +7205,493 @@ func NewInvoiceStatusFromString(s string) (InvoiceStatus, error) {
 
 func (i InvoiceStatus) Ptr() *InvoiceStatus {
 	return &i
+}
+
+type InvoiceTemplateCreationRequest struct {
+	Status *InvoiceStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Total amount of invoice in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
+	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+	// Currency code for the amount. Defaults to USD.
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	// Date the invoice was issued.
+	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
+	// Initial date when funds are scheduled to be deducted from payer's account.
+	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// Due date of invoice.
+	DueDate       *time.Time `json:"dueDate,omitempty" url:"dueDate,omitempty"`
+	InvoiceNumber *string    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
+	// Note to self or memo on invoice.
+	NoteToSelf       *string    `json:"noteToSelf,omitempty" url:"noteToSelf,omitempty"`
+	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	// ID or foreign ID of the payer of this invoice.
+	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
+	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	// ID or foreign ID of the vendor of this invoice.
+	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
+	PaymentDestinationID *PaymentMethodID `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
+	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	// Set approvers for this invoice.
+	Approvers []*ApprovalSlotAssignment `json:"approvers,omitempty" url:"approvers,omitempty"`
+	// Metadata associated with this invoice.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// Base64 encoded image or PDF of invoice document. PNG, JPG, WEBP, and PDF are supported. 10MB max. If the invoice already has a document, this will add a new document to the invoice.
+	Document *string `json:"document,omitempty" url:"document,omitempty"`
+	// User ID or Foreign ID of entity user who created this invoice.
+	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
+	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
+	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
+	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
+	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
+	PaymentSchedule *PaymentSchedule                  `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	LineItems       []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	// ID of the entity who created this invoice template.
+	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceTemplateCreationRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceTemplateCreationRequest) UnmarshalJSON(data []byte) error {
+	type embed InvoiceTemplateCreationRequest
+	var unmarshaler = struct {
+		embed
+		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		DueDate          *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceTemplateCreationRequest(unmarshaler.embed)
+	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
+	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.DueDate = unmarshaler.DueDate.TimePtr()
+	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
+	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceTemplateCreationRequest) MarshalJSON() ([]byte, error) {
+	type embed InvoiceTemplateCreationRequest
+	var marshaler = struct {
+		embed
+		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		DueDate          *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed:            embed(*i),
+		InvoiceDate:      core.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:    core.NewOptionalDateTime(i.DeductionDate),
+		DueDate:          core.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceTemplateCreationRequest) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceTemplateID = string
+
+type InvoiceTemplateRequestBase struct {
+	Status *InvoiceStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Total amount of invoice in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
+	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+	// Currency code for the amount. Defaults to USD.
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	// Date the invoice was issued.
+	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
+	// Initial date when funds are scheduled to be deducted from payer's account.
+	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// Due date of invoice.
+	DueDate       *time.Time `json:"dueDate,omitempty" url:"dueDate,omitempty"`
+	InvoiceNumber *string    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
+	// Note to self or memo on invoice.
+	NoteToSelf       *string    `json:"noteToSelf,omitempty" url:"noteToSelf,omitempty"`
+	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	// ID or foreign ID of the payer of this invoice.
+	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
+	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	// ID or foreign ID of the vendor of this invoice.
+	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
+	PaymentDestinationID *PaymentMethodID `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
+	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	// Set approvers for this invoice.
+	Approvers []*ApprovalSlotAssignment `json:"approvers,omitempty" url:"approvers,omitempty"`
+	// Metadata associated with this invoice.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// Base64 encoded image or PDF of invoice document. PNG, JPG, WEBP, and PDF are supported. 10MB max. If the invoice already has a document, this will add a new document to the invoice.
+	Document *string `json:"document,omitempty" url:"document,omitempty"`
+	// User ID or Foreign ID of entity user who created this invoice.
+	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
+	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
+	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
+	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
+	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
+	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceTemplateRequestBase) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceTemplateRequestBase) UnmarshalJSON(data []byte) error {
+	type embed InvoiceTemplateRequestBase
+	var unmarshaler = struct {
+		embed
+		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		DueDate          *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceTemplateRequestBase(unmarshaler.embed)
+	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
+	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.DueDate = unmarshaler.DueDate.TimePtr()
+	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
+	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceTemplateRequestBase) MarshalJSON() ([]byte, error) {
+	type embed InvoiceTemplateRequestBase
+	var marshaler = struct {
+		embed
+		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		DueDate          *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed:            embed(*i),
+		InvoiceDate:      core.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:    core.NewOptionalDateTime(i.DeductionDate),
+		DueDate:          core.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceTemplateRequestBase) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceTemplateResponse struct {
+	Status InvoiceStatus `json:"status" url:"status"`
+	// Total amount of invoice in major units
+	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+	// Currency code for the amount. Defaults to USD.
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	// Date the invoice was issued.
+	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
+	// Initial date when funds are scheduled to be deducted from payer's account. The actual deduction date may differ from this date, and will be reflected in the processedAt field.
+	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// If this is a recurring invoice, this will be the next date when funds are scheduled to be deducted from payer's account.
+	NextDeductionDate *time.Time `json:"nextDeductionDate,omitempty" url:"nextDeductionDate,omitempty"`
+	// Due date of invoice.
+	DueDate                   *time.Time                 `json:"dueDate,omitempty" url:"dueDate,omitempty"`
+	InvoiceNumber             *string                    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
+	NoteToSelf                *string                    `json:"noteToSelf,omitempty" url:"noteToSelf,omitempty"`
+	ServiceStartDate          *time.Time                 `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate            *time.Time                 `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	PayerID                   *EntityID                  `json:"payerId,omitempty" url:"payerId,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	PaymentSourceID           *PaymentMethodID           `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	VendorID                  *EntityID                  `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	PaymentDestinationID      *PaymentMethodID           `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	// True if the payment destination has been confirmed by the vendor. False if the payment destination has been set (for example, a check to an address) but has not been confirmed by the vendor.
+	PaymentDestinationConfirmed bool `json:"paymentDestinationConfirmed" url:"paymentDestinationConfirmed"`
+	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
+	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
+	// True if the invoice has documents attached.
+	HasDocuments bool `json:"hasDocuments" url:"hasDocuments"`
+	// True if the invoice was created by an incoming email.
+	HasSourceEmail bool                       `json:"hasSourceEmail" url:"hasSourceEmail"`
+	LineItems      []*InvoiceLineItemResponse `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	Approvers      []*ApprovalSlot            `json:"approvers,omitempty" url:"approvers,omitempty"`
+	ApprovalPolicy []*ApprovalPolicyResponse  `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
+	// Metadata associated with this invoice.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// The ID of the entity who created this invoice.
+	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
+	// Entity user who created this invoice.
+	CreatorUser *EntityUserResponse `json:"creatorUser,omitempty" url:"creatorUser,omitempty"`
+	CreatedAt   time.Time           `json:"createdAt" url:"createdAt"`
+	UpdatedAt   time.Time           `json:"updatedAt" url:"updatedAt"`
+	Comments    []*CommentResponse  `json:"comments,omitempty" url:"comments,omitempty"`
+	// Fees associated with this invoice.
+	Fees *InvoiceFeesResponse `json:"fees,omitempty" url:"fees,omitempty"`
+	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
+	PaymentSchedule *PaymentSchedule  `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	ID              InvoiceTemplateID `json:"id" url:"id"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceTemplateResponse) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceTemplateResponse) UnmarshalJSON(data []byte) error {
+	type embed InvoiceTemplateResponse
+	var unmarshaler = struct {
+		embed
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceTemplateResponse(unmarshaler.embed)
+	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
+	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.NextDeductionDate = unmarshaler.NextDeductionDate.TimePtr()
+	i.DueDate = unmarshaler.DueDate.TimePtr()
+	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
+	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+	i.CreatedAt = unmarshaler.CreatedAt.Time()
+	i.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceTemplateResponse) MarshalJSON() ([]byte, error) {
+	type embed InvoiceTemplateResponse
+	var marshaler = struct {
+		embed
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
+	}{
+		embed:             embed(*i),
+		InvoiceDate:       core.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:     core.NewOptionalDateTime(i.DeductionDate),
+		NextDeductionDate: core.NewOptionalDateTime(i.NextDeductionDate),
+		DueDate:           core.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate:  core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:    core.NewOptionalDateTime(i.ServiceEndDate),
+		CreatedAt:         core.NewDateTime(i.CreatedAt),
+		UpdatedAt:         core.NewDateTime(i.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceTemplateResponse) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceTemplateUpdateRequest struct {
+	Status *InvoiceStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Total amount of invoice in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
+	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+	// Currency code for the amount. Defaults to USD.
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	// Date the invoice was issued.
+	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
+	// Initial date when funds are scheduled to be deducted from payer's account.
+	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// Due date of invoice.
+	DueDate       *time.Time `json:"dueDate,omitempty" url:"dueDate,omitempty"`
+	InvoiceNumber *string    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
+	// Note to self or memo on invoice.
+	NoteToSelf       *string    `json:"noteToSelf,omitempty" url:"noteToSelf,omitempty"`
+	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	// ID or foreign ID of the payer of this invoice.
+	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
+	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	// ID or foreign ID of the vendor of this invoice.
+	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
+	PaymentDestinationID *PaymentMethodID `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
+	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	// Set approvers for this invoice.
+	Approvers []*ApprovalSlotAssignment `json:"approvers,omitempty" url:"approvers,omitempty"`
+	// Metadata associated with this invoice.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// Base64 encoded image or PDF of invoice document. PNG, JPG, WEBP, and PDF are supported. 10MB max. If the invoice already has a document, this will add a new document to the invoice.
+	Document *string `json:"document,omitempty" url:"document,omitempty"`
+	// User ID or Foreign ID of entity user who created this invoice.
+	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
+	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
+	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
+	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
+	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
+	PaymentSchedule *PaymentSchedule                `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	LineItems       []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	// ID or foreign ID of entity who created this invoice.
+	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceTemplateUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceTemplateUpdateRequest) UnmarshalJSON(data []byte) error {
+	type embed InvoiceTemplateUpdateRequest
+	var unmarshaler = struct {
+		embed
+		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		DueDate          *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceTemplateUpdateRequest(unmarshaler.embed)
+	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
+	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.DueDate = unmarshaler.DueDate.TimePtr()
+	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
+	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceTemplateUpdateRequest) MarshalJSON() ([]byte, error) {
+	type embed InvoiceTemplateUpdateRequest
+	var marshaler = struct {
+		embed
+		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
+		DueDate          *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed:            embed(*i),
+		InvoiceDate:      core.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:    core.NewOptionalDateTime(i.DeductionDate),
+		DueDate:          core.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceTemplateUpdateRequest) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
 }
 
 type InvoiceUpdateRequest struct {
@@ -7665,6 +8382,7 @@ type BusinessOnboardingOptions struct {
 	Phone                           *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
 	TenNinetyNine                   *OnboardingOption `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
 	W9                              *OnboardingOption `json:"w9,omitempty" url:"w9,omitempty"`
+	BankStatement                   *OnboardingOption `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
 	Type                            *OnboardingOption `json:"type,omitempty" url:"type,omitempty"`
 	DoingBusinessAs                 *OnboardingOption `json:"doingBusinessAs,omitempty" url:"doingBusinessAs,omitempty"`
 	Ein                             *OnboardingOption `json:"ein,omitempty" url:"ein,omitempty"`
@@ -7894,6 +8612,7 @@ type CommonOnboardingOptions struct {
 	Phone          *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
 	TenNinetyNine  *OnboardingOption `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
 	W9             *OnboardingOption `json:"w9,omitempty" url:"w9,omitempty"`
+	BankStatement  *OnboardingOption `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -8283,6 +9002,7 @@ type IndividualOnboardingOptions struct {
 	Phone          *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
 	TenNinetyNine  *OnboardingOption `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
 	W9             *OnboardingOption `json:"w9,omitempty" url:"w9,omitempty"`
+	BankStatement  *OnboardingOption `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
 	DateOfBirth    *OnboardingOption `json:"dateOfBirth,omitempty" url:"dateOfBirth,omitempty"`
 	Ssn            *OnboardingOption `json:"ssn,omitempty" url:"ssn,omitempty"`
 
@@ -8954,6 +9674,7 @@ type OrganizationRequest struct {
 	PayorOnboardingOptions           *OnboardingOptionsRequest                `json:"payorOnboardingOptions,omitempty" url:"payorOnboardingOptions,omitempty"`
 	MetadataSchema                   []*MetadataSchema                        `json:"metadataSchema,omitempty" url:"metadataSchema,omitempty"`
 	NotificationEmailTemplate        *NotificationEmailTemplateRequest        `json:"notificationEmailTemplate,omitempty" url:"notificationEmailTemplate,omitempty"`
+	CustomDomains                    []string                                 `json:"customDomains,omitempty" url:"customDomains,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -9008,6 +9729,7 @@ type OrganizationResponse struct {
 	PayorOnboardingOptions           *OnboardingOptionsResponse                `json:"payorOnboardingOptions,omitempty" url:"payorOnboardingOptions,omitempty"`
 	MetadataSchema                   []*MetadataSchema                         `json:"metadataSchema,omitempty" url:"metadataSchema,omitempty"`
 	NotificationEmailTemplate        *NotificationEmailTemplateResponse        `json:"notificationEmailTemplate,omitempty" url:"notificationEmailTemplate,omitempty"`
+	CustomDomains                    []string                                  `json:"customDomains,omitempty" url:"customDomains,omitempty"`
 	OrganizationEntityID             *EntityID                                 `json:"organizationEntityId,omitempty" url:"organizationEntityId,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -11892,6 +12614,180 @@ func (u *UtilityPaymentMethodResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+type FindVendorCreditResponse struct {
+	// Total number of vendor credits for the given filters. This value is not limited by the limit parameter. It is provided so that you can determine how many pages of results are available.
+	Count int `json:"count" url:"count"`
+	// True if there are more vendor credits available for the given filters.
+	HasMore bool                    `json:"hasMore" url:"hasMore"`
+	Data    []*VendorCreditResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FindVendorCreditResponse) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
+}
+
+func (f *FindVendorCreditResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler FindVendorCreditResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FindVendorCreditResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
+	f._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FindVendorCreditResponse) String() string {
+	if len(f._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(f._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type VendorCreditID = string
+
+type VendorCreditRequest struct {
+	// Total amount of the vendor credit in major units
+	TotalAmount float64 `json:"totalAmount" url:"totalAmount"`
+	// Currency code for the amount. Defaults to USD.
+	Currency CurrencyCode `json:"currency" url:"currency"`
+	// An optional note to attach to the vendor credit
+	Note *string `json:"note,omitempty" url:"note,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (v *VendorCreditRequest) GetExtraProperties() map[string]interface{} {
+	return v.extraProperties
+}
+
+func (v *VendorCreditRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler VendorCreditRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*v = VendorCreditRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *v)
+	if err != nil {
+		return err
+	}
+	v.extraProperties = extraProperties
+
+	v._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (v *VendorCreditRequest) String() string {
+	if len(v._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(v._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(v); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", v)
+}
+
+type VendorCreditResponse struct {
+	ID VendorCreditID `json:"id" url:"id"`
+	// Total issued amount of the vendor credit in major units
+	TotalAmount *float64 `json:"totalAmount,omitempty" url:"totalAmount,omitempty"`
+	// Remaining usable amount in the vendor credit in major units
+	RemainingAmount *float64 `json:"remainingAmount,omitempty" url:"remainingAmount,omitempty"`
+	// Currency code for the amount. Defaults to USD.
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	// ID of the vendor the vendor credit may be used for
+	VendorID EntityID `json:"vendorId" url:"vendorId"`
+	// ID of the payer who may use the vendor credit
+	PayerID EntityID `json:"payerId" url:"payerId"`
+	// ID of the entity that created this vendor credit
+	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
+	// An optional note to attach to the vendor credit
+	Note *string `json:"note,omitempty" url:"note,omitempty"`
+	// The IDs of the invoices that this vendor credit has been applied to
+	InvoiceIDs []InvoiceID `json:"invoiceIds,omitempty" url:"invoiceIds,omitempty"`
+	CreatedAt  time.Time   `json:"createdAt" url:"createdAt"`
+	UpdatedAt  time.Time   `json:"updatedAt" url:"updatedAt"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (v *VendorCreditResponse) GetExtraProperties() map[string]interface{} {
+	return v.extraProperties
+}
+
+func (v *VendorCreditResponse) UnmarshalJSON(data []byte) error {
+	type embed VendorCreditResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*v),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*v = VendorCreditResponse(unmarshaler.embed)
+	v.CreatedAt = unmarshaler.CreatedAt.Time()
+	v.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *v)
+	if err != nil {
+		return err
+	}
+	v.extraProperties = extraProperties
+
+	v._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (v *VendorCreditResponse) MarshalJSON() ([]byte, error) {
+	type embed VendorCreditResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*v),
+		CreatedAt: core.NewDateTime(v.CreatedAt),
+		UpdatedAt: core.NewDateTime(v.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (v *VendorCreditResponse) String() string {
+	if len(v._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(v._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(v); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", v)
 }
 
 type CounterpartyEventWebhook struct {
