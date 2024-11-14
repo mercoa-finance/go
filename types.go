@@ -6868,6 +6868,8 @@ type InvoiceResponse struct {
 	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
 	// Initial date when funds are scheduled to be deducted from payer's account. The actual deduction date may differ from this date, and will be reflected in the processedAt field.
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// For invoice templates, this is the date when the next recurring payment will be scheduled.
+	NextDeductionDate *time.Time `json:"nextDeductionDate,omitempty" url:"nextDeductionDate,omitempty"`
 	// Due date of invoice.
 	DueDate                   *time.Time                 `json:"dueDate,omitempty" url:"dueDate,omitempty"`
 	InvoiceNumber             *string                    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
@@ -6931,15 +6933,16 @@ func (i *InvoiceResponse) UnmarshalJSON(data []byte) error {
 	type embed InvoiceResponse
 	var unmarshaler = struct {
 		embed
-		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
-		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
-		DueDate          *core.DateTime `json:"dueDate,omitempty"`
-		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
-		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
-		CreatedAt        *core.DateTime `json:"createdAt"`
-		UpdatedAt        *core.DateTime `json:"updatedAt"`
-		ProcessedAt      *core.DateTime `json:"processedAt,omitempty"`
-		SettlementDate   *core.DateTime `json:"settlementDate,omitempty"`
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
+		ProcessedAt       *core.DateTime `json:"processedAt,omitempty"`
+		SettlementDate    *core.DateTime `json:"settlementDate,omitempty"`
 	}{
 		embed: embed(*i),
 	}
@@ -6949,6 +6952,7 @@ func (i *InvoiceResponse) UnmarshalJSON(data []byte) error {
 	*i = InvoiceResponse(unmarshaler.embed)
 	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
 	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.NextDeductionDate = unmarshaler.NextDeductionDate.TimePtr()
 	i.DueDate = unmarshaler.DueDate.TimePtr()
 	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
 	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
@@ -6971,26 +6975,28 @@ func (i *InvoiceResponse) MarshalJSON() ([]byte, error) {
 	type embed InvoiceResponse
 	var marshaler = struct {
 		embed
-		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
-		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
-		DueDate          *core.DateTime `json:"dueDate,omitempty"`
-		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
-		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
-		CreatedAt        *core.DateTime `json:"createdAt"`
-		UpdatedAt        *core.DateTime `json:"updatedAt"`
-		ProcessedAt      *core.DateTime `json:"processedAt,omitempty"`
-		SettlementDate   *core.DateTime `json:"settlementDate,omitempty"`
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
+		ProcessedAt       *core.DateTime `json:"processedAt,omitempty"`
+		SettlementDate    *core.DateTime `json:"settlementDate,omitempty"`
 	}{
-		embed:            embed(*i),
-		InvoiceDate:      core.NewOptionalDateTime(i.InvoiceDate),
-		DeductionDate:    core.NewOptionalDateTime(i.DeductionDate),
-		DueDate:          core.NewOptionalDateTime(i.DueDate),
-		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
-		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
-		CreatedAt:        core.NewDateTime(i.CreatedAt),
-		UpdatedAt:        core.NewDateTime(i.UpdatedAt),
-		ProcessedAt:      core.NewOptionalDateTime(i.ProcessedAt),
-		SettlementDate:   core.NewOptionalDateTime(i.SettlementDate),
+		embed:             embed(*i),
+		InvoiceDate:       core.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:     core.NewOptionalDateTime(i.DeductionDate),
+		NextDeductionDate: core.NewOptionalDateTime(i.NextDeductionDate),
+		DueDate:           core.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate:  core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:    core.NewOptionalDateTime(i.ServiceEndDate),
+		CreatedAt:         core.NewDateTime(i.CreatedAt),
+		UpdatedAt:         core.NewDateTime(i.UpdatedAt),
+		ProcessedAt:       core.NewOptionalDateTime(i.ProcessedAt),
+		SettlementDate:    core.NewOptionalDateTime(i.SettlementDate),
 	}
 	return json.Marshal(marshaler)
 }
@@ -7017,6 +7023,8 @@ type InvoiceResponseBase struct {
 	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
 	// Initial date when funds are scheduled to be deducted from payer's account. The actual deduction date may differ from this date, and will be reflected in the processedAt field.
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// For invoice templates, this is the date when the next recurring payment will be scheduled.
+	NextDeductionDate *time.Time `json:"nextDeductionDate,omitempty" url:"nextDeductionDate,omitempty"`
 	// Due date of invoice.
 	DueDate                   *time.Time                 `json:"dueDate,omitempty" url:"dueDate,omitempty"`
 	InvoiceNumber             *string                    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
@@ -7069,13 +7077,14 @@ func (i *InvoiceResponseBase) UnmarshalJSON(data []byte) error {
 	type embed InvoiceResponseBase
 	var unmarshaler = struct {
 		embed
-		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
-		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
-		DueDate          *core.DateTime `json:"dueDate,omitempty"`
-		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
-		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
-		CreatedAt        *core.DateTime `json:"createdAt"`
-		UpdatedAt        *core.DateTime `json:"updatedAt"`
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
 	}{
 		embed: embed(*i),
 	}
@@ -7085,6 +7094,7 @@ func (i *InvoiceResponseBase) UnmarshalJSON(data []byte) error {
 	*i = InvoiceResponseBase(unmarshaler.embed)
 	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
 	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.NextDeductionDate = unmarshaler.NextDeductionDate.TimePtr()
 	i.DueDate = unmarshaler.DueDate.TimePtr()
 	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
 	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
@@ -7105,22 +7115,24 @@ func (i *InvoiceResponseBase) MarshalJSON() ([]byte, error) {
 	type embed InvoiceResponseBase
 	var marshaler = struct {
 		embed
-		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
-		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
-		DueDate          *core.DateTime `json:"dueDate,omitempty"`
-		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
-		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
-		CreatedAt        *core.DateTime `json:"createdAt"`
-		UpdatedAt        *core.DateTime `json:"updatedAt"`
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
 	}{
-		embed:            embed(*i),
-		InvoiceDate:      core.NewOptionalDateTime(i.InvoiceDate),
-		DeductionDate:    core.NewOptionalDateTime(i.DeductionDate),
-		DueDate:          core.NewOptionalDateTime(i.DueDate),
-		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
-		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
-		CreatedAt:        core.NewDateTime(i.CreatedAt),
-		UpdatedAt:        core.NewDateTime(i.UpdatedAt),
+		embed:             embed(*i),
+		InvoiceDate:       core.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:     core.NewOptionalDateTime(i.DeductionDate),
+		NextDeductionDate: core.NewOptionalDateTime(i.NextDeductionDate),
+		DueDate:           core.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate:  core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:    core.NewOptionalDateTime(i.ServiceEndDate),
+		CreatedAt:         core.NewDateTime(i.CreatedAt),
+		UpdatedAt:         core.NewDateTime(i.UpdatedAt),
 	}
 	return json.Marshal(marshaler)
 }
@@ -7429,6 +7441,8 @@ type InvoiceTemplateResponse struct {
 	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
 	// Initial date when funds are scheduled to be deducted from payer's account. The actual deduction date may differ from this date, and will be reflected in the processedAt field.
 	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// For invoice templates, this is the date when the next recurring payment will be scheduled.
+	NextDeductionDate *time.Time `json:"nextDeductionDate,omitempty" url:"nextDeductionDate,omitempty"`
 	// Due date of invoice.
 	DueDate                   *time.Time                 `json:"dueDate,omitempty" url:"dueDate,omitempty"`
 	InvoiceNumber             *string                    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
@@ -7482,13 +7496,14 @@ func (i *InvoiceTemplateResponse) UnmarshalJSON(data []byte) error {
 	type embed InvoiceTemplateResponse
 	var unmarshaler = struct {
 		embed
-		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
-		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
-		DueDate          *core.DateTime `json:"dueDate,omitempty"`
-		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
-		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
-		CreatedAt        *core.DateTime `json:"createdAt"`
-		UpdatedAt        *core.DateTime `json:"updatedAt"`
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
 	}{
 		embed: embed(*i),
 	}
@@ -7498,6 +7513,7 @@ func (i *InvoiceTemplateResponse) UnmarshalJSON(data []byte) error {
 	*i = InvoiceTemplateResponse(unmarshaler.embed)
 	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
 	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.NextDeductionDate = unmarshaler.NextDeductionDate.TimePtr()
 	i.DueDate = unmarshaler.DueDate.TimePtr()
 	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
 	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
@@ -7518,22 +7534,24 @@ func (i *InvoiceTemplateResponse) MarshalJSON() ([]byte, error) {
 	type embed InvoiceTemplateResponse
 	var marshaler = struct {
 		embed
-		InvoiceDate      *core.DateTime `json:"invoiceDate,omitempty"`
-		DeductionDate    *core.DateTime `json:"deductionDate,omitempty"`
-		DueDate          *core.DateTime `json:"dueDate,omitempty"`
-		ServiceStartDate *core.DateTime `json:"serviceStartDate,omitempty"`
-		ServiceEndDate   *core.DateTime `json:"serviceEndDate,omitempty"`
-		CreatedAt        *core.DateTime `json:"createdAt"`
-		UpdatedAt        *core.DateTime `json:"updatedAt"`
+		InvoiceDate       *core.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate     *core.DateTime `json:"deductionDate,omitempty"`
+		NextDeductionDate *core.DateTime `json:"nextDeductionDate,omitempty"`
+		DueDate           *core.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate  *core.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate    *core.DateTime `json:"serviceEndDate,omitempty"`
+		CreatedAt         *core.DateTime `json:"createdAt"`
+		UpdatedAt         *core.DateTime `json:"updatedAt"`
 	}{
-		embed:            embed(*i),
-		InvoiceDate:      core.NewOptionalDateTime(i.InvoiceDate),
-		DeductionDate:    core.NewOptionalDateTime(i.DeductionDate),
-		DueDate:          core.NewOptionalDateTime(i.DueDate),
-		ServiceStartDate: core.NewOptionalDateTime(i.ServiceStartDate),
-		ServiceEndDate:   core.NewOptionalDateTime(i.ServiceEndDate),
-		CreatedAt:        core.NewDateTime(i.CreatedAt),
-		UpdatedAt:        core.NewDateTime(i.UpdatedAt),
+		embed:             embed(*i),
+		InvoiceDate:       core.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:     core.NewOptionalDateTime(i.DeductionDate),
+		NextDeductionDate: core.NewOptionalDateTime(i.NextDeductionDate),
+		DueDate:           core.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate:  core.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:    core.NewOptionalDateTime(i.ServiceEndDate),
+		CreatedAt:         core.NewDateTime(i.CreatedAt),
+		UpdatedAt:         core.NewDateTime(i.UpdatedAt),
 	}
 	return json.Marshal(marshaler)
 }
