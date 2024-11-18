@@ -1524,8 +1524,12 @@ func (a *ApprovalPolicyUpdateRequest) String() string {
 }
 
 type ApproverRule struct {
-	NumApprovers   int             `json:"numApprovers" url:"numApprovers"`
+	// Number of approvals required to approve an invoice
+	NumApprovers int `json:"numApprovers" url:"numApprovers"`
+	// List of users or roles that should be used to determine eligible approvers
 	IdentifierList *IdentifierList `json:"identifierList,omitempty" url:"identifierList,omitempty"`
+	// If true, the policy will automatically assign approvers to the invoice. If more than one approver is eligible, the policy will assign all eligible approvers to the invoice.
+	AutoAssign *bool `json:"autoAssign,omitempty" url:"autoAssign,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2301,6 +2305,8 @@ type EntityCustomizationRequest struct {
 	PaymentSource      []*PaymentMethodCustomizationRequest `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
 	BackupDisbursement []*PaymentMethodCustomizationRequest `json:"backupDisbursement,omitempty" url:"backupDisbursement,omitempty"`
 	PaymentDestination []*PaymentMethodCustomizationRequest `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Ocr                *OcrCustomizationRequest             `json:"ocr,omitempty" url:"ocr,omitempty"`
+	Notifications      *NotificationCustomizationRequest    `json:"notifications,omitempty" url:"notifications,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2345,6 +2351,8 @@ type EntityCustomizationResponse struct {
 	PaymentSource      []*PaymentMethodCustomizationRequest `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
 	BackupDisbursement []*PaymentMethodCustomizationRequest `json:"backupDisbursement,omitempty" url:"backupDisbursement,omitempty"`
 	PaymentDestination []*PaymentMethodCustomizationRequest `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Ocr                *OcrCustomizationRequest             `json:"ocr,omitempty" url:"ocr,omitempty"`
+	Notifications      *NotificationCustomizationRequest    `json:"notifications,omitempty" url:"notifications,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -3604,6 +3612,48 @@ func (m *MetadataTrigger) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
+type NotificationCustomizationRequest struct {
+	// If set, notifications to this role will be sent to the email address of the entity. Set as empty string to disable.
+	AssumeRole *string `json:"assumeRole,omitempty" url:"assumeRole,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (n *NotificationCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return n.extraProperties
+}
+
+func (n *NotificationCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler NotificationCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*n = NotificationCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *n)
+	if err != nil {
+		return err
+	}
+	n.extraProperties = extraProperties
+
+	n._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (n *NotificationCustomizationRequest) String() string {
+	if len(n._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(n._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(n); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", n)
+}
+
 type NotificationID = string
 
 type NotificationPolicyRequest struct {
@@ -3887,6 +3937,56 @@ func (n *NotificationUpdateRequest) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", n)
+}
+
+type OcrCustomizationRequest struct {
+	// Extract line items from the invoice. Defaults to true.
+	LineItems *bool `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	// Pull custom metadata at the invoice level. Defaults to true.
+	InvoiceMetadata *bool `json:"invoiceMetadata,omitempty" url:"invoiceMetadata,omitempty"`
+	// Pull custom metadata at the line item level. Defaults to true.
+	LineItemMetadata *bool `json:"lineItemMetadata,omitempty" url:"lineItemMetadata,omitempty"`
+	// Pull GL Account ID at the line item level. Defaults to true.
+	LineItemGlAccountID *bool `json:"lineItemGlAccountId,omitempty" url:"lineItemGlAccountId,omitempty"`
+	// Use AI to predict metadata from historical data. Defaults to true.
+	PredictMetadata *bool `json:"predictMetadata,omitempty" url:"predictMetadata,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OcrCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
+}
+
+func (o *OcrCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler OcrCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*o = OcrCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
+	o._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (o *OcrCustomizationRequest) String() string {
+	if len(o._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(o); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", o)
 }
 
 type PaymentMethodCustomizationRequest struct {
@@ -4912,7 +5012,8 @@ type ApprovalSlot struct {
 	// The identifier for the approval policy this slot is associated with.
 	ApprovalPolicyID ApprovalPolicyID `json:"approvalPolicyId" url:"approvalPolicyId"`
 	// The identifier for this approval slot
-	ApprovalSlotID  ApprovalSlotID `json:"approvalSlotId" url:"approvalSlotId"`
+	ApprovalSlotID ApprovalSlotID `json:"approvalSlotId" url:"approvalSlotId"`
+	// The ID of the user who is assigned to the approval slot. If undefined, the approval slot is assigned to all eligible approvers.
 	AssignedUserID  *EntityUserID  `json:"assignedUserId,omitempty" url:"assignedUserId,omitempty"`
 	Action          ApproverAction `json:"action" url:"action"`
 	EligibleRoles   []string       `json:"eligibleRoles,omitempty" url:"eligibleRoles,omitempty"`
@@ -4979,7 +5080,8 @@ func (a *ApprovalSlot) String() string {
 type ApprovalSlotAssignment struct {
 	// The identifier for the approval slot this user is assigned to.
 	ApprovalSlotID ApprovalSlotID `json:"approvalSlotId" url:"approvalSlotId"`
-	AssignedUserID EntityUserID   `json:"assignedUserId" url:"assignedUserId"`
+	// The ID of the user who is assigned to the approval slot. To assign all eligible users to an approval slot, use "ANY".
+	AssignedUserID EntityUserID `json:"assignedUserId" url:"assignedUserId"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -5554,7 +5656,9 @@ type InvoiceCreationWithEntityGroupRequest struct {
 	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
 	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
-	PaymentSchedule *PaymentSchedule                  `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	// The IDs of the vendor credits to be applied to this invoice. Passing this field will un-apply any previously applied vendor credits.
+	VendorCreditIDs []VendorCreditID                  `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
 	LineItems       []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID of the entity group who created this invoice.
 	CreatorEntityGroupID EntityGroupID `json:"creatorEntityGroupId" url:"creatorEntityGroupId"`
@@ -5683,7 +5787,9 @@ type InvoiceCreationWithEntityRequest struct {
 	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
 	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
-	PaymentSchedule *PaymentSchedule                  `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	// The IDs of the vendor credits to be applied to this invoice. Passing this field will un-apply any previously applied vendor credits.
+	VendorCreditIDs []VendorCreditID                  `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
 	LineItems       []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID of the entity who created this invoice.
 	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
@@ -5892,50 +5998,6 @@ func (i *InvoiceEventsResponse) UnmarshalJSON(data []byte) error {
 }
 
 func (i *InvoiceEventsResponse) String() string {
-	if len(i._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-type InvoiceFailureReason struct {
-	// The failure reason code.
-	Code *string `json:"code,omitempty" url:"code,omitempty"`
-	// The failure reason description.
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (i *InvoiceFailureReason) GetExtraProperties() map[string]interface{} {
-	return i.extraProperties
-}
-
-func (i *InvoiceFailureReason) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceFailureReason
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InvoiceFailureReason(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-
-	i._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InvoiceFailureReason) String() string {
 	if len(i._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
 			return value
@@ -6781,6 +6843,8 @@ type InvoiceRequestBase struct {
 	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	// The IDs of the vendor credits to be applied to this invoice. Passing this field will un-apply any previously applied vendor credits.
+	VendorCreditIDs []VendorCreditID `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -6918,8 +6982,10 @@ type InvoiceResponse struct {
 	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	// If the invoice failed to be paid, this field will be populated with the type of failure.
 	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
-	// If the invoice failed to be paid, this field will be populated with the reason of failure.
-	FailureReason *InvoiceFailureReason `json:"failureReason,omitempty" url:"failureReason,omitempty"`
+	// Transactions associated with this invoice.
+	Transactions []*TransactionResponseWithoutInvoices `json:"transactions,omitempty" url:"transactions,omitempty"`
+	// The IDs of the vendor credits that are currently applied to this invoice.
+	VendorCreditIDs []VendorCreditID `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -7733,7 +7799,9 @@ type InvoiceUpdateRequest struct {
 	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
 	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
-	PaymentSchedule *PaymentSchedule                `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	// The IDs of the vendor credits to be applied to this invoice. Passing this field will un-apply any previously applied vendor credits.
+	VendorCreditIDs []VendorCreditID                `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
 	LineItems       []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID or foreign ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
@@ -12605,6 +12673,368 @@ func (u *UtilityPaymentMethodResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+type TransactionFailureReason struct {
+	// The failure reason code.
+	Code *string `json:"code,omitempty" url:"code,omitempty"`
+	// The failure reason description.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionFailureReason) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionFailureReason) UnmarshalJSON(data []byte) error {
+	type unmarshaler TransactionFailureReason
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TransactionFailureReason(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionFailureReason) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TransactionResponseBankToBankBase struct {
+	ID        TransactionID     `json:"id" url:"id"`
+	Status    TransactionStatus `json:"status" url:"status"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
+	// If the invoice failed to be paid, this field will be populated with the reason of failure.
+	FailureReason *TransactionFailureReason `json:"failureReason,omitempty" url:"failureReason,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionResponseBankToBankBase) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseBankToBankBase) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseBankToBankBase
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseBankToBankBase(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseBankToBankBase) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseBankToBankBase
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*t),
+		CreatedAt: core.NewDateTime(t.CreatedAt),
+		UpdatedAt: core.NewDateTime(t.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseBankToBankBase) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TransactionResponseBankToMailedCheckBase struct {
+	ID        TransactionID     `json:"id" url:"id"`
+	Status    TransactionStatus `json:"status" url:"status"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
+	// The number of the check
+	CheckNumber int `json:"checkNumber" url:"checkNumber"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionResponseBankToMailedCheckBase) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseBankToMailedCheckBase) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseBankToMailedCheckBase
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseBankToMailedCheckBase(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseBankToMailedCheckBase) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseBankToMailedCheckBase
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*t),
+		CreatedAt: core.NewDateTime(t.CreatedAt),
+		UpdatedAt: core.NewDateTime(t.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseBankToMailedCheckBase) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TransactionResponseBase struct {
+	ID        TransactionID     `json:"id" url:"id"`
+	Status    TransactionStatus `json:"status" url:"status"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionResponseBase) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseBase) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseBase
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseBase(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseBase) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseBase
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*t),
+		CreatedAt: core.NewDateTime(t.CreatedAt),
+		UpdatedAt: core.NewDateTime(t.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseBase) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TransactionResponseWithoutInvoices struct {
+	Type                     string
+	BankAccountToBankAccount *TransactionResponseBankToBankBase
+	BankAccountToMailedCheck *TransactionResponseBankToMailedCheckBase
+	Custom                   *TransactionResponseBase
+}
+
+func (t *TransactionResponseWithoutInvoices) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	t.Type = unmarshaler.Type
+	switch unmarshaler.Type {
+	case "bankAccountToBankAccount":
+		value := new(TransactionResponseBankToBankBase)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.BankAccountToBankAccount = value
+	case "bankAccountToMailedCheck":
+		value := new(TransactionResponseBankToMailedCheckBase)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.BankAccountToMailedCheck = value
+	case "custom":
+		value := new(TransactionResponseBase)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.Custom = value
+	}
+	return nil
+}
+
+func (t TransactionResponseWithoutInvoices) MarshalJSON() ([]byte, error) {
+	if t.BankAccountToBankAccount != nil {
+		return core.MarshalJSONWithExtraProperty(t.BankAccountToBankAccount, "type", "bankAccountToBankAccount")
+	}
+	if t.BankAccountToMailedCheck != nil {
+		return core.MarshalJSONWithExtraProperty(t.BankAccountToMailedCheck, "type", "bankAccountToMailedCheck")
+	}
+	if t.Custom != nil {
+		return core.MarshalJSONWithExtraProperty(t.Custom, "type", "custom")
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", t)
+}
+
+type TransactionResponseWithoutInvoicesVisitor interface {
+	VisitBankAccountToBankAccount(*TransactionResponseBankToBankBase) error
+	VisitBankAccountToMailedCheck(*TransactionResponseBankToMailedCheckBase) error
+	VisitCustom(*TransactionResponseBase) error
+}
+
+func (t *TransactionResponseWithoutInvoices) Accept(visitor TransactionResponseWithoutInvoicesVisitor) error {
+	if t.BankAccountToBankAccount != nil {
+		return visitor.VisitBankAccountToBankAccount(t.BankAccountToBankAccount)
+	}
+	if t.BankAccountToMailedCheck != nil {
+		return visitor.VisitBankAccountToMailedCheck(t.BankAccountToMailedCheck)
+	}
+	if t.Custom != nil {
+		return visitor.VisitCustom(t.Custom)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", t)
+}
+
+type CalculateVendorCreditUsageResponse struct {
+	// Remaining amount on the invoice after vendor credits are applied in major units.
+	RemainingAmount float64 `json:"remainingAmount" url:"remainingAmount"`
+	// Currency code for the amount. Defaults to USD.
+	Currency CurrencyCode `json:"currency" url:"currency"`
+	// Vendor credits that will be applied to the invoice. The objects returned represent the states each vendor credit will be in AFTER they are applied to the invoice, not their current states.
+	VendorCredits []*VendorCreditResponse `json:"vendorCredits,omitempty" url:"vendorCredits,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CalculateVendorCreditUsageResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CalculateVendorCreditUsageResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler CalculateVendorCreditUsageResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CalculateVendorCreditUsageResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CalculateVendorCreditUsageResponse) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 type FindVendorCreditResponse struct {
