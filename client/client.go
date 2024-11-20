@@ -15,6 +15,7 @@ import (
 	option "github.com/mercoa-finance/go/option"
 	organizationclient "github.com/mercoa-finance/go/organization/client"
 	paymentmethods "github.com/mercoa-finance/go/paymentmethods"
+	transaction "github.com/mercoa-finance/go/transaction"
 	http "net/http"
 )
 
@@ -33,6 +34,7 @@ type Client struct {
 	CustomPaymentMethodSchema *custompaymentmethodschema.Client
 	Ocr                       *ocr.Client
 	PaymentMethods            *paymentmethods.Client
+	Transaction               *transaction.Client
 }
 
 func NewClient(opts ...option.RequestOption) *Client {
@@ -56,5 +58,6 @@ func NewClient(opts ...option.RequestOption) *Client {
 		CustomPaymentMethodSchema: custompaymentmethodschema.NewClient(opts...),
 		Ocr:                       ocr.NewClient(opts...),
 		PaymentMethods:            paymentmethods.NewClient(opts...),
+		Transaction:               transaction.NewClient(opts...),
 	}
 }

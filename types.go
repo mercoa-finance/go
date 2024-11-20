@@ -5284,6 +5284,8 @@ func (c CheckDeliveryMethod) Ptr() *CheckDeliveryMethod {
 type CheckPaymentDestinationOptions struct {
 	// Delivery method for check disbursements. Defaults to MAIL.
 	Delivery *CheckDeliveryMethod `json:"delivery,omitempty" url:"delivery,omitempty"`
+	// If true, prints the invoice description (noteToSelf) on the check note. Defaults to false.
+	PrintDescription *bool `json:"printDescription,omitempty" url:"printDescription,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -12719,6 +12721,8 @@ func (t *TransactionFailureReason) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
+type TransactionID = string
+
 type TransactionResponseBankToBankBase struct {
 	ID        TransactionID     `json:"id" url:"id"`
 	Status    TransactionStatus `json:"status" url:"status"`
@@ -12776,6 +12780,76 @@ func (t *TransactionResponseBankToBankBase) MarshalJSON() ([]byte, error) {
 }
 
 func (t *TransactionResponseBankToBankBase) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TransactionResponseBankToBankWithInvoices struct {
+	ID        TransactionID     `json:"id" url:"id"`
+	Status    TransactionStatus `json:"status" url:"status"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
+	// If the invoice failed to be paid, this field will be populated with the reason of failure.
+	FailureReason *TransactionFailureReason `json:"failureReason,omitempty" url:"failureReason,omitempty"`
+	// Invoices associated with this transaction
+	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionResponseBankToBankWithInvoices) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseBankToBankWithInvoices) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseBankToBankWithInvoices
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseBankToBankWithInvoices(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseBankToBankWithInvoices) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseBankToBankWithInvoices
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*t),
+		CreatedAt: core.NewDateTime(t.CreatedAt),
+		UpdatedAt: core.NewDateTime(t.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseBankToBankWithInvoices) String() string {
 	if len(t._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
 			return value
@@ -12855,6 +12929,76 @@ func (t *TransactionResponseBankToMailedCheckBase) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
+type TransactionResponseBankToMailedCheckWithInvoices struct {
+	ID        TransactionID     `json:"id" url:"id"`
+	Status    TransactionStatus `json:"status" url:"status"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
+	// The number of the check
+	CheckNumber int `json:"checkNumber" url:"checkNumber"`
+	// Invoices associated with this transaction
+	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseBankToMailedCheckWithInvoices
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseBankToMailedCheckWithInvoices(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseBankToMailedCheckWithInvoices
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*t),
+		CreatedAt: core.NewDateTime(t.CreatedAt),
+		UpdatedAt: core.NewDateTime(t.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
 type TransactionResponseBase struct {
 	ID        TransactionID     `json:"id" url:"id"`
 	Status    TransactionStatus `json:"status" url:"status"`
@@ -12910,6 +13054,74 @@ func (t *TransactionResponseBase) MarshalJSON() ([]byte, error) {
 }
 
 func (t *TransactionResponseBase) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TransactionResponseCustomWithInvoices struct {
+	ID        TransactionID     `json:"id" url:"id"`
+	Status    TransactionStatus `json:"status" url:"status"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time         `json:"updatedAt" url:"updatedAt"`
+	// Invoices associated with this transaction
+	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionResponseCustomWithInvoices) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseCustomWithInvoices) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseCustomWithInvoices
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseCustomWithInvoices(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseCustomWithInvoices) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseCustomWithInvoices
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*t),
+		CreatedAt: core.NewDateTime(t.CreatedAt),
+		UpdatedAt: core.NewDateTime(t.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseCustomWithInvoices) String() string {
 	if len(t._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
 			return value
