@@ -34,6 +34,8 @@ type EntityGetInvoicesRequest struct {
 	PayerID []*mercoafinancego.EntityID `json:"-" url:"payerId,omitempty"`
 	// Filter invoices by vendor ID or vendor foreign ID.
 	VendorID []*mercoafinancego.EntityID `json:"-" url:"vendorId,omitempty"`
+	// Filter invoices by the ID or foreign ID of the user that created the invoice.
+	CreatorUserID []*mercoafinancego.EntityUserID `json:"-" url:"creatorUserId,omitempty"`
 	// Filter invoices by assigned approver user ID.
 	ApproverID []*mercoafinancego.EntityUserID `json:"-" url:"approverId,omitempty"`
 	// Filter invoices by approver action. Needs to be used with approverId. For example, if you want to find all invoices that have been approved by a specific user, you would use approverId and approverAction=APPROVE.

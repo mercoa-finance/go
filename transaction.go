@@ -10,16 +10,16 @@ import (
 )
 
 type FindTransactionsRequest struct {
-	// Filter invoices by the ID or foreign ID of the entity that created the transaction.
+	// Filter transactions by the ID or foreign ID of the entity that is the payer or the vendor of the invoice that created the transaction.
 	EntityID []*EntityID `json:"-" url:"entityId,omitempty"`
 	// CREATED_AT Start date filter.
 	StartDate *time.Time `json:"-" url:"startDate,omitempty"`
 	// CREATED_AT End date filter.
 	EndDate *time.Time `json:"-" url:"endDate,omitempty"`
-	// Number of invoices to return. Limit can range between 1 and 100, and the default is 10.
+	// Number of transactions to return. Limit can range between 1 and 100, and the default is 10.
 	Limit *int `json:"-" url:"limit,omitempty"`
-	// The ID of the invoice to start after. If not provided, the first page of invoices will be returned.
-	StartingAfter *InvoiceID `json:"-" url:"startingAfter,omitempty"`
+	// The ID of the transactions to start after. If not provided, the first page of transactions will be returned.
+	StartingAfter *TransactionID `json:"-" url:"startingAfter,omitempty"`
 	// Find transactions by vendor name, invoice number, or amount. Partial matches are supported.
 	Search *string `json:"-" url:"search,omitempty"`
 	// Filter transactions by invoice metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
@@ -32,6 +32,8 @@ type FindTransactionsRequest struct {
 	PayerID []*EntityID `json:"-" url:"payerId,omitempty"`
 	// Filter transactions by vendor ID or vendor foreign ID.
 	VendorID []*EntityID `json:"-" url:"vendorId,omitempty"`
+	// Filter transactions by the ID or foreign ID of the user that created the invoice that created the transaction.
+	CreatorUserID []*EntityUserID `json:"-" url:"creatorUserId,omitempty"`
 	// Filter transactions by invoice ID.
 	InvoiceID []*InvoiceID `json:"-" url:"invoiceId,omitempty"`
 	// Filter transactions by transaction ID.
