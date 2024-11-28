@@ -92,6 +92,7 @@ type TransactionResponse struct {
 	BankAccountToBankAccount *TransactionResponseBankToBankWithInvoices
 	BankAccountToMailedCheck *TransactionResponseBankToMailedCheckWithInvoices
 	Custom                   *TransactionResponseCustomWithInvoices
+	OffPlatform              *TransactionResponseCustomWithInvoices
 }
 
 func (t *TransactionResponse) UnmarshalJSON(data []byte) error {
@@ -121,6 +122,12 @@ func (t *TransactionResponse) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		t.Custom = value
+	case "offPlatform":
+		value := new(TransactionResponseCustomWithInvoices)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.OffPlatform = value
 	}
 	return nil
 }
@@ -135,6 +142,9 @@ func (t TransactionResponse) MarshalJSON() ([]byte, error) {
 	if t.Custom != nil {
 		return core.MarshalJSONWithExtraProperty(t.Custom, "type", "custom")
 	}
+	if t.OffPlatform != nil {
+		return core.MarshalJSONWithExtraProperty(t.OffPlatform, "type", "offPlatform")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", t)
 }
 
@@ -142,6 +152,7 @@ type TransactionResponseVisitor interface {
 	VisitBankAccountToBankAccount(*TransactionResponseBankToBankWithInvoices) error
 	VisitBankAccountToMailedCheck(*TransactionResponseBankToMailedCheckWithInvoices) error
 	VisitCustom(*TransactionResponseCustomWithInvoices) error
+	VisitOffPlatform(*TransactionResponseCustomWithInvoices) error
 }
 
 func (t *TransactionResponse) Accept(visitor TransactionResponseVisitor) error {
@@ -153,6 +164,9 @@ func (t *TransactionResponse) Accept(visitor TransactionResponseVisitor) error {
 	}
 	if t.Custom != nil {
 		return visitor.VisitCustom(t.Custom)
+	}
+	if t.OffPlatform != nil {
+		return visitor.VisitOffPlatform(t.OffPlatform)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", t)
 }
@@ -200,6 +214,7 @@ const (
 	TransactionTypeBankAccountToBankAccount TransactionType = "bankAccountToBankAccount"
 	TransactionTypeBankAccountToMailedCheck TransactionType = "bankAccountToMailedCheck"
 	TransactionTypeCustom                   TransactionType = "custom"
+	TransactionTypeOffPlatform              TransactionType = "offPlatform"
 )
 
 func NewTransactionTypeFromString(s string) (TransactionType, error) {
@@ -210,6 +225,8 @@ func NewTransactionTypeFromString(s string) (TransactionType, error) {
 		return TransactionTypeBankAccountToMailedCheck, nil
 	case "custom":
 		return TransactionTypeCustom, nil
+	case "offPlatform":
+		return TransactionTypeOffPlatform, nil
 	}
 	var t TransactionType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

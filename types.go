@@ -8582,6 +8582,8 @@ type ColorSchemeRequest struct {
 	SecondaryColor      *string `json:"secondaryColor,omitempty" url:"secondaryColor,omitempty"`
 	LogoBackgroundColor *string `json:"logoBackgroundColor,omitempty" url:"logoBackgroundColor,omitempty"`
 	RoundedCorners      *int    `json:"roundedCorners,omitempty" url:"roundedCorners,omitempty"`
+	FontFamily          *string `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	FontSize            *string `json:"fontSize,omitempty" url:"fontSize,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -8626,6 +8628,8 @@ type ColorSchemeResponse struct {
 	SecondaryColor      *string `json:"secondaryColor,omitempty" url:"secondaryColor,omitempty"`
 	LogoBackgroundColor *string `json:"logoBackgroundColor,omitempty" url:"logoBackgroundColor,omitempty"`
 	RoundedCorners      *int    `json:"roundedCorners,omitempty" url:"roundedCorners,omitempty"`
+	FontFamily          *string `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	FontSize            *string `json:"fontSize,omitempty" url:"fontSize,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -13138,6 +13142,7 @@ type TransactionResponseWithoutInvoices struct {
 	BankAccountToBankAccount *TransactionResponseBankToBankBase
 	BankAccountToMailedCheck *TransactionResponseBankToMailedCheckBase
 	Custom                   *TransactionResponseBase
+	OffPlatform              *TransactionResponseBase
 }
 
 func (t *TransactionResponseWithoutInvoices) UnmarshalJSON(data []byte) error {
@@ -13167,6 +13172,12 @@ func (t *TransactionResponseWithoutInvoices) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		t.Custom = value
+	case "offPlatform":
+		value := new(TransactionResponseBase)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.OffPlatform = value
 	}
 	return nil
 }
@@ -13181,6 +13192,9 @@ func (t TransactionResponseWithoutInvoices) MarshalJSON() ([]byte, error) {
 	if t.Custom != nil {
 		return core.MarshalJSONWithExtraProperty(t.Custom, "type", "custom")
 	}
+	if t.OffPlatform != nil {
+		return core.MarshalJSONWithExtraProperty(t.OffPlatform, "type", "offPlatform")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", t)
 }
 
@@ -13188,6 +13202,7 @@ type TransactionResponseWithoutInvoicesVisitor interface {
 	VisitBankAccountToBankAccount(*TransactionResponseBankToBankBase) error
 	VisitBankAccountToMailedCheck(*TransactionResponseBankToMailedCheckBase) error
 	VisitCustom(*TransactionResponseBase) error
+	VisitOffPlatform(*TransactionResponseBase) error
 }
 
 func (t *TransactionResponseWithoutInvoices) Accept(visitor TransactionResponseWithoutInvoicesVisitor) error {
@@ -13199,6 +13214,9 @@ func (t *TransactionResponseWithoutInvoices) Accept(visitor TransactionResponseW
 	}
 	if t.Custom != nil {
 		return visitor.VisitCustom(t.Custom)
+	}
+	if t.OffPlatform != nil {
+		return visitor.VisitOffPlatform(t.OffPlatform)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", t)
 }
