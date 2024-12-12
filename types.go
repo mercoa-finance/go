@@ -3950,6 +3950,8 @@ type OcrCustomizationRequest struct {
 	LineItemGlAccountID *bool `json:"lineItemGlAccountId,omitempty" url:"lineItemGlAccountId,omitempty"`
 	// Use AI to predict metadata from historical data. Defaults to true.
 	PredictMetadata *bool `json:"predictMetadata,omitempty" url:"predictMetadata,omitempty"`
+	// Pull tax and shipping information as line items. Defaults to true. If false, tax and shipping will extracted as invoice level fields.
+	TaxAndShippingAsLineItems *bool `json:"taxAndShippingAsLineItems,omitempty" url:"taxAndShippingAsLineItems,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -5660,8 +5662,12 @@ type InvoiceCreationWithEntityGroupRequest struct {
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	// The IDs of the vendor credits to be applied to this invoice. Passing this field will un-apply any previously applied vendor credits.
-	VendorCreditIDs []VendorCreditID                  `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
-	LineItems       []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	VendorCreditIDs []VendorCreditID `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
+	// Tax amount for this invoice.
+	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
+	// Shipping amount for this invoice.
+	ShippingAmount *float64                          `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
+	LineItems      []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID of the entity group who created this invoice.
 	CreatorEntityGroupID EntityGroupID `json:"creatorEntityGroupId" url:"creatorEntityGroupId"`
 
@@ -5791,8 +5797,12 @@ type InvoiceCreationWithEntityRequest struct {
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	// The IDs of the vendor credits to be applied to this invoice. Passing this field will un-apply any previously applied vendor credits.
-	VendorCreditIDs []VendorCreditID                  `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
-	LineItems       []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	VendorCreditIDs []VendorCreditID `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
+	// Tax amount for this invoice.
+	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
+	// Shipping amount for this invoice.
+	ShippingAmount *float64                          `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
+	LineItems      []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID of the entity who created this invoice.
 	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
 
@@ -5907,11 +5917,13 @@ func (i InvoiceDateFilter) Ptr() *InvoiceDateFilter {
 }
 
 type InvoiceEvent struct {
-	WebhookIDs []string         `json:"webhookIds,omitempty" url:"webhookIds,omitempty"`
-	Data       *InvoiceResponse `json:"data,omitempty" url:"data,omitempty"`
+	WebhookIDs []string              `json:"webhookIds,omitempty" url:"webhookIds,omitempty"`
+	Data       *InvoiceUpdateRequest `json:"data,omitempty" url:"data,omitempty"`
 	// The ID of the user who triggered this event
-	UserID    *EntityUserID `json:"userId,omitempty" url:"userId,omitempty"`
-	CreatedAt time.Time     `json:"createdAt" url:"createdAt"`
+	UserID    *EntityUserID  `json:"userId,omitempty" url:"userId,omitempty"`
+	CreatedAt time.Time      `json:"createdAt" url:"createdAt"`
+	IPAddress *string        `json:"ipAddress,omitempty" url:"ipAddress,omitempty"`
+	Status    *InvoiceStatus `json:"status,omitempty" url:"status,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -6847,6 +6859,10 @@ type InvoiceRequestBase struct {
 	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	// The IDs of the vendor credits to be applied to this invoice. Passing this field will un-apply any previously applied vendor credits.
 	VendorCreditIDs []VendorCreditID `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
+	// Tax amount for this invoice.
+	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
+	// Shipping amount for this invoice.
+	ShippingAmount *float64 `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -6960,8 +6976,12 @@ type InvoiceResponse struct {
 	// True if the invoice was created by an incoming email.
 	HasSourceEmail bool                       `json:"hasSourceEmail" url:"hasSourceEmail"`
 	LineItems      []*InvoiceLineItemResponse `json:"lineItems,omitempty" url:"lineItems,omitempty"`
-	Approvers      []*ApprovalSlot            `json:"approvers,omitempty" url:"approvers,omitempty"`
-	ApprovalPolicy []*ApprovalPolicyResponse  `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
+	// Tax amount for this invoice.
+	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
+	// Shipping amount for this invoice.
+	ShippingAmount *float64                  `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
+	Approvers      []*ApprovalSlot           `json:"approvers,omitempty" url:"approvers,omitempty"`
+	ApprovalPolicy []*ApprovalPolicyResponse `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
 	// Metadata associated with this invoice.
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The ID of the entity who created this invoice.
@@ -7117,8 +7137,12 @@ type InvoiceResponseBase struct {
 	// True if the invoice was created by an incoming email.
 	HasSourceEmail bool                       `json:"hasSourceEmail" url:"hasSourceEmail"`
 	LineItems      []*InvoiceLineItemResponse `json:"lineItems,omitempty" url:"lineItems,omitempty"`
-	Approvers      []*ApprovalSlot            `json:"approvers,omitempty" url:"approvers,omitempty"`
-	ApprovalPolicy []*ApprovalPolicyResponse  `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
+	// Tax amount for this invoice.
+	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
+	// Shipping amount for this invoice.
+	ShippingAmount *float64                  `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
+	Approvers      []*ApprovalSlot           `json:"approvers,omitempty" url:"approvers,omitempty"`
+	ApprovalPolicy []*ApprovalPolicyResponse `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
 	// Metadata associated with this invoice.
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The ID of the entity who created this invoice.
@@ -7306,8 +7330,12 @@ type InvoiceTemplateCreationRequest struct {
 	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
 	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
-	PaymentSchedule *PaymentSchedule                  `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
-	LineItems       []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	// Tax amount for this invoice.
+	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
+	// Shipping amount for this invoice.
+	ShippingAmount *float64                          `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
+	LineItems      []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID of the entity who created this invoice template.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 
@@ -7426,6 +7454,10 @@ type InvoiceTemplateRequestBase struct {
 	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	// Tax amount for this invoice.
+	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
+	// Shipping amount for this invoice.
+	ShippingAmount *float64 `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -7535,8 +7567,12 @@ type InvoiceTemplateResponse struct {
 	// True if the invoice was created by an incoming email.
 	HasSourceEmail bool                       `json:"hasSourceEmail" url:"hasSourceEmail"`
 	LineItems      []*InvoiceLineItemResponse `json:"lineItems,omitempty" url:"lineItems,omitempty"`
-	Approvers      []*ApprovalSlot            `json:"approvers,omitempty" url:"approvers,omitempty"`
-	ApprovalPolicy []*ApprovalPolicyResponse  `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
+	// Tax amount for this invoice.
+	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
+	// Shipping amount for this invoice.
+	ShippingAmount *float64                  `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
+	Approvers      []*ApprovalSlot           `json:"approvers,omitempty" url:"approvers,omitempty"`
+	ApprovalPolicy []*ApprovalPolicyResponse `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
 	// Metadata associated with this invoice.
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The ID of the entity who created this invoice.
@@ -7676,8 +7712,12 @@ type InvoiceTemplateUpdateRequest struct {
 	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
 	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
-	PaymentSchedule *PaymentSchedule                `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
-	LineItems       []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	// Tax amount for this invoice.
+	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
+	// Shipping amount for this invoice.
+	ShippingAmount *float64                        `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
+	LineItems      []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID or foreign ID of entity who created this invoice.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 
@@ -7803,8 +7843,12 @@ type InvoiceUpdateRequest struct {
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	// The IDs of the vendor credits to be applied to this invoice. Passing this field will un-apply any previously applied vendor credits.
-	VendorCreditIDs []VendorCreditID                `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
-	LineItems       []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	VendorCreditIDs []VendorCreditID `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
+	// Tax amount for this invoice.
+	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
+	// Shipping amount for this invoice.
+	ShippingAmount *float64                        `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
+	LineItems      []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID or foreign ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 
@@ -7886,7 +7930,7 @@ func (i *InvoiceUpdateRequest) String() string {
 
 type MetadataFilter struct {
 	Key string `json:"key" url:"key"`
-	// If multiple values are provided, the filter will match if any of the values match (OR filter)
+	// If multiple values are provided, the filter will match if any of the values match (OR filter). To filter for the absence of a key, use the value 'NULL'.
 	Value *StringOrStringArray `json:"value,omitempty" url:"value,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -7997,37 +8041,15 @@ func (p *PaymentDestinationOptions) Accept(visitor PaymentDestinationOptionsVisi
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
-type PaymentMonthRepeatType string
-
-const (
-	PaymentMonthRepeatTypeStart PaymentMonthRepeatType = "start"
-	PaymentMonthRepeatTypeEnd   PaymentMonthRepeatType = "end"
-)
-
-func NewPaymentMonthRepeatTypeFromString(s string) (PaymentMonthRepeatType, error) {
-	switch s {
-	case "start":
-		return PaymentMonthRepeatTypeStart, nil
-	case "end":
-		return PaymentMonthRepeatTypeEnd, nil
-	}
-	var t PaymentMonthRepeatType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PaymentMonthRepeatType) Ptr() *PaymentMonthRepeatType {
-	return &p
-}
-
 type PaymentMonthSchedule struct {
 	// How often to repeat the payments. Defaults to 1. Must be greater than 0. For example, if repeatEvery is set to 2 and this is a daily payment, the payment will be made every other day. If repeatEvery is set to 3 and this is a weekly payment, the payment will be made every third week.
 	RepeatEvery *int `json:"repeatEvery,omitempty" url:"repeatEvery,omitempty"`
 	// When to end the payments, either a number of occurrences or a date. Defaults to never ending if not specified
 	Ends *PaymentScheduleEndCondition `json:"ends,omitempty" url:"ends,omitempty"`
-	// Offset from the start or end of the month to repeat on (0-30). Defaults to 0.
-	DayOffset int `json:"dayOffset" url:"dayOffset"`
-	// Type of offset. If start, will offset from the start of the month (so 10 with an offset of start will be on the 10th of the month). If end, will offset from the end of the month (so 10 with an offset of end will be the 20th).
-	OffsetType *PaymentMonthRepeatType `json:"offsetType,omitempty" url:"offsetType,omitempty"`
+	// deprecated. will be removed in the future and will always be 0.
+	DayOffset *int `json:"dayOffset,omitempty" url:"dayOffset,omitempty"`
+	// Day of the month to repeat on. Positive values (1-31): Represent the day of the month counting from the start (e.g., 10 is the 10th day of the month). Negative values (-1 to -31): Represent the day of the month counting backward from the end (e.g., -1 is the last day of the month, -2 is the second-to-last day).
+	RepeatOnDay int `json:"repeatOnDay" url:"repeatOnDay"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -8325,7 +8347,7 @@ type PaymentYearSchedule struct {
 	RepeatEvery *int `json:"repeatEvery,omitempty" url:"repeatEvery,omitempty"`
 	// When to end the payments, either a number of occurrences or a date. Defaults to never ending if not specified
 	Ends *PaymentScheduleEndCondition `json:"ends,omitempty" url:"ends,omitempty"`
-	// Day of the month to repeat on (1-31).
+	// Day of the month to repeat on. Positive values (1-31): Represent the day of the month counting from the start (e.g., 10 is the 10th day of the month). Negative values (-1 to -31): Represent the day of the month counting backward from the end (e.g., -1 is the last day of the month, -2 is the second-to-last day).
 	RepeatOnDay int `json:"repeatOnDay" url:"repeatOnDay"`
 	// Month to repeat on (1-12).
 	RepeatOnMonth int `json:"repeatOnMonth" url:"repeatOnMonth"`

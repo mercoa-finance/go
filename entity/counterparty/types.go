@@ -7,8 +7,10 @@ import (
 )
 
 type FindPayeeCounterpartiesRequest struct {
-	// Filter by counterparty name
+	// Use search instead. Deprecated. Filter counterparties by name. Partial matches are supported.
 	Name *string `json:"-" url:"name,omitempty"`
+	// Filter counterparties by name or email. Partial matches are supported.
+	Search *string `json:"-" url:"search,omitempty"`
 	// Filter by network type. By default, only ENTITY counterparties are returned.
 	NetworkType []*mercoafinancego.CounterpartyNetworkType `json:"-" url:"networkType,omitempty"`
 	// If true, will include counterparty payment methods as part of the response
@@ -28,8 +30,10 @@ type FindPayeeCounterpartiesRequest struct {
 }
 
 type FindPayorCounterpartiesRequest struct {
-	// Filter by counterparty name
+	// Use search instead. Deprecated. Filter counterparties by name. Partial matches are supported.
 	Name *string `json:"-" url:"name,omitempty"`
+	// Filter counterparties by name or email. Partial matches are supported.
+	Search *string `json:"-" url:"search,omitempty"`
 	// Filter by network type. By default, only ENTITY counterparties are returned.
 	NetworkType []*mercoafinancego.CounterpartyNetworkType `json:"-" url:"networkType,omitempty"`
 	// If true, will include counterparty payment methods as part of the response
