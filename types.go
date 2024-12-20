@@ -2300,6 +2300,120 @@ func (e *EntityAddPayorsRequest) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
+type EntityCloneRequest struct {
+	// The ID or ForeignId of the entity to clone.
+	CreateFromID EntityID `json:"createFromId" url:"createFromId"`
+	// The ID used to identify this entity in your system. This ID must be unique across all entities in your system.
+	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	// Sets the email address to which to send invoices to be added to the Invoice Inbox. Only provide the local-part/username of the email address, do not include the @domain.com
+	EmailTo *string `json:"emailTo,omitempty" url:"emailTo,omitempty"`
+	// Email inbox alias addresses. Used when forwarding emails to the emailTo address from an alias. Include the full email address.
+	EmailToAlias []string `json:"emailToAlias,omitempty" url:"emailToAlias,omitempty"`
+	// Base64 encoded PNG image data for the entity logo. Max size 100KB.
+	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
+	// Simple key/value metadata associated with this entity. For more complex metadata, use the Metadata API.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityCloneRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityCloneRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityCloneRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityCloneRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityCloneRequest) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EntityCreationRequest struct {
+	// The ID used to identify this entity in your system. This ID must be unique across all entities in your system.
+	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	// Sets the email address to which to send invoices to be added to the Invoice Inbox. Only provide the local-part/username of the email address, do not include the @domain.com
+	EmailTo *string `json:"emailTo,omitempty" url:"emailTo,omitempty"`
+	// Email inbox alias addresses. Used when forwarding emails to the emailTo address from an alias. Include the full email address.
+	EmailToAlias []string `json:"emailToAlias,omitempty" url:"emailToAlias,omitempty"`
+	// If this entity has a direct relationship with your organization (e.g your direct customer or client), set this to true. Otherwise, set to false (e.g your customer's vendors).
+	IsCustomer  bool            `json:"isCustomer" url:"isCustomer"`
+	AccountType AccountType     `json:"accountType" url:"accountType"`
+	Profile     *ProfileRequest `json:"profile,omitempty" url:"profile,omitempty"`
+	// If this entity will be paying invoices, set this to true.
+	IsPayor bool `json:"isPayor" url:"isPayor"`
+	// If this entity will be receiving payments, set this to true.
+	IsPayee bool `json:"isPayee" url:"isPayee"`
+	// Control if this entity should be available as a payor to any entity on your platform. If set to false, this entity will only be available as a payor to entities that have a direct relationship with this entity. Defaults to false.
+	IsNetworkPayor *bool `json:"isNetworkPayor,omitempty" url:"isNetworkPayor,omitempty"`
+	// Control if this entity should be available as a payee to any entity on your platform. If set to false, this entity will only be available as a payee to entities that have a direct relationship with this entity. Defaults to false.
+	IsNetworkPayee *bool `json:"isNetworkPayee,omitempty" url:"isNetworkPayee,omitempty"`
+	// Base64 encoded PNG image data for the entity logo. Max size 100KB.
+	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
+	// Simple key/value metadata associated with this entity. For more complex metadata, use the Metadata API.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EntityCreationRequest) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EntityCreationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntityCreationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntityCreationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntityCreationRequest) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
 type EntityCustomizationRequest struct {
 	Metadata           []*MetadataCustomizationRequest      `json:"metadata,omitempty" url:"metadata,omitempty"`
 	PaymentSource      []*PaymentMethodCustomizationRequest `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
@@ -2307,6 +2421,7 @@ type EntityCustomizationRequest struct {
 	PaymentDestination []*PaymentMethodCustomizationRequest `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
 	Ocr                *OcrCustomizationRequest             `json:"ocr,omitempty" url:"ocr,omitempty"`
 	Notifications      *NotificationCustomizationRequest    `json:"notifications,omitempty" url:"notifications,omitempty"`
+	Workflow           *WorkflowCustomizationRequest        `json:"workflow,omitempty" url:"workflow,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2353,6 +2468,7 @@ type EntityCustomizationResponse struct {
 	PaymentDestination []*PaymentMethodCustomizationRequest `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
 	Ocr                *OcrCustomizationRequest             `json:"ocr,omitempty" url:"ocr,omitempty"`
 	Notifications      *NotificationCustomizationRequest    `json:"notifications,omitempty" url:"notifications,omitempty"`
+	Workflow           *WorkflowCustomizationRequest        `json:"workflow,omitempty" url:"workflow,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2648,65 +2764,47 @@ func (e EntityOnboardingLinkType) Ptr() *EntityOnboardingLinkType {
 }
 
 type EntityRequest struct {
-	// The ID used to identify this entity in your system. This ID must be unique across all entities in your system.
-	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
-	// Sets the email address to which to send invoices to be added to the Invoice Inbox. Only provide the local-part/username of the email address, do not include the @domain.com
-	EmailTo *string `json:"emailTo,omitempty" url:"emailTo,omitempty"`
-	// Email inbox alias addresses. Used when forwarding emails to the emailTo address from an alias. Include the full email address.
-	EmailToAlias []string `json:"emailToAlias,omitempty" url:"emailToAlias,omitempty"`
-	// If this entity has a direct relationship with your organization (e.g your direct customer or client), set this to true. Otherwise, set to false (e.g your customer's vendors).
-	IsCustomer  bool            `json:"isCustomer" url:"isCustomer"`
-	AccountType AccountType     `json:"accountType" url:"accountType"`
-	Profile     *ProfileRequest `json:"profile,omitempty" url:"profile,omitempty"`
-	// If this entity will be paying invoices, set this to true.
-	IsPayor bool `json:"isPayor" url:"isPayor"`
-	// If this entity will be receiving payments, set this to true.
-	IsPayee bool `json:"isPayee" url:"isPayee"`
-	// Control if this entity should be available as a payor to any entity on your platform. If set to false, this entity will only be available as a payor to entities that have a direct relationship with this entity. Defaults to false.
-	IsNetworkPayor *bool `json:"isNetworkPayor,omitempty" url:"isNetworkPayor,omitempty"`
-	// Control if this entity should be available as a payee to any entity on your platform. If set to false, this entity will only be available as a payee to entities that have a direct relationship with this entity. Defaults to false.
-	IsNetworkPayee *bool `json:"isNetworkPayee,omitempty" url:"isNetworkPayee,omitempty"`
-	// Base64 encoded PNG image data for the entity logo. Max size 100KB.
-	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
-	// Simple key/value metadata associated with this entity. For more complex metadata, use the Metadata API.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (e *EntityRequest) GetExtraProperties() map[string]interface{} {
-	return e.extraProperties
+	EntityCreationRequest *EntityCreationRequest
+	EntityCloneRequest    *EntityCloneRequest
 }
 
 func (e *EntityRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler EntityRequest
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
+	valueEntityCreationRequest := new(EntityCreationRequest)
+	if err := json.Unmarshal(data, &valueEntityCreationRequest); err == nil {
+		e.EntityCreationRequest = valueEntityCreationRequest
+		return nil
 	}
-	*e = EntityRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *e)
-	if err != nil {
-		return err
+	valueEntityCloneRequest := new(EntityCloneRequest)
+	if err := json.Unmarshal(data, &valueEntityCloneRequest); err == nil {
+		e.EntityCloneRequest = valueEntityCloneRequest
+		return nil
 	}
-	e.extraProperties = extraProperties
-
-	e._rawJSON = json.RawMessage(data)
-	return nil
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, e)
 }
 
-func (e *EntityRequest) String() string {
-	if len(e._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
-			return value
-		}
+func (e EntityRequest) MarshalJSON() ([]byte, error) {
+	if e.EntityCreationRequest != nil {
+		return json.Marshal(e.EntityCreationRequest)
 	}
-	if value, err := core.StringifyJSON(e); err == nil {
-		return value
+	if e.EntityCloneRequest != nil {
+		return json.Marshal(e.EntityCloneRequest)
 	}
-	return fmt.Sprintf("%#v", e)
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", e)
+}
+
+type EntityRequestVisitor interface {
+	VisitEntityCreationRequest(*EntityCreationRequest) error
+	VisitEntityCloneRequest(*EntityCloneRequest) error
+}
+
+func (e *EntityRequest) Accept(visitor EntityRequestVisitor) error {
+	if e.EntityCreationRequest != nil {
+		return visitor.VisitEntityCreationRequest(e.EntityCreationRequest)
+	}
+	if e.EntityCloneRequest != nil {
+		return visitor.VisitEntityCloneRequest(e.EntityCloneRequest)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", e)
 }
 
 type EntityResponse struct {
@@ -4922,6 +5020,48 @@ func (v *VendorTrigger) String() string {
 	return fmt.Sprintf("%#v", v)
 }
 
+type WorkflowCustomizationRequest struct {
+	// If true, the invoice will be automatically advanced to the furthest stage in the payment workflow. For example, if the invoice is APPROVED, but has all necessary data to move to SCHEDULED, it will be advanced to SCHEDULED.
+	AutoAdvanceInvoiceStatus *bool `json:"autoAdvanceInvoiceStatus,omitempty" url:"autoAdvanceInvoiceStatus,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (w *WorkflowCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return w.extraProperties
+}
+
+func (w *WorkflowCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler WorkflowCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WorkflowCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+
+	w._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WorkflowCustomizationRequest) String() string {
+	if len(w._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(w._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
 type AddApproverRequest struct {
 	// The identifier for the approval slot this user is assigned to.
 	ApprovalSlotID *ApprovalSlotID `json:"approvalSlotId,omitempty" url:"approvalSlotId,omitempty"`
@@ -6148,40 +6288,6 @@ func (i *InvoiceFeesResponse) String() string {
 
 type InvoiceID = string
 
-type InvoiceLineItemCategory string
-
-const (
-	InvoiceLineItemCategoryExpense  InvoiceLineItemCategory = "EXPENSE"
-	InvoiceLineItemCategoryRevenue  InvoiceLineItemCategory = "REVENUE"
-	InvoiceLineItemCategoryTax      InvoiceLineItemCategory = "TAX"
-	InvoiceLineItemCategoryShipping InvoiceLineItemCategory = "SHIPPING"
-	InvoiceLineItemCategoryDiscount InvoiceLineItemCategory = "DISCOUNT"
-	InvoiceLineItemCategoryOther    InvoiceLineItemCategory = "OTHER"
-)
-
-func NewInvoiceLineItemCategoryFromString(s string) (InvoiceLineItemCategory, error) {
-	switch s {
-	case "EXPENSE":
-		return InvoiceLineItemCategoryExpense, nil
-	case "REVENUE":
-		return InvoiceLineItemCategoryRevenue, nil
-	case "TAX":
-		return InvoiceLineItemCategoryTax, nil
-	case "SHIPPING":
-		return InvoiceLineItemCategoryShipping, nil
-	case "DISCOUNT":
-		return InvoiceLineItemCategoryDiscount, nil
-	case "OTHER":
-		return InvoiceLineItemCategoryOther, nil
-	}
-	var t InvoiceLineItemCategory
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (i InvoiceLineItemCategory) Ptr() *InvoiceLineItemCategory {
-	return &i
-}
-
 type InvoiceLineItemCreationRequest struct {
 	// Currency code for the amount. Defaults to USD.
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
@@ -6189,11 +6295,11 @@ type InvoiceLineItemCreationRequest struct {
 	Quantity *float64      `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
 	UnitPrice *float64 `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
-	// Category of the line item. Defaults to EXPENSE.
-	Category         *InvoiceLineItemCategory `json:"category,omitempty" url:"category,omitempty"`
-	ServiceStartDate *time.Time               `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
-	ServiceEndDate   *time.Time               `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	Metadata         map[string]string        `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// Category of the line item.
+	Category         *string           `json:"category,omitempty" url:"category,omitempty"`
+	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
 	// Total amount of line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
@@ -6265,11 +6371,11 @@ type InvoiceLineItemID = string
 type InvoiceLineItemIndividualUpdateRequest struct {
 	Name        *string `json:"name,omitempty" url:"name,omitempty"`
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// Category of the line item. Defaults to EXPENSE.
-	Category         *InvoiceLineItemCategory `json:"category,omitempty" url:"category,omitempty"`
-	ServiceStartDate *time.Time               `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
-	ServiceEndDate   *time.Time               `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	Metadata         map[string]string        `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// Category of the line item.
+	Category         *string           `json:"category,omitempty" url:"category,omitempty"`
+	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
 
@@ -6340,11 +6446,11 @@ type InvoiceLineItemRequestBase struct {
 	Quantity *float64      `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
 	UnitPrice *float64 `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
-	// Category of the line item. Defaults to EXPENSE.
-	Category         *InvoiceLineItemCategory `json:"category,omitempty" url:"category,omitempty"`
-	ServiceStartDate *time.Time               `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
-	ServiceEndDate   *time.Time               `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	Metadata         map[string]string        `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// Category of the line item.
+	Category         *string           `json:"category,omitempty" url:"category,omitempty"`
+	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
 
@@ -6417,11 +6523,12 @@ type InvoiceLineItemResponse struct {
 	Name        *string      `json:"name,omitempty" url:"name,omitempty"`
 	Quantity    *float64     `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of line item in major units.
-	UnitPrice        *float64                `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
-	Category         InvoiceLineItemCategory `json:"category" url:"category"`
-	ServiceStartDate *time.Time              `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
-	ServiceEndDate   *time.Time              `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	Metadata         map[string]string       `json:"metadata,omitempty" url:"metadata,omitempty"`
+	UnitPrice *float64 `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
+	// Category of the line item. Defaults to 'EXPENSE'.
+	Category         string            `json:"category" url:"category"`
+	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string   `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
 	CreatedAt   time.Time `json:"createdAt" url:"createdAt"`
@@ -6502,11 +6609,11 @@ type InvoiceLineItemUpdateRequest struct {
 	Quantity *float64      `json:"quantity,omitempty" url:"quantity,omitempty"`
 	// Unit price of the line item in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
 	UnitPrice *float64 `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
-	// Category of the line item. Defaults to EXPENSE.
-	Category         *InvoiceLineItemCategory `json:"category,omitempty" url:"category,omitempty"`
-	ServiceStartDate *time.Time               `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
-	ServiceEndDate   *time.Time               `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
-	Metadata         map[string]string        `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// Category of the line item.
+	Category         *string           `json:"category,omitempty" url:"category,omitempty"`
+	ServiceStartDate *time.Time        `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time        `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	Metadata         map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// ID of general ledger account associated with this line item.
 	GlAccountID *string `json:"glAccountId,omitempty" url:"glAccountId,omitempty"`
 	// If provided, will overwrite line item on the invoice with this ID. If not provided, will create a new line item.
@@ -12387,8 +12494,8 @@ func (p *PaymentMethodWithEntityResponse) String() string {
 }
 
 type PlaidAccessTokenRequest struct {
-	// Plaid account ID
-	AccountID string `json:"accountId" url:"accountId"`
+	// Plaid account ID. If not provided, will try to match the provided routing number and account number.
+	AccountID *string `json:"accountId,omitempty" url:"accountId,omitempty"`
 	// Plaid access token for the account. If you already have an access token for the account (for example, you have linked the account to your app already), use this instead of publicToken.
 	AccessToken string `json:"accessToken" url:"accessToken"`
 
@@ -12530,8 +12637,8 @@ func (p *PlaidProcessorTokenRequest) String() string {
 }
 
 type PlaidPublicTokenRequest struct {
-	// Plaid account ID
-	AccountID string `json:"accountId" url:"accountId"`
+	// Plaid account ID. If not provided, will try to match the provided routing number and account number.
+	AccountID *string `json:"accountId,omitempty" url:"accountId,omitempty"`
 	// Public token received from Plaid Link. Use this if linking the account using the Plaid Link frontend component.
 	PublicToken string `json:"publicToken" url:"publicToken"`
 
@@ -13776,4 +13883,47 @@ func (p *PaymentMethodWebhook) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+// A transaction was created, completed, or failed
+type TransactionWebhook struct {
+	EventType   string               `json:"eventType" url:"eventType"`
+	Transaction *TransactionResponse `json:"transaction,omitempty" url:"transaction,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionWebhook) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler TransactionWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TransactionWebhook(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionWebhook) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
 }
