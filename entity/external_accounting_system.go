@@ -17,6 +17,89 @@ type SyncExternalSystemRequest struct {
 	GlAccounts *SyncType `json:"-" url:"glAccounts,omitempty"`
 }
 
+type CodatCompanyCreationRequest struct {
+	// If the company already exists in Codat, provide the company ID to link the company to the entity. If the company does not exist, leave this field blank and Codat will create a new company.
+	CompanyID *string `json:"companyId,omitempty" url:"companyId,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CodatCompanyCreationRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CodatCompanyCreationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CodatCompanyCreationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CodatCompanyCreationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CodatCompanyCreationRequest) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CodatCompanyResponse struct {
+	CompanyID string `json:"companyId" url:"companyId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CodatCompanyResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CodatCompanyResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler CodatCompanyResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CodatCompanyResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CodatCompanyResponse) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 type ExternalAccountingSystemCompanyCreationRequest struct {
 	Type   string
 	Codat  *CodatCompanyCreationRequest
@@ -141,6 +224,89 @@ func (e *ExternalAccountingSystemCompanyResponse) Accept(visitor ExternalAccount
 		return visitor.VisitNone(e.None)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", e)
+}
+
+type RutterCompanyCreationRequest struct {
+	// The access token for the existing Rutter connection. If the connection does not exist, leave this field blank and Rutter will create a new connection.
+	AccessToken *string `json:"accessToken,omitempty" url:"accessToken,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (r *RutterCompanyCreationRequest) GetExtraProperties() map[string]interface{} {
+	return r.extraProperties
+}
+
+func (r *RutterCompanyCreationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler RutterCompanyCreationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RutterCompanyCreationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+
+	r._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RutterCompanyCreationRequest) String() string {
+	if len(r._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(r._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+type RutterCompanyResponse struct {
+	AccessToken string `json:"accessToken" url:"accessToken"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (r *RutterCompanyResponse) GetExtraProperties() map[string]interface{} {
+	return r.extraProperties
+}
+
+func (r *RutterCompanyResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler RutterCompanyResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RutterCompanyResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+
+	r._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RutterCompanyResponse) String() string {
+	if len(r._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(r._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
 }
 
 type SyncType string

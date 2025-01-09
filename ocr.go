@@ -9,7 +9,7 @@ import (
 )
 
 type OcrAsyncResponse struct {
-	JobID string `json:"jobId" url:"jobId"`
+	JobID OcrJobID `json:"jobId" url:"jobId"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -50,7 +50,7 @@ func (o *OcrAsyncResponse) String() string {
 }
 
 type OcrJobResponse struct {
-	JobID  string       `json:"jobId" url:"jobId"`
+	JobID  OcrJobID     `json:"jobId" url:"jobId"`
 	Status OcrJobStatus `json:"status" url:"status"`
 	Data   *OcrResponse `json:"data,omitempty" url:"data,omitempty"`
 
@@ -90,6 +90,31 @@ func (o *OcrJobResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", o)
+}
+
+type OcrJobStatus string
+
+const (
+	OcrJobStatusPending OcrJobStatus = "pending"
+	OcrJobStatusSuccess OcrJobStatus = "success"
+	OcrJobStatusFailed  OcrJobStatus = "failed"
+)
+
+func NewOcrJobStatusFromString(s string) (OcrJobStatus, error) {
+	switch s {
+	case "pending":
+		return OcrJobStatusPending, nil
+	case "success":
+		return OcrJobStatusSuccess, nil
+	case "failed":
+		return OcrJobStatusFailed, nil
+	}
+	var t OcrJobStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (o OcrJobStatus) Ptr() *OcrJobStatus {
+	return &o
 }
 
 type OcrRequest struct {
@@ -141,6 +166,7 @@ func (o *OcrRequest) String() string {
 }
 
 type OcrResponse struct {
+	JobID       OcrJobID              `json:"jobId" url:"jobId"`
 	Invoice     *InvoiceResponse      `json:"invoice,omitempty" url:"invoice,omitempty"`
 	Vendor      *CounterpartyResponse `json:"vendor,omitempty" url:"vendor,omitempty"`
 	Check       *CheckResponse        `json:"check,omitempty" url:"check,omitempty"`

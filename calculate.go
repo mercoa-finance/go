@@ -172,3 +172,116 @@ func (c *CalculatePaymentTimingResponse) String() string {
 	}
 	return fmt.Sprintf("%#v", c)
 }
+
+type EstimatedTiming struct {
+	// Date the payment is scheduled to be deducted from the payer's account. Use this field if the payment has not yet been deducted.
+	EstimatedDeductionDate *time.Time `json:"estimatedDeductionDate,omitempty" url:"estimatedDeductionDate,omitempty"`
+	// Date the payment was processed. Use this field if the payment has already been deducted.
+	ProcessedAt *time.Time `json:"processedAt,omitempty" url:"processedAt,omitempty"`
+	// ID of payment source.
+	PaymentSourceID PaymentMethodID `json:"paymentSourceId" url:"paymentSourceId"`
+	// ID of payment destination.
+	PaymentDestinationID PaymentMethodID `json:"paymentDestinationId" url:"paymentDestinationId"`
+	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EstimatedTiming) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EstimatedTiming) UnmarshalJSON(data []byte) error {
+	type embed EstimatedTiming
+	var unmarshaler = struct {
+		embed
+		EstimatedDeductionDate *core.DateTime `json:"estimatedDeductionDate,omitempty"`
+		ProcessedAt            *core.DateTime `json:"processedAt,omitempty"`
+	}{
+		embed: embed(*e),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*e = EstimatedTiming(unmarshaler.embed)
+	e.EstimatedDeductionDate = unmarshaler.EstimatedDeductionDate.TimePtr()
+	e.ProcessedAt = unmarshaler.ProcessedAt.TimePtr()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EstimatedTiming) MarshalJSON() ([]byte, error) {
+	type embed EstimatedTiming
+	var marshaler = struct {
+		embed
+		EstimatedDeductionDate *core.DateTime `json:"estimatedDeductionDate,omitempty"`
+		ProcessedAt            *core.DateTime `json:"processedAt,omitempty"`
+	}{
+		embed:                  embed(*e),
+		EstimatedDeductionDate: core.NewOptionalDateTime(e.EstimatedDeductionDate),
+		ProcessedAt:            core.NewOptionalDateTime(e.ProcessedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (e *EstimatedTiming) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type InvoiceTiming struct {
+	InvoiceID InvoiceID `json:"invoiceId" url:"invoiceId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *InvoiceTiming) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceTiming) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceTiming
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceTiming(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceTiming) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}

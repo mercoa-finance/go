@@ -13,6 +13,6 @@ type CalculateVendorCreditUsageRequest struct {
 	Currency *mercoafinancego.CurrencyCode `json:"-" url:"currency,omitempty"`
 	// List of invoice IDs to exclude from the calculation. If not provided or an empty list, no invoices will be excluded. This is useful for recalculating vendor credit usage on invoices that already have vendor credits applied.
 	ExcludedInvoiceIDs []mercoafinancego.InvoiceID `json:"-" url:"excludedInvoiceIds,omitempty"`
-	// List of vendor credit IDs to include in the calculation. If not provided, all applicable vendor credits will be included, while an empty list will not include ANY vendor credits. This is useful for recalculating vendor credit usage on invoices that have a fixed list of applied vendor credits (e.g. a SCHEDULED or PENDING invoice).
+	// List of vendor credit IDs to include in the calculation. If not provided, all applicable vendor credits will be included, while an empty list will not include ANY vendor credits.  This is useful for recalculating vendor credit usage on invoices that have a fixed list of applied vendor credits (e.g. a SCHEDULED or PENDING invoice).
 	IncludedVendorCreditIDs []mercoafinancego.VendorCreditID `json:"-" url:"includedVendorCreditIds,omitempty"`
 }

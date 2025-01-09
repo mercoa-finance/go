@@ -13,6 +13,51 @@ type BankLookupRequest struct {
 	RoutingNumber string `json:"-" url:"routingNumber"`
 }
 
+type BankAddress struct {
+	Address             string `json:"address" url:"address"`
+	City                string `json:"city" url:"city"`
+	State               string `json:"state" url:"state"`
+	PostalCode          string `json:"postalCode" url:"postalCode"`
+	PostalCodeExtension string `json:"postalCodeExtension" url:"postalCodeExtension"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BankAddress) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BankAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler BankAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BankAddress(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
+	b._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BankAddress) String() string {
+	if len(b._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(b._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
 type BankLookupResponse struct {
 	BankName    string       `json:"bankName" url:"bankName"`
 	BankAddress *BankAddress `json:"bankAddress,omitempty" url:"bankAddress,omitempty"`
