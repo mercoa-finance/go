@@ -56,11 +56,6 @@ type GenerateOnboardingLink struct {
 	ConnectedEntityID *mercoafinancego.EntityID `json:"-" url:"connectedEntityId,omitempty"`
 }
 
-type PlaidLinkTokenRequest struct {
-	// ID of Bank Account to update
-	PaymentMethodID *mercoafinancego.PaymentMethodID `json:"-" url:"paymentMethodId,omitempty"`
-}
-
 type SendOnboardingLink struct {
 	// The type of onboarding link to generate. If not provided, the default is payee. The onboarding options are determined by your organization's onboarding configuration.
 	Type mercoafinancego.EntityOnboardingLinkType `json:"-" url:"type"`

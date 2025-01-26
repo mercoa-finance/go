@@ -10,3 +10,8 @@ type GetAllPaymentMethodsRequest struct {
 	// Type of payment method to filter
 	Type []*mercoafinancego.PaymentMethodType `json:"-" url:"type,omitempty"`
 }
+
+type PlaidLinkTokenRequest struct {
+	// ID of Bank Account to update
+	PaymentMethodID *mercoafinancego.PaymentMethodID `json:"-" url:"paymentMethodId,omitempty"`
+}

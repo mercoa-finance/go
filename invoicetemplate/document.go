@@ -12,7 +12,7 @@ type GetDocumentsRequest struct {
 }
 
 type UploadDocumentRequest struct {
-	// Base64 encoded image or PDF of invoice document. PNG, JPG, WEBP, and PDF are supported. 10MB max.
+	// Base64-encoded string. Supported file types include PNG, JPG, WEBP, PDF, and all Microsoft Office formats (automatically converted to PDF). Max file size 10MB.
 	Document string `json:"document" url:"-"`
 	// Specify Document Type, defaults to INVOICE
 	Type *mercoafinancego.DocumentType `json:"type,omitempty" url:"-"`

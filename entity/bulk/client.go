@@ -9,6 +9,7 @@ import (
 	errors "errors"
 	mercoafinancego "github.com/mercoa-finance/go"
 	core "github.com/mercoa-finance/go/core"
+	entity "github.com/mercoa-finance/go/entity"
 	option "github.com/mercoa-finance/go/option"
 	io "io"
 	http "net/http"
@@ -37,7 +38,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 // Create multiple entities in bulk. This endpoint will process synchronously and return a list of entities that were created or failed to create.
 func (c *Client) Create(
 	ctx context.Context,
-	request *mercoafinancego.BulkEntityCreationRequest,
+	request *entity.BulkEntityCreationRequest,
 	opts ...option.RequestOption,
 ) (*mercoafinancego.BulkEntityCreationResponse, error) {
 	options := core.NewRequestOptions(opts...)
@@ -50,6 +51,14 @@ func (c *Client) Create(
 		baseURL = options.BaseURL
 	}
 	endpointURL := baseURL + "/entities"
+
+	queryParams, err := core.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
 
 	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
 
