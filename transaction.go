@@ -20,7 +20,7 @@ type FindTransactionsRequest struct {
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// The ID of the transactions to start after. If not provided, the first page of transactions will be returned.
 	StartingAfter *TransactionID `json:"-" url:"startingAfter,omitempty"`
-	// Find transactions by vendor name, invoice number, or amount. Partial matches are supported.
+	// Find transactions by vendor name, invoice number, check number, or amount. Partial matches are supported.
 	Search *string `json:"-" url:"search,omitempty"`
 	// Filter transactions by invoice metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
 	Metadata []*MetadataFilter `json:"-" url:"metadata,omitempty"`

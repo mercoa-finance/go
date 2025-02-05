@@ -24,7 +24,7 @@ type GetAllInvoiceTemplatesRequest struct {
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// The ID of the invoice template to start after. If not provided, the first page of invoice templates will be returned.
 	StartingAfter *mercoafinancego.InvoiceTemplateID `json:"-" url:"startingAfter,omitempty"`
-	// Find invoice templates by vendor name, invoice number, or amount. Partial matches are supported.
+	// Find invoice templates by vendor name, check number, invoice number, or amount. Partial matches are supported.
 	Search *string `json:"-" url:"search,omitempty"`
 	// Filter invoice templates by metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
 	Metadata []*mercoafinancego.MetadataFilter `json:"-" url:"metadata,omitempty"`

@@ -31,7 +31,7 @@ type GetAllInvoicesRequest struct {
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// The ID of the invoice to start after. If not provided, the first page of invoices will be returned.
 	StartingAfter *mercoafinancego.InvoiceID `json:"-" url:"startingAfter,omitempty"`
-	// Find invoices by vendor name, invoice number, or amount. Partial matches are supported.
+	// Find invoices by vendor name, invoice number, check number, or amount. Partial matches are supported.
 	Search *string `json:"-" url:"search,omitempty"`
 	// Filter invoices by metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
 	Metadata []*mercoafinancego.MetadataFilter `json:"-" url:"metadata,omitempty"`
@@ -57,4 +57,8 @@ type GetAllInvoicesRequest struct {
 	PaymentType []mercoafinancego.PaymentType `json:"-" url:"paymentType,omitempty"`
 	// Filter invoice by invoice template ID
 	InvoiceTemplateID []*mercoafinancego.InvoiceTemplateID `json:"-" url:"invoiceTemplateId,omitempty"`
+	// Whether to return payer metadata in the response
+	ReturnPayerMetadata *bool `json:"-" url:"returnPayerMetadata,omitempty"`
+	// Whether to return vendor metadata in the response
+	ReturnVendorMetadata *bool `json:"-" url:"returnVendorMetadata,omitempty"`
 }

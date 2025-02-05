@@ -32,7 +32,7 @@ type EntityGetInvoicesRequest struct {
 	LineItemMetadata []*mercoafinancego.MetadataFilter `json:"-" url:"lineItemMetadata,omitempty"`
 	// Filter invoices by line item GL account ID. Each filter will be applied as an OR condition. Duplicate keys will be ignored.
 	LineItemGlAccountID []*string `json:"-" url:"lineItemGlAccountId,omitempty"`
-	// Find invoices by vendor name, invoice number, or amount. Partial matches are supported.
+	// Find invoices by vendor name, invoice number, check number, or amount. Partial matches are supported.
 	Search *string `json:"-" url:"search,omitempty"`
 	// Filter invoices by payer ID or payer foreign ID.
 	PayerID []*mercoafinancego.EntityID `json:"-" url:"payerId,omitempty"`
@@ -50,10 +50,14 @@ type EntityGetInvoicesRequest struct {
 	Status []*mercoafinancego.InvoiceStatus `json:"-" url:"status,omitempty"`
 	// Filter invoices by payment type.
 	PaymentType []mercoafinancego.PaymentType `json:"-" url:"paymentType,omitempty"`
+	// Whether to return payer metadata in the response
+	ReturnPayerMetadata *bool `json:"-" url:"returnPayerMetadata,omitempty"`
+	// Whether to return vendor metadata in the response
+	ReturnVendorMetadata *bool `json:"-" url:"returnVendorMetadata,omitempty"`
 }
 
 type InvoiceMetricsRequest struct {
-	// Find invoices by vendor name, invoice number, or amount. Partial matches are supported.
+	// Find invoices by vendor name, invoice number, check number, or amount. Partial matches are supported.
 	Search *string `json:"-" url:"search,omitempty"`
 	// Only return invoices that are not payable by the entity. This will return only invoices that are receivable by the entity.
 	ExcludePayables *bool `json:"-" url:"excludePayables,omitempty"`

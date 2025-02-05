@@ -10782,6 +10782,7 @@ type OrganizationRequest struct {
 	MetadataSchema                   []*MetadataSchema                        `json:"metadataSchema,omitempty" url:"metadataSchema,omitempty"`
 	NotificationEmailTemplate        *NotificationEmailTemplateRequest        `json:"notificationEmailTemplate,omitempty" url:"notificationEmailTemplate,omitempty"`
 	CustomDomains                    []string                                 `json:"customDomains,omitempty" url:"customDomains,omitempty"`
+	RolePermissionConfig             *RolePermissionConfigRequest             `json:"rolePermissionConfig,omitempty" url:"rolePermissionConfig,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -10838,6 +10839,7 @@ type OrganizationResponse struct {
 	NotificationEmailTemplate        *NotificationEmailTemplateResponse        `json:"notificationEmailTemplate,omitempty" url:"notificationEmailTemplate,omitempty"`
 	CustomDomains                    []string                                  `json:"customDomains,omitempty" url:"customDomains,omitempty"`
 	OrganizationEntityID             *EntityID                                 `json:"organizationEntityId,omitempty" url:"organizationEntityId,omitempty"`
+	RolePermissionConfig             *RolePermissionConfigResponse             `json:"rolePermissionConfig,omitempty" url:"rolePermissionConfig,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -11276,6 +11278,107 @@ func (p *PaymentRailResponse) Accept(visitor PaymentRailResponseVisitor) error {
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
+
+type Permission string
+
+const (
+	PermissionInvoiceAll              Permission = "invoice.all"
+	PermissionInvoiceViewAll          Permission = "invoice.view.all"
+	PermissionInvoiceViewDraft        Permission = "invoice.view.draft"
+	PermissionInvoiceViewNew          Permission = "invoice.view.new"
+	PermissionInvoiceViewApproved     Permission = "invoice.view.approved"
+	PermissionInvoiceViewScheduled    Permission = "invoice.view.scheduled"
+	PermissionInvoiceViewPending      Permission = "invoice.view.pending"
+	PermissionInvoiceViewPaid         Permission = "invoice.view.paid"
+	PermissionInvoiceViewArchived     Permission = "invoice.view.archived"
+	PermissionInvoiceViewRefused      Permission = "invoice.view.refused"
+	PermissionInvoiceViewCanceled     Permission = "invoice.view.canceled"
+	PermissionInvoiceViewFailed       Permission = "invoice.view.failed"
+	PermissionInvoiceCreateAll        Permission = "invoice.create.all"
+	PermissionInvoiceCreateDraft      Permission = "invoice.create.draft"
+	PermissionInvoiceCreateNew        Permission = "invoice.create.new"
+	PermissionInvoiceCreateApproved   Permission = "invoice.create.approved"
+	PermissionInvoiceCreateScheduled  Permission = "invoice.create.scheduled"
+	PermissionInvoiceDelete           Permission = "invoice.delete"
+	PermissionInvoiceCommentView      Permission = "invoice.comment.view"
+	PermissionInvoiceCommentCreate    Permission = "invoice.comment.create"
+	PermissionInvoiceApproverOverride Permission = "invoice.approver.override"
+	PermissionInvoiceCheckPrint       Permission = "invoice.check.print"
+	PermissionPaymentMethodAll        Permission = "paymentMethod.all"
+	PermissionPaymentMethodView       Permission = "paymentMethod.view"
+	PermissionPaymentMethodCreate     Permission = "paymentMethod.create"
+	PermissionPaymentMethodUpdate     Permission = "paymentMethod.update"
+	PermissionPaymentMethodDelete     Permission = "paymentMethod.delete"
+)
+
+func NewPermissionFromString(s string) (Permission, error) {
+	switch s {
+	case "invoice.all":
+		return PermissionInvoiceAll, nil
+	case "invoice.view.all":
+		return PermissionInvoiceViewAll, nil
+	case "invoice.view.draft":
+		return PermissionInvoiceViewDraft, nil
+	case "invoice.view.new":
+		return PermissionInvoiceViewNew, nil
+	case "invoice.view.approved":
+		return PermissionInvoiceViewApproved, nil
+	case "invoice.view.scheduled":
+		return PermissionInvoiceViewScheduled, nil
+	case "invoice.view.pending":
+		return PermissionInvoiceViewPending, nil
+	case "invoice.view.paid":
+		return PermissionInvoiceViewPaid, nil
+	case "invoice.view.archived":
+		return PermissionInvoiceViewArchived, nil
+	case "invoice.view.refused":
+		return PermissionInvoiceViewRefused, nil
+	case "invoice.view.canceled":
+		return PermissionInvoiceViewCanceled, nil
+	case "invoice.view.failed":
+		return PermissionInvoiceViewFailed, nil
+	case "invoice.create.all":
+		return PermissionInvoiceCreateAll, nil
+	case "invoice.create.draft":
+		return PermissionInvoiceCreateDraft, nil
+	case "invoice.create.new":
+		return PermissionInvoiceCreateNew, nil
+	case "invoice.create.approved":
+		return PermissionInvoiceCreateApproved, nil
+	case "invoice.create.scheduled":
+		return PermissionInvoiceCreateScheduled, nil
+	case "invoice.delete":
+		return PermissionInvoiceDelete, nil
+	case "invoice.comment.view":
+		return PermissionInvoiceCommentView, nil
+	case "invoice.comment.create":
+		return PermissionInvoiceCommentCreate, nil
+	case "invoice.approver.override":
+		return PermissionInvoiceApproverOverride, nil
+	case "invoice.check.print":
+		return PermissionInvoiceCheckPrint, nil
+	case "paymentMethod.all":
+		return PermissionPaymentMethodAll, nil
+	case "paymentMethod.view":
+		return PermissionPaymentMethodView, nil
+	case "paymentMethod.create":
+		return PermissionPaymentMethodCreate, nil
+	case "paymentMethod.update":
+		return PermissionPaymentMethodUpdate, nil
+	case "paymentMethod.delete":
+		return PermissionPaymentMethodDelete, nil
+	}
+	var t Permission
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p Permission) Ptr() *Permission {
+	return &p
+}
+
+type RolePermissionConfigRequest = map[string][]Permission
+
+type RolePermissionConfigResponse = map[string][]Permission
 
 type RutterProviderRequest struct {
 	ClientID     string `json:"clientId" url:"clientId"`

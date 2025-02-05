@@ -32,6 +32,8 @@ type GetOrganizationRequest struct {
 	MetadataSchema *bool `json:"-" url:"metadataSchema,omitempty"`
 	// include notification-email-template in response
 	NotificationEmailTemplate *bool `json:"-" url:"notificationEmailTemplate,omitempty"`
+	// include role permission config in response
+	RolePermissionConfig *bool `json:"-" url:"rolePermissionConfig,omitempty"`
 	// include custom domains in response
 	CustomDomains *bool `json:"-" url:"customDomains,omitempty"`
 }
