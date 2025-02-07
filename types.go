@@ -11299,6 +11299,15 @@ const (
 	PermissionInvoiceCreateNew        Permission = "invoice.create.new"
 	PermissionInvoiceCreateApproved   Permission = "invoice.create.approved"
 	PermissionInvoiceCreateScheduled  Permission = "invoice.create.scheduled"
+	PermissionInvoiceCreateArchived   Permission = "invoice.create.archived"
+	PermissionInvoiceCreateCancel     Permission = "invoice.create.cancel"
+	PermissionInvoiceUpdateAll        Permission = "invoice.update.all"
+	PermissionInvoiceUpdateDraft      Permission = "invoice.update.draft"
+	PermissionInvoiceUpdateNew        Permission = "invoice.update.new"
+	PermissionInvoiceUpdateApproved   Permission = "invoice.update.approved"
+	PermissionInvoiceUpdateScheduled  Permission = "invoice.update.scheduled"
+	PermissionInvoiceUpdateArchived   Permission = "invoice.update.archived"
+	PermissionInvoiceUpdateCancel     Permission = "invoice.update.cancel"
 	PermissionInvoiceDelete           Permission = "invoice.delete"
 	PermissionInvoiceCommentView      Permission = "invoice.comment.view"
 	PermissionInvoiceCommentCreate    Permission = "invoice.comment.create"
@@ -11347,6 +11356,24 @@ func NewPermissionFromString(s string) (Permission, error) {
 		return PermissionInvoiceCreateApproved, nil
 	case "invoice.create.scheduled":
 		return PermissionInvoiceCreateScheduled, nil
+	case "invoice.create.archived":
+		return PermissionInvoiceCreateArchived, nil
+	case "invoice.create.cancel":
+		return PermissionInvoiceCreateCancel, nil
+	case "invoice.update.all":
+		return PermissionInvoiceUpdateAll, nil
+	case "invoice.update.draft":
+		return PermissionInvoiceUpdateDraft, nil
+	case "invoice.update.new":
+		return PermissionInvoiceUpdateNew, nil
+	case "invoice.update.approved":
+		return PermissionInvoiceUpdateApproved, nil
+	case "invoice.update.scheduled":
+		return PermissionInvoiceUpdateScheduled, nil
+	case "invoice.update.archived":
+		return PermissionInvoiceUpdateArchived, nil
+	case "invoice.update.cancel":
+		return PermissionInvoiceUpdateCancel, nil
 	case "invoice.delete":
 		return PermissionInvoiceDelete, nil
 	case "invoice.comment.view":

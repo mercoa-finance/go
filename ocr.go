@@ -171,6 +171,7 @@ type OcrResponse struct {
 	Vendor      *CounterpartyResponse `json:"vendor,omitempty" url:"vendor,omitempty"`
 	Check       *CheckResponse        `json:"check,omitempty" url:"check,omitempty"`
 	BankAccount *BankAccountResponse  `json:"bankAccount,omitempty" url:"bankAccount,omitempty"`
+	Payer       *EntityResponse       `json:"payer,omitempty" url:"payer,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
