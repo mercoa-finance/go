@@ -5,6 +5,7 @@ package client
 import (
 	banklookup "github.com/mercoa-finance/go/banklookup"
 	calculate "github.com/mercoa-finance/go/calculate"
+	contractclient "github.com/mercoa-finance/go/contract/client"
 	core "github.com/mercoa-finance/go/core"
 	custompaymentmethodschema "github.com/mercoa-finance/go/custompaymentmethodschema"
 	entityclient "github.com/mercoa-finance/go/entity/client"
@@ -24,6 +25,7 @@ type Client struct {
 	caller  *core.Caller
 	header  http.Header
 
+	Contract                  *contractclient.Client
 	EntityGroup               *entitygroupclient.Client
 	Entity                    *entityclient.Client
 	InvoiceTemplate           *invoicetemplateclient.Client
@@ -48,6 +50,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 			},
 		),
 		header:                    options.ToHeader(),
+		Contract:                  contractclient.NewClient(opts...),
 		EntityGroup:               entitygroupclient.NewClient(opts...),
 		Entity:                    entityclient.NewClient(opts...),
 		InvoiceTemplate:           invoicetemplateclient.NewClient(opts...),

@@ -376,6 +376,657 @@ func (s *StringOrStringArray) Accept(visitor StringOrStringArrayVisitor) error {
 	return fmt.Errorf("type %T does not include a non-empty union type", s)
 }
 
+type ContractCreateRequest struct {
+	// Natural language summary of the contract
+	Summary string `json:"summary" url:"summary"`
+	// Recurrences defining the contract's fee schedule.
+	Recurrences []*ContractRecurrenceCreateRequest `json:"recurrences,omitempty" url:"recurrences,omitempty"`
+	// ID of the entity that created the contract
+	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
+	// ID of the payer entity for this contract
+	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// ID of the vendor entity for this contract
+	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *ContractCreateRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *ContractCreateRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ContractCreateRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ContractCreateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ContractCreateRequest) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type ContractID = string
+
+type ContractInvoiceLineItemSchema struct {
+	// Name of the line item
+	Name string `json:"name" url:"name"`
+	// Unit price of the line item
+	UnitPrice *float64 `json:"unitPrice,omitempty" url:"unitPrice,omitempty"`
+	// ISO 4217 currency code
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	// Quantity of the line item
+	Quantity *float64 `json:"quantity,omitempty" url:"quantity,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *ContractInvoiceLineItemSchema) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *ContractInvoiceLineItemSchema) UnmarshalJSON(data []byte) error {
+	type unmarshaler ContractInvoiceLineItemSchema
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ContractInvoiceLineItemSchema(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ContractInvoiceLineItemSchema) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type ContractInvoiceSchema struct {
+	// Line items in the invoice
+	LineItems []*ContractInvoiceLineItemSchema `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *ContractInvoiceSchema) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *ContractInvoiceSchema) UnmarshalJSON(data []byte) error {
+	type unmarshaler ContractInvoiceSchema
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ContractInvoiceSchema(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ContractInvoiceSchema) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type ContractJobID = string
+
+type ContractJobStatus string
+
+const (
+	ContractJobStatusPending ContractJobStatus = "pending"
+	ContractJobStatusSuccess ContractJobStatus = "success"
+	ContractJobStatusFailed  ContractJobStatus = "failed"
+)
+
+func NewContractJobStatusFromString(s string) (ContractJobStatus, error) {
+	switch s {
+	case "pending":
+		return ContractJobStatusPending, nil
+	case "success":
+		return ContractJobStatusSuccess, nil
+	case "failed":
+		return ContractJobStatusFailed, nil
+	}
+	var t ContractJobStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c ContractJobStatus) Ptr() *ContractJobStatus {
+	return &c
+}
+
+type ContractRecurrenceCreateRequest struct {
+	// RFC 5545 RRULE string
+	Rrule string `json:"rrule" url:"rrule"`
+	// Natural language justification for the recurrence
+	Justification string `json:"justification" url:"justification"`
+	// Natural language summary of the contract, filtered to only include information relevant to the recurrence
+	FilteredContractSummary string `json:"filteredContractSummary" url:"filteredContractSummary"`
+	// Schema of the invoices to be created by this recurrence
+	InvoiceSchema *ContractInvoiceSchema `json:"invoiceSchema,omitempty" url:"invoiceSchema,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *ContractRecurrenceCreateRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *ContractRecurrenceCreateRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ContractRecurrenceCreateRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ContractRecurrenceCreateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ContractRecurrenceCreateRequest) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type ContractRecurrenceID = string
+
+type ContractRecurrenceResponse struct {
+	ID         ContractRecurrenceID `json:"id" url:"id"`
+	ContractID ContractID           `json:"contractId" url:"contractId"`
+	// RFC 5545 RRULE string
+	Rrule string `json:"rrule" url:"rrule"`
+	// Natural language justification for the recurrence
+	Justification string `json:"justification" url:"justification"`
+	// Natural language summary of the contract, filtered to only include information relevant to the recurrence
+	FilteredContractSummary string `json:"filteredContractSummary" url:"filteredContractSummary"`
+	// Schema of the invoices to be created by this recurrence
+	InvoiceSchema *ContractInvoiceSchema `json:"invoiceSchema,omitempty" url:"invoiceSchema,omitempty"`
+	// IDs of invoices created by the recurrence
+	CreatedInvoiceIDs []InvoiceID `json:"createdInvoiceIds,omitempty" url:"createdInvoiceIds,omitempty"`
+	CreatedAt         time.Time   `json:"createdAt" url:"createdAt"`
+	UpdatedAt         time.Time   `json:"updatedAt" url:"updatedAt"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *ContractRecurrenceResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *ContractRecurrenceResponse) UnmarshalJSON(data []byte) error {
+	type embed ContractRecurrenceResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = ContractRecurrenceResponse(unmarshaler.embed)
+	c.CreatedAt = unmarshaler.CreatedAt.Time()
+	c.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ContractRecurrenceResponse) MarshalJSON() ([]byte, error) {
+	type embed ContractRecurrenceResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*c),
+		CreatedAt: core.NewDateTime(c.CreatedAt),
+		UpdatedAt: core.NewDateTime(c.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (c *ContractRecurrenceResponse) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type ContractResponse struct {
+	ID ContractID `json:"id" url:"id"`
+	// Natural language summary of the contract
+	Summary string `json:"summary" url:"summary"`
+	// Recurrences defining the contract's fee schedule
+	Recurrences []*ContractRecurrenceResponse `json:"recurrences,omitempty" url:"recurrences,omitempty"`
+	// Date of the next invoice to be created from the contract
+	NextInvoiceDate *time.Time `json:"nextInvoiceDate,omitempty" url:"nextInvoiceDate,omitempty" format:"date"`
+	// The ID of the entity who created this contract
+	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
+	// The ID of the payer entity for this contract
+	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// The payer entity for this contract
+	Payer *CounterpartyResponse `json:"payer,omitempty" url:"payer,omitempty"`
+	// The ID of the vendor entity for this contract
+	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	// The vendor entity for this contract
+	Vendor    *CounterpartyResponse `json:"vendor,omitempty" url:"vendor,omitempty"`
+	CreatedAt time.Time             `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time             `json:"updatedAt" url:"updatedAt"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *ContractResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *ContractResponse) UnmarshalJSON(data []byte) error {
+	type embed ContractResponse
+	var unmarshaler = struct {
+		embed
+		NextInvoiceDate *core.Date     `json:"nextInvoiceDate,omitempty"`
+		CreatedAt       *core.DateTime `json:"createdAt"`
+		UpdatedAt       *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = ContractResponse(unmarshaler.embed)
+	c.NextInvoiceDate = unmarshaler.NextInvoiceDate.TimePtr()
+	c.CreatedAt = unmarshaler.CreatedAt.Time()
+	c.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ContractResponse) MarshalJSON() ([]byte, error) {
+	type embed ContractResponse
+	var marshaler = struct {
+		embed
+		NextInvoiceDate *core.Date     `json:"nextInvoiceDate,omitempty"`
+		CreatedAt       *core.DateTime `json:"createdAt"`
+		UpdatedAt       *core.DateTime `json:"updatedAt"`
+	}{
+		embed:           embed(*c),
+		NextInvoiceDate: core.NewOptionalDate(c.NextInvoiceDate),
+		CreatedAt:       core.NewDateTime(c.CreatedAt),
+		UpdatedAt:       core.NewDateTime(c.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (c *ContractResponse) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type ContractUpdateRequest struct {
+	// Natural language summary of the contract
+	Summary *string `json:"summary,omitempty" url:"summary,omitempty"`
+	// Recurrences defining the contract's fee schedule. Please note that setting this will overwrite all existing recurrences.
+	Recurrences []*ContractRecurrenceCreateRequest `json:"recurrences,omitempty" url:"recurrences,omitempty"`
+	// ID of the entity that created the contract
+	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
+	// ID of the payer entity for this contract
+	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// ID of the vendor entity for this contract
+	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *ContractUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *ContractUpdateRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ContractUpdateRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ContractUpdateRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ContractUpdateRequest) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type FindContractResponse struct {
+	// Total number of contracts found
+	Count int `json:"count" url:"count"`
+	// True if there are more contracts available for the given filters
+	HasMore bool                `json:"hasMore" url:"hasMore"`
+	Data    []*ContractResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FindContractResponse) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
+}
+
+func (f *FindContractResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler FindContractResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FindContractResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
+	f._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FindContractResponse) String() string {
+	if len(f._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(f._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type GenerateContractAsyncJobResponse struct {
+	// Job ID
+	JobID ContractJobID `json:"jobId" url:"jobId"`
+	// Job status
+	Status ContractJobStatus `json:"status" url:"status"`
+	// Contract
+	Contract *ContractResponse `json:"contract,omitempty" url:"contract,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (g *GenerateContractAsyncJobResponse) GetExtraProperties() map[string]interface{} {
+	return g.extraProperties
+}
+
+func (g *GenerateContractAsyncJobResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateContractAsyncJobResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GenerateContractAsyncJobResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+
+	g._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GenerateContractAsyncJobResponse) String() string {
+	if len(g._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(g._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GenerateContractAsyncResponse struct {
+	// Job ID
+	JobID ContractJobID `json:"jobId" url:"jobId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (g *GenerateContractAsyncResponse) GetExtraProperties() map[string]interface{} {
+	return g.extraProperties
+}
+
+func (g *GenerateContractAsyncResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateContractAsyncResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GenerateContractAsyncResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+
+	g._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GenerateContractAsyncResponse) String() string {
+	if len(g._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(g._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GenerateContractRequest struct {
+	// Base64 encoded PDF of contract document.
+	Document string `json:"document" url:"document"`
+	// ID of the entity that created the contract
+	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (g *GenerateContractRequest) GetExtraProperties() map[string]interface{} {
+	return g.extraProperties
+}
+
+func (g *GenerateContractRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateContractRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GenerateContractRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+
+	g._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GenerateContractRequest) String() string {
+	if len(g._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(g._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GenerateContractResponse struct {
+	// Job ID
+	JobID ContractJobID `json:"jobId" url:"jobId"`
+	// Contract
+	Contract *ContractResponse `json:"contract,omitempty" url:"contract,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (g *GenerateContractResponse) GetExtraProperties() map[string]interface{} {
+	return g.extraProperties
+}
+
+func (g *GenerateContractResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateContractResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GenerateContractResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+
+	g._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GenerateContractResponse) String() string {
+	if len(g._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(g._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
 type EmailLog struct {
 	ID        EmailLogID `json:"id" url:"id"`
 	Subject   string     `json:"subject" url:"subject"`
@@ -2649,6 +3300,7 @@ type EntityCustomizationRequest struct {
 	Ocr                *OcrCustomizationRequest             `json:"ocr,omitempty" url:"ocr,omitempty"`
 	Notifications      *NotificationCustomizationRequest    `json:"notifications,omitempty" url:"notifications,omitempty"`
 	Workflow           *WorkflowCustomizationRequest        `json:"workflow,omitempty" url:"workflow,omitempty"`
+	RolePermissions    *RolePermissionRequest               `json:"rolePermissions,omitempty" url:"rolePermissions,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -2696,6 +3348,7 @@ type EntityCustomizationResponse struct {
 	Ocr                *OcrCustomizationResponse            `json:"ocr,omitempty" url:"ocr,omitempty"`
 	Notifications      *NotificationCustomizationRequest    `json:"notifications,omitempty" url:"notifications,omitempty"`
 	Workflow           *WorkflowCustomizationRequest        `json:"workflow,omitempty" url:"workflow,omitempty"`
+	RolePermissions    RolePermissionRequest                `json:"rolePermissions,omitempty" url:"rolePermissions,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -10331,6 +10984,8 @@ func (m *MetadataSchema) String() string {
 }
 
 type MetadataShowConditions struct {
+	// Always hide this field. Useful for getting data from OCR and AI predictions that you don't want to show in the UI.
+	AlwaysHide *bool `json:"alwaysHide,omitempty" url:"alwaysHide,omitempty"`
 	// Show this field only if the entity has values set for the metadata key.
 	HasOptions *bool `json:"hasOptions,omitempty" url:"hasOptions,omitempty"`
 	// Show this field only if a document has been attached.
@@ -10782,7 +11437,7 @@ type OrganizationRequest struct {
 	MetadataSchema                   []*MetadataSchema                        `json:"metadataSchema,omitempty" url:"metadataSchema,omitempty"`
 	NotificationEmailTemplate        *NotificationEmailTemplateRequest        `json:"notificationEmailTemplate,omitempty" url:"notificationEmailTemplate,omitempty"`
 	CustomDomains                    []string                                 `json:"customDomains,omitempty" url:"customDomains,omitempty"`
-	RolePermissionConfig             *RolePermissionConfigRequest             `json:"rolePermissionConfig,omitempty" url:"rolePermissionConfig,omitempty"`
+	RolePermissions                  *RolePermissionRequest                   `json:"rolePermissions,omitempty" url:"rolePermissions,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -10839,7 +11494,7 @@ type OrganizationResponse struct {
 	NotificationEmailTemplate        *NotificationEmailTemplateResponse        `json:"notificationEmailTemplate,omitempty" url:"notificationEmailTemplate,omitempty"`
 	CustomDomains                    []string                                  `json:"customDomains,omitempty" url:"customDomains,omitempty"`
 	OrganizationEntityID             *EntityID                                 `json:"organizationEntityId,omitempty" url:"organizationEntityId,omitempty"`
-	RolePermissionConfig             *RolePermissionConfigResponse             `json:"rolePermissionConfig,omitempty" url:"rolePermissionConfig,omitempty"`
+	RolePermissions                  *RolePermissionResponse                   `json:"rolePermissions,omitempty" url:"rolePermissions,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -11403,9 +12058,9 @@ func (p Permission) Ptr() *Permission {
 	return &p
 }
 
-type RolePermissionConfigRequest = map[string][]Permission
+type RolePermissionRequest = map[string][]Permission
 
-type RolePermissionConfigResponse = map[string][]Permission
+type RolePermissionResponse = map[string][]Permission
 
 type RutterProviderRequest struct {
 	ClientID     string `json:"clientId" url:"clientId"`

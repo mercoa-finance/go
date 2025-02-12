@@ -33,7 +33,7 @@ type GetOrganizationRequest struct {
 	// include notification-email-template in response
 	NotificationEmailTemplate *bool `json:"-" url:"notificationEmailTemplate,omitempty"`
 	// include role permission config in response
-	RolePermissionConfig *bool `json:"-" url:"rolePermissionConfig,omitempty"`
+	RolePermissions *bool `json:"-" url:"rolePermissions,omitempty"`
 	// include custom domains in response
 	CustomDomains *bool `json:"-" url:"customDomains,omitempty"`
 }
