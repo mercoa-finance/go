@@ -9863,43 +9863,43 @@ func (b *BankPaymentRailResponse) String() string {
 	return fmt.Sprintf("%#v", b)
 }
 
-type BusinessOnboardingOptions struct {
-	TermsOfService                  *OnboardingOption `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
-	Email                           *OnboardingOption `json:"email,omitempty" url:"email,omitempty"`
-	Name                            *OnboardingOption `json:"name,omitempty" url:"name,omitempty"`
-	Address                         *OnboardingOption `json:"address,omitempty" url:"address,omitempty"`
-	Phone                           *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
-	TenNinetyNine                   *OnboardingOption `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
-	W9                              *OnboardingOption `json:"w9,omitempty" url:"w9,omitempty"`
-	BankStatement                   *OnboardingOption `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
-	Type                            *OnboardingOption `json:"type,omitempty" url:"type,omitempty"`
-	DoingBusinessAs                 *OnboardingOption `json:"doingBusinessAs,omitempty" url:"doingBusinessAs,omitempty"`
-	Ein                             *OnboardingOption `json:"ein,omitempty" url:"ein,omitempty"`
-	Mcc                             *OnboardingOption `json:"mcc,omitempty" url:"mcc,omitempty"`
-	FormationDate                   *OnboardingOption `json:"formationDate,omitempty" url:"formationDate,omitempty"`
-	Website                         *OnboardingOption `json:"website,omitempty" url:"website,omitempty"`
-	Description                     *OnboardingOption `json:"description,omitempty" url:"description,omitempty"`
-	Representatives                 *OnboardingOption `json:"representatives,omitempty" url:"representatives,omitempty"`
-	Logo                            *OnboardingOption `json:"logo,omitempty" url:"logo,omitempty"`
-	AverageTransactionSize          *OnboardingOption `json:"averageTransactionSize,omitempty" url:"averageTransactionSize,omitempty"`
-	AverageMonthlyTransactionVolume *OnboardingOption `json:"averageMonthlyTransactionVolume,omitempty" url:"averageMonthlyTransactionVolume,omitempty"`
-	MaxTransactionSize              *OnboardingOption `json:"maxTransactionSize,omitempty" url:"maxTransactionSize,omitempty"`
+type BusinessOnboardingOptionsRequest struct {
+	TermsOfService                  *OnboardingOptionRequest `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
+	Email                           *OnboardingOptionRequest `json:"email,omitempty" url:"email,omitempty"`
+	Name                            *OnboardingOptionRequest `json:"name,omitempty" url:"name,omitempty"`
+	Address                         *OnboardingOptionRequest `json:"address,omitempty" url:"address,omitempty"`
+	Phone                           *OnboardingOptionRequest `json:"phone,omitempty" url:"phone,omitempty"`
+	TenNinetyNine                   *OnboardingOptionRequest `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
+	W9                              *OnboardingOptionRequest `json:"w9,omitempty" url:"w9,omitempty"`
+	BankStatement                   *OnboardingOptionRequest `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
+	Type                            *OnboardingOptionRequest `json:"type,omitempty" url:"type,omitempty"`
+	DoingBusinessAs                 *OnboardingOptionRequest `json:"doingBusinessAs,omitempty" url:"doingBusinessAs,omitempty"`
+	Ein                             *OnboardingOptionRequest `json:"ein,omitempty" url:"ein,omitempty"`
+	Mcc                             *OnboardingOptionRequest `json:"mcc,omitempty" url:"mcc,omitempty"`
+	FormationDate                   *OnboardingOptionRequest `json:"formationDate,omitempty" url:"formationDate,omitempty"`
+	Website                         *OnboardingOptionRequest `json:"website,omitempty" url:"website,omitempty"`
+	Description                     *OnboardingOptionRequest `json:"description,omitempty" url:"description,omitempty"`
+	Representatives                 *OnboardingOptionRequest `json:"representatives,omitempty" url:"representatives,omitempty"`
+	Logo                            *OnboardingOptionRequest `json:"logo,omitempty" url:"logo,omitempty"`
+	AverageTransactionSize          *OnboardingOptionRequest `json:"averageTransactionSize,omitempty" url:"averageTransactionSize,omitempty"`
+	AverageMonthlyTransactionVolume *OnboardingOptionRequest `json:"averageMonthlyTransactionVolume,omitempty" url:"averageMonthlyTransactionVolume,omitempty"`
+	MaxTransactionSize              *OnboardingOptionRequest `json:"maxTransactionSize,omitempty" url:"maxTransactionSize,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
 }
 
-func (b *BusinessOnboardingOptions) GetExtraProperties() map[string]interface{} {
+func (b *BusinessOnboardingOptionsRequest) GetExtraProperties() map[string]interface{} {
 	return b.extraProperties
 }
 
-func (b *BusinessOnboardingOptions) UnmarshalJSON(data []byte) error {
-	type unmarshaler BusinessOnboardingOptions
+func (b *BusinessOnboardingOptionsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler BusinessOnboardingOptionsRequest
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*b = BusinessOnboardingOptions(value)
+	*b = BusinessOnboardingOptionsRequest(value)
 
 	extraProperties, err := core.ExtractExtraProperties(data, *b)
 	if err != nil {
@@ -9911,7 +9911,67 @@ func (b *BusinessOnboardingOptions) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (b *BusinessOnboardingOptions) String() string {
+func (b *BusinessOnboardingOptionsRequest) String() string {
+	if len(b._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(b._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BusinessOnboardingOptionsResponse struct {
+	TermsOfService                  *OnboardingOptionResponse `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
+	Email                           *OnboardingOptionResponse `json:"email,omitempty" url:"email,omitempty"`
+	Name                            *OnboardingOptionResponse `json:"name,omitempty" url:"name,omitempty"`
+	Address                         *OnboardingOptionResponse `json:"address,omitempty" url:"address,omitempty"`
+	Phone                           *OnboardingOptionResponse `json:"phone,omitempty" url:"phone,omitempty"`
+	TenNinetyNine                   *OnboardingOptionResponse `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
+	W9                              *OnboardingOptionResponse `json:"w9,omitempty" url:"w9,omitempty"`
+	BankStatement                   *OnboardingOptionResponse `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
+	Type                            *OnboardingOptionResponse `json:"type,omitempty" url:"type,omitempty"`
+	DoingBusinessAs                 *OnboardingOptionResponse `json:"doingBusinessAs,omitempty" url:"doingBusinessAs,omitempty"`
+	Ein                             *OnboardingOptionResponse `json:"ein,omitempty" url:"ein,omitempty"`
+	Mcc                             *OnboardingOptionResponse `json:"mcc,omitempty" url:"mcc,omitempty"`
+	FormationDate                   *OnboardingOptionResponse `json:"formationDate,omitempty" url:"formationDate,omitempty"`
+	Website                         *OnboardingOptionResponse `json:"website,omitempty" url:"website,omitempty"`
+	Description                     *OnboardingOptionResponse `json:"description,omitempty" url:"description,omitempty"`
+	Representatives                 *OnboardingOptionResponse `json:"representatives,omitempty" url:"representatives,omitempty"`
+	Logo                            *OnboardingOptionResponse `json:"logo,omitempty" url:"logo,omitempty"`
+	AverageTransactionSize          *OnboardingOptionResponse `json:"averageTransactionSize,omitempty" url:"averageTransactionSize,omitempty"`
+	AverageMonthlyTransactionVolume *OnboardingOptionResponse `json:"averageMonthlyTransactionVolume,omitempty" url:"averageMonthlyTransactionVolume,omitempty"`
+	MaxTransactionSize              *OnboardingOptionResponse `json:"maxTransactionSize,omitempty" url:"maxTransactionSize,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BusinessOnboardingOptionsResponse) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BusinessOnboardingOptionsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler BusinessOnboardingOptionsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BusinessOnboardingOptionsResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
+	b._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BusinessOnboardingOptionsResponse) String() string {
 	if len(b._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(b._rawJSON); err == nil {
 			return value
@@ -10189,31 +10249,31 @@ func (c *ColorSchemeResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-type CommonOnboardingOptions struct {
-	TermsOfService *OnboardingOption `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
-	Email          *OnboardingOption `json:"email,omitempty" url:"email,omitempty"`
-	Name           *OnboardingOption `json:"name,omitempty" url:"name,omitempty"`
-	Address        *OnboardingOption `json:"address,omitempty" url:"address,omitempty"`
-	Phone          *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
-	TenNinetyNine  *OnboardingOption `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
-	W9             *OnboardingOption `json:"w9,omitempty" url:"w9,omitempty"`
-	BankStatement  *OnboardingOption `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
+type CommonOnboardingOptionsRequest struct {
+	TermsOfService *OnboardingOptionRequest `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
+	Email          *OnboardingOptionRequest `json:"email,omitempty" url:"email,omitempty"`
+	Name           *OnboardingOptionRequest `json:"name,omitempty" url:"name,omitempty"`
+	Address        *OnboardingOptionRequest `json:"address,omitempty" url:"address,omitempty"`
+	Phone          *OnboardingOptionRequest `json:"phone,omitempty" url:"phone,omitempty"`
+	TenNinetyNine  *OnboardingOptionRequest `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
+	W9             *OnboardingOptionRequest `json:"w9,omitempty" url:"w9,omitempty"`
+	BankStatement  *OnboardingOptionRequest `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
 }
 
-func (c *CommonOnboardingOptions) GetExtraProperties() map[string]interface{} {
+func (c *CommonOnboardingOptionsRequest) GetExtraProperties() map[string]interface{} {
 	return c.extraProperties
 }
 
-func (c *CommonOnboardingOptions) UnmarshalJSON(data []byte) error {
-	type unmarshaler CommonOnboardingOptions
+func (c *CommonOnboardingOptionsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CommonOnboardingOptionsRequest
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CommonOnboardingOptions(value)
+	*c = CommonOnboardingOptionsRequest(value)
 
 	extraProperties, err := core.ExtractExtraProperties(data, *c)
 	if err != nil {
@@ -10225,7 +10285,55 @@ func (c *CommonOnboardingOptions) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *CommonOnboardingOptions) String() string {
+func (c *CommonOnboardingOptionsRequest) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CommonOnboardingOptionsResponse struct {
+	TermsOfService *OnboardingOptionResponse `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
+	Email          *OnboardingOptionResponse `json:"email,omitempty" url:"email,omitempty"`
+	Name           *OnboardingOptionResponse `json:"name,omitempty" url:"name,omitempty"`
+	Address        *OnboardingOptionResponse `json:"address,omitempty" url:"address,omitempty"`
+	Phone          *OnboardingOptionResponse `json:"phone,omitempty" url:"phone,omitempty"`
+	TenNinetyNine  *OnboardingOptionResponse `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
+	W9             *OnboardingOptionResponse `json:"w9,omitempty" url:"w9,omitempty"`
+	BankStatement  *OnboardingOptionResponse `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CommonOnboardingOptionsResponse) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CommonOnboardingOptionsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler CommonOnboardingOptionsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CommonOnboardingOptionsResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CommonOnboardingOptionsResponse) String() string {
 	if len(c._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
 			return value
@@ -10754,33 +10862,33 @@ func (g *GenericPaymentRailResponse) String() string {
 	return fmt.Sprintf("%#v", g)
 }
 
-type IndividualOnboardingOptions struct {
-	TermsOfService *OnboardingOption `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
-	Email          *OnboardingOption `json:"email,omitempty" url:"email,omitempty"`
-	Name           *OnboardingOption `json:"name,omitempty" url:"name,omitempty"`
-	Address        *OnboardingOption `json:"address,omitempty" url:"address,omitempty"`
-	Phone          *OnboardingOption `json:"phone,omitempty" url:"phone,omitempty"`
-	TenNinetyNine  *OnboardingOption `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
-	W9             *OnboardingOption `json:"w9,omitempty" url:"w9,omitempty"`
-	BankStatement  *OnboardingOption `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
-	DateOfBirth    *OnboardingOption `json:"dateOfBirth,omitempty" url:"dateOfBirth,omitempty"`
-	Ssn            *OnboardingOption `json:"ssn,omitempty" url:"ssn,omitempty"`
+type IndividualOnboardingOptionsRequest struct {
+	TermsOfService *OnboardingOptionRequest `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
+	Email          *OnboardingOptionRequest `json:"email,omitempty" url:"email,omitempty"`
+	Name           *OnboardingOptionRequest `json:"name,omitempty" url:"name,omitempty"`
+	Address        *OnboardingOptionRequest `json:"address,omitempty" url:"address,omitempty"`
+	Phone          *OnboardingOptionRequest `json:"phone,omitempty" url:"phone,omitempty"`
+	TenNinetyNine  *OnboardingOptionRequest `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
+	W9             *OnboardingOptionRequest `json:"w9,omitempty" url:"w9,omitempty"`
+	BankStatement  *OnboardingOptionRequest `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
+	DateOfBirth    *OnboardingOptionRequest `json:"dateOfBirth,omitempty" url:"dateOfBirth,omitempty"`
+	Ssn            *OnboardingOptionRequest `json:"ssn,omitempty" url:"ssn,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
 }
 
-func (i *IndividualOnboardingOptions) GetExtraProperties() map[string]interface{} {
+func (i *IndividualOnboardingOptionsRequest) GetExtraProperties() map[string]interface{} {
 	return i.extraProperties
 }
 
-func (i *IndividualOnboardingOptions) UnmarshalJSON(data []byte) error {
-	type unmarshaler IndividualOnboardingOptions
+func (i *IndividualOnboardingOptionsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler IndividualOnboardingOptionsRequest
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*i = IndividualOnboardingOptions(value)
+	*i = IndividualOnboardingOptionsRequest(value)
 
 	extraProperties, err := core.ExtractExtraProperties(data, *i)
 	if err != nil {
@@ -10792,7 +10900,57 @@ func (i *IndividualOnboardingOptions) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (i *IndividualOnboardingOptions) String() string {
+func (i *IndividualOnboardingOptionsRequest) String() string {
+	if len(i._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type IndividualOnboardingOptionsResponse struct {
+	TermsOfService *OnboardingOptionResponse `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
+	Email          *OnboardingOptionResponse `json:"email,omitempty" url:"email,omitempty"`
+	Name           *OnboardingOptionResponse `json:"name,omitempty" url:"name,omitempty"`
+	Address        *OnboardingOptionResponse `json:"address,omitempty" url:"address,omitempty"`
+	Phone          *OnboardingOptionResponse `json:"phone,omitempty" url:"phone,omitempty"`
+	TenNinetyNine  *OnboardingOptionResponse `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
+	W9             *OnboardingOptionResponse `json:"w9,omitempty" url:"w9,omitempty"`
+	BankStatement  *OnboardingOptionResponse `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
+	DateOfBirth    *OnboardingOptionResponse `json:"dateOfBirth,omitempty" url:"dateOfBirth,omitempty"`
+	Ssn            *OnboardingOptionResponse `json:"ssn,omitempty" url:"ssn,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (i *IndividualOnboardingOptionsResponse) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *IndividualOnboardingOptionsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler IndividualOnboardingOptionsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = IndividualOnboardingOptionsResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+
+	i._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *IndividualOnboardingOptionsResponse) String() string {
 	if len(i._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
 			return value
@@ -11288,26 +11446,27 @@ func (n *NotificationEmailTemplateResponse) String() string {
 	return fmt.Sprintf("%#v", n)
 }
 
-type OnboardingOption struct {
-	Show     bool `json:"show" url:"show"`
-	Edit     bool `json:"edit" url:"edit"`
-	Required bool `json:"required" url:"required"`
+// How this field will be shown on the onboarding page.  If `show`, `edit`, or `required` are not specified, they will default to `false`. Note that `required` implies `edit`, and `edit` implies `show`.
+type OnboardingOptionRequest struct {
+	Show     *bool `json:"show,omitempty" url:"show,omitempty"`
+	Edit     *bool `json:"edit,omitempty" url:"edit,omitempty"`
+	Required *bool `json:"required,omitempty" url:"required,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
 }
 
-func (o *OnboardingOption) GetExtraProperties() map[string]interface{} {
+func (o *OnboardingOptionRequest) GetExtraProperties() map[string]interface{} {
 	return o.extraProperties
 }
 
-func (o *OnboardingOption) UnmarshalJSON(data []byte) error {
-	type unmarshaler OnboardingOption
+func (o *OnboardingOptionRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler OnboardingOptionRequest
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*o = OnboardingOption(value)
+	*o = OnboardingOptionRequest(value)
 
 	extraProperties, err := core.ExtractExtraProperties(data, *o)
 	if err != nil {
@@ -11319,7 +11478,51 @@ func (o *OnboardingOption) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *OnboardingOption) String() string {
+func (o *OnboardingOptionRequest) String() string {
+	if len(o._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(o); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", o)
+}
+
+// How this field will be shown on the onboarding page. Note that `required` implies `edit`, and `edit` implies `show`.
+type OnboardingOptionResponse struct {
+	Show     bool `json:"show" url:"show"`
+	Edit     bool `json:"edit" url:"edit"`
+	Required bool `json:"required" url:"required"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OnboardingOptionResponse) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
+}
+
+func (o *OnboardingOptionResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler OnboardingOptionResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*o = OnboardingOptionResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
+	o._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (o *OnboardingOptionResponse) String() string {
 	if len(o._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
 			return value
@@ -11332,11 +11535,11 @@ func (o *OnboardingOption) String() string {
 }
 
 type OnboardingOptionsRequest struct {
-	EnableBusiness   *bool                        `json:"enableBusiness,omitempty" url:"enableBusiness,omitempty"`
-	EnableIndividual *bool                        `json:"enableIndividual,omitempty" url:"enableIndividual,omitempty"`
-	PaymentMethod    *bool                        `json:"paymentMethod,omitempty" url:"paymentMethod,omitempty"`
-	Business         *BusinessOnboardingOptions   `json:"business,omitempty" url:"business,omitempty"`
-	Individual       *IndividualOnboardingOptions `json:"individual,omitempty" url:"individual,omitempty"`
+	EnableBusiness   *bool                               `json:"enableBusiness,omitempty" url:"enableBusiness,omitempty"`
+	EnableIndividual *bool                               `json:"enableIndividual,omitempty" url:"enableIndividual,omitempty"`
+	PaymentMethod    *bool                               `json:"paymentMethod,omitempty" url:"paymentMethod,omitempty"`
+	Business         *BusinessOnboardingOptionsRequest   `json:"business,omitempty" url:"business,omitempty"`
+	Individual       *IndividualOnboardingOptionsRequest `json:"individual,omitempty" url:"individual,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -11377,11 +11580,11 @@ func (o *OnboardingOptionsRequest) String() string {
 }
 
 type OnboardingOptionsResponse struct {
-	EnableBusiness   bool                         `json:"enableBusiness" url:"enableBusiness"`
-	EnableIndividual bool                         `json:"enableIndividual" url:"enableIndividual"`
-	PaymentMethod    bool                         `json:"paymentMethod" url:"paymentMethod"`
-	Business         *BusinessOnboardingOptions   `json:"business,omitempty" url:"business,omitempty"`
-	Individual       *IndividualOnboardingOptions `json:"individual,omitempty" url:"individual,omitempty"`
+	EnableBusiness   bool                                 `json:"enableBusiness" url:"enableBusiness"`
+	EnableIndividual bool                                 `json:"enableIndividual" url:"enableIndividual"`
+	PaymentMethod    bool                                 `json:"paymentMethod" url:"paymentMethod"`
+	Business         *BusinessOnboardingOptionsResponse   `json:"business,omitempty" url:"business,omitempty"`
+	Individual       *IndividualOnboardingOptionsResponse `json:"individual,omitempty" url:"individual,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
