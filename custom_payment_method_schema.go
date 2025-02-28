@@ -22,8 +22,7 @@ type CustomPaymentMethodSchemaRequest struct {
 	// The maximum amount that can be transferred from this payment method in a single transaction.
 	MaxAmount *float64 `json:"maxAmount,omitempty" url:"maxAmount,omitempty"`
 	// The minimum amount that can be transferred from this payment method in a single transaction. Default is 1.
-	MinAmount *float64                      `json:"minAmount,omitempty" url:"minAmount,omitempty"`
-	Fees      *CustomPaymentMethodSchemaFee `json:"fees,omitempty" url:"fees,omitempty"`
+	MinAmount *float64 `json:"minAmount,omitempty" url:"minAmount,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage

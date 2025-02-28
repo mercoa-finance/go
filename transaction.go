@@ -91,6 +91,9 @@ type TransactionResponse struct {
 	Type                     string
 	BankAccountToBankAccount *TransactionResponseBankToBankWithInvoices
 	BankAccountToMailedCheck *TransactionResponseBankToMailedCheckWithInvoices
+	BankAccountToWallet      *TransactionResponseBankToWalletWithInvoices
+	CardToWallet             *TransactionResponseCardToWalletWithInvoices
+	WalletToBankAccount      *TransactionResponseWalletToBankWithInvoices
 	Custom                   *TransactionResponseCustomWithInvoices
 	OffPlatform              *TransactionResponseCustomWithInvoices
 }
@@ -116,6 +119,24 @@ func (t *TransactionResponse) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		t.BankAccountToMailedCheck = value
+	case "bankAccountToWallet":
+		value := new(TransactionResponseBankToWalletWithInvoices)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.BankAccountToWallet = value
+	case "cardToWallet":
+		value := new(TransactionResponseCardToWalletWithInvoices)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.CardToWallet = value
+	case "walletToBankAccount":
+		value := new(TransactionResponseWalletToBankWithInvoices)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.WalletToBankAccount = value
 	case "custom":
 		value := new(TransactionResponseCustomWithInvoices)
 		if err := json.Unmarshal(data, &value); err != nil {
@@ -139,6 +160,15 @@ func (t TransactionResponse) MarshalJSON() ([]byte, error) {
 	if t.BankAccountToMailedCheck != nil {
 		return core.MarshalJSONWithExtraProperty(t.BankAccountToMailedCheck, "type", "bankAccountToMailedCheck")
 	}
+	if t.BankAccountToWallet != nil {
+		return core.MarshalJSONWithExtraProperty(t.BankAccountToWallet, "type", "bankAccountToWallet")
+	}
+	if t.CardToWallet != nil {
+		return core.MarshalJSONWithExtraProperty(t.CardToWallet, "type", "cardToWallet")
+	}
+	if t.WalletToBankAccount != nil {
+		return core.MarshalJSONWithExtraProperty(t.WalletToBankAccount, "type", "walletToBankAccount")
+	}
 	if t.Custom != nil {
 		return core.MarshalJSONWithExtraProperty(t.Custom, "type", "custom")
 	}
@@ -151,6 +181,9 @@ func (t TransactionResponse) MarshalJSON() ([]byte, error) {
 type TransactionResponseVisitor interface {
 	VisitBankAccountToBankAccount(*TransactionResponseBankToBankWithInvoices) error
 	VisitBankAccountToMailedCheck(*TransactionResponseBankToMailedCheckWithInvoices) error
+	VisitBankAccountToWallet(*TransactionResponseBankToWalletWithInvoices) error
+	VisitCardToWallet(*TransactionResponseCardToWalletWithInvoices) error
+	VisitWalletToBankAccount(*TransactionResponseWalletToBankWithInvoices) error
 	VisitCustom(*TransactionResponseCustomWithInvoices) error
 	VisitOffPlatform(*TransactionResponseCustomWithInvoices) error
 }
@@ -161,6 +194,15 @@ func (t *TransactionResponse) Accept(visitor TransactionResponseVisitor) error {
 	}
 	if t.BankAccountToMailedCheck != nil {
 		return visitor.VisitBankAccountToMailedCheck(t.BankAccountToMailedCheck)
+	}
+	if t.BankAccountToWallet != nil {
+		return visitor.VisitBankAccountToWallet(t.BankAccountToWallet)
+	}
+	if t.CardToWallet != nil {
+		return visitor.VisitCardToWallet(t.CardToWallet)
+	}
+	if t.WalletToBankAccount != nil {
+		return visitor.VisitWalletToBankAccount(t.WalletToBankAccount)
 	}
 	if t.Custom != nil {
 		return visitor.VisitCustom(t.Custom)
@@ -335,6 +377,168 @@ func (t *TransactionResponseBankToMailedCheckWithInvoices) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
+type TransactionResponseBankToWalletWithInvoices struct {
+	ID                        TransactionID              `json:"id" url:"id"`
+	Status                    TransactionStatus          `json:"status" url:"status"`
+	Amount                    int                        `json:"amount" url:"amount"`
+	Currency                  string                     `json:"currency" url:"currency"`
+	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
+	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
+	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
+	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
+	CreatedAt                 time.Time                  `json:"createdAt" url:"createdAt"`
+	UpdatedAt                 time.Time                  `json:"updatedAt" url:"updatedAt"`
+	// If the invoice failed to be paid, this field will be populated with the reason of failure.
+	FailureReason *TransactionFailureReason `json:"failureReason,omitempty" url:"failureReason,omitempty"`
+	// Invoices associated with this transaction
+	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionResponseBankToWalletWithInvoices) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseBankToWalletWithInvoices) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseBankToWalletWithInvoices
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseBankToWalletWithInvoices(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseBankToWalletWithInvoices) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseBankToWalletWithInvoices
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*t),
+		CreatedAt: core.NewDateTime(t.CreatedAt),
+		UpdatedAt: core.NewDateTime(t.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseBankToWalletWithInvoices) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TransactionResponseCardToWalletWithInvoices struct {
+	ID                        TransactionID              `json:"id" url:"id"`
+	Status                    TransactionStatus          `json:"status" url:"status"`
+	Amount                    int                        `json:"amount" url:"amount"`
+	Currency                  string                     `json:"currency" url:"currency"`
+	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
+	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
+	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
+	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
+	CreatedAt                 time.Time                  `json:"createdAt" url:"createdAt"`
+	UpdatedAt                 time.Time                  `json:"updatedAt" url:"updatedAt"`
+	// Invoices associated with this transaction
+	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionResponseCardToWalletWithInvoices) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseCardToWalletWithInvoices) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseCardToWalletWithInvoices
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseCardToWalletWithInvoices(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseCardToWalletWithInvoices) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseCardToWalletWithInvoices
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*t),
+		CreatedAt: core.NewDateTime(t.CreatedAt),
+		UpdatedAt: core.NewDateTime(t.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseCardToWalletWithInvoices) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
 type TransactionResponseCustomWithInvoices struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
@@ -404,6 +608,88 @@ func (t *TransactionResponseCustomWithInvoices) MarshalJSON() ([]byte, error) {
 }
 
 func (t *TransactionResponseCustomWithInvoices) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TransactionResponseWalletToBankWithInvoices struct {
+	ID                        TransactionID              `json:"id" url:"id"`
+	Status                    TransactionStatus          `json:"status" url:"status"`
+	Amount                    int                        `json:"amount" url:"amount"`
+	Currency                  string                     `json:"currency" url:"currency"`
+	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
+	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
+	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
+	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
+	CreatedAt                 time.Time                  `json:"createdAt" url:"createdAt"`
+	UpdatedAt                 time.Time                  `json:"updatedAt" url:"updatedAt"`
+	// If the invoice failed to be paid, this field will be populated with the reason of failure.
+	FailureReason *TransactionFailureReason `json:"failureReason,omitempty" url:"failureReason,omitempty"`
+	// Invoices associated with this transaction
+	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionResponseWalletToBankWithInvoices) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseWalletToBankWithInvoices) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseWalletToBankWithInvoices
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseWalletToBankWithInvoices(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseWalletToBankWithInvoices) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseWalletToBankWithInvoices
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*t),
+		CreatedAt: core.NewDateTime(t.CreatedAt),
+		UpdatedAt: core.NewDateTime(t.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseWalletToBankWithInvoices) String() string {
 	if len(t._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
 			return value

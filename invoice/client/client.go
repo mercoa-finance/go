@@ -12,6 +12,7 @@ import (
 	invoice "github.com/mercoa-finance/go/invoice"
 	approval "github.com/mercoa-finance/go/invoice/approval"
 	bulk "github.com/mercoa-finance/go/invoice/bulk"
+	collection "github.com/mercoa-finance/go/invoice/collection"
 	comment "github.com/mercoa-finance/go/invoice/comment"
 	document "github.com/mercoa-finance/go/invoice/document"
 	lineitemclient "github.com/mercoa-finance/go/invoice/lineitem/client"
@@ -29,6 +30,7 @@ type Client struct {
 	LineItem     *lineitemclient.Client
 	Approval     *approval.Client
 	Bulk         *bulk.Client
+	Collection   *collection.Client
 	Comment      *comment.Client
 	Document     *document.Client
 	PaymentLinks *paymentlinks.Client
@@ -48,6 +50,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		LineItem:     lineitemclient.NewClient(opts...),
 		Approval:     approval.NewClient(opts...),
 		Bulk:         bulk.NewClient(opts...),
+		Collection:   collection.NewClient(opts...),
 		Comment:      comment.NewClient(opts...),
 		Document:     document.NewClient(opts...),
 		PaymentLinks: paymentlinks.NewClient(opts...),

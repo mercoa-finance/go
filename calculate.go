@@ -14,12 +14,16 @@ type CalculateFeesRequest struct {
 	Amount float64 `json:"amount" url:"amount"`
 	// Currency code for the amount. Defaults to USD.
 	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	// ID of the entity creating the invoice. If not provided, the fees will be calculated with the default pricing for the organization.
+	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 	// ID of payment source.
 	PaymentSourceID PaymentMethodID `json:"paymentSourceId" url:"paymentSourceId"`
 	// ID of payment destination.
 	PaymentDestinationID PaymentMethodID `json:"paymentDestinationId" url:"paymentDestinationId"`
 	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	// Type of payment to calculate fees for. Defaults to PAYABLE (Accounts Payable).
+	Type *FeeCalculationType `json:"type,omitempty" url:"type,omitempty"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -243,6 +247,29 @@ func (e *EstimatedTiming) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
+}
+
+// Type of payment to calculate fees for.
+type FeeCalculationType string
+
+const (
+	FeeCalculationTypePayable    FeeCalculationType = "PAYABLE"
+	FeeCalculationTypeReceivable FeeCalculationType = "RECEIVABLE"
+)
+
+func NewFeeCalculationTypeFromString(s string) (FeeCalculationType, error) {
+	switch s {
+	case "PAYABLE":
+		return FeeCalculationTypePayable, nil
+	case "RECEIVABLE":
+		return FeeCalculationTypeReceivable, nil
+	}
+	var t FeeCalculationType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FeeCalculationType) Ptr() *FeeCalculationType {
+	return &f
 }
 
 type InvoiceTiming struct {

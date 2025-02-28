@@ -9,6 +9,247 @@ import (
 	time "time"
 )
 
+type ActionBase struct {
+	ID ActionID `json:"id" url:"id"`
+	// The UTC timestamp for when this action is scheduled for execution. Actual execution may be delayed by a few minutes due to processing time.
+	ScheduledExecutionTime time.Time `json:"scheduledExecutionTime" url:"scheduledExecutionTime"`
+	// The current lifecycle state of the action. SUGGESTED actions are pending approval, APPROVED actions will be executed, and COMPLETED actions have been executed.
+	Status ActionStatus `json:"status" url:"status"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (a *ActionBase) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
+}
+
+func (a *ActionBase) UnmarshalJSON(data []byte) error {
+	type embed ActionBase
+	var unmarshaler = struct {
+		embed
+		ScheduledExecutionTime *core.DateTime `json:"scheduledExecutionTime"`
+	}{
+		embed: embed(*a),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*a = ActionBase(unmarshaler.embed)
+	a.ScheduledExecutionTime = unmarshaler.ScheduledExecutionTime.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+
+	a._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *ActionBase) MarshalJSON() ([]byte, error) {
+	type embed ActionBase
+	var marshaler = struct {
+		embed
+		ScheduledExecutionTime *core.DateTime `json:"scheduledExecutionTime"`
+	}{
+		embed:                  embed(*a),
+		ScheduledExecutionTime: core.NewDateTime(a.ScheduledExecutionTime),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (a *ActionBase) String() string {
+	if len(a._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(a._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+type ActionID = string
+
+type ActionResponse struct {
+	Type  string
+	Email *EmailCollectionActionResponse
+}
+
+func (a *ActionResponse) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	a.Type = unmarshaler.Type
+	switch unmarshaler.Type {
+	case "email":
+		value := new(EmailCollectionActionResponse)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		a.Email = value
+	}
+	return nil
+}
+
+func (a ActionResponse) MarshalJSON() ([]byte, error) {
+	if a.Email != nil {
+		return core.MarshalJSONWithExtraProperty(a.Email, "type", "email")
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", a)
+}
+
+type ActionResponseVisitor interface {
+	VisitEmail(*EmailCollectionActionResponse) error
+}
+
+func (a *ActionResponse) Accept(visitor ActionResponseVisitor) error {
+	if a.Email != nil {
+		return visitor.VisitEmail(a.Email)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", a)
+}
+
+type ActionStatus string
+
+const (
+	ActionStatusSuggested ActionStatus = "SUGGESTED"
+	ActionStatusApproved  ActionStatus = "APPROVED"
+	ActionStatusCompleted ActionStatus = "COMPLETED"
+)
+
+func NewActionStatusFromString(s string) (ActionStatus, error) {
+	switch s {
+	case "SUGGESTED":
+		return ActionStatusSuggested, nil
+	case "APPROVED":
+		return ActionStatusApproved, nil
+	case "COMPLETED":
+		return ActionStatusCompleted, nil
+	}
+	var t ActionStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a ActionStatus) Ptr() *ActionStatus {
+	return &a
+}
+
+type EmailCollectionActionResponse struct {
+	ID ActionID `json:"id" url:"id"`
+	// The UTC timestamp for when this action is scheduled for execution. Actual execution may be delayed by a few minutes due to processing time.
+	ScheduledExecutionTime time.Time `json:"scheduledExecutionTime" url:"scheduledExecutionTime"`
+	// The current lifecycle state of the action. SUGGESTED actions are pending approval, APPROVED actions will be executed, and COMPLETED actions have been executed.
+	Status ActionStatus `json:"status" url:"status"`
+	// The subject of the email
+	Subject string `json:"subject" url:"subject"`
+	// The body of the email in plaintext
+	Body string `json:"body" url:"body"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (e *EmailCollectionActionResponse) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EmailCollectionActionResponse) UnmarshalJSON(data []byte) error {
+	type embed EmailCollectionActionResponse
+	var unmarshaler = struct {
+		embed
+		ScheduledExecutionTime *core.DateTime `json:"scheduledExecutionTime"`
+	}{
+		embed: embed(*e),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*e = EmailCollectionActionResponse(unmarshaler.embed)
+	e.ScheduledExecutionTime = unmarshaler.ScheduledExecutionTime.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+
+	e._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailCollectionActionResponse) MarshalJSON() ([]byte, error) {
+	type embed EmailCollectionActionResponse
+	var marshaler = struct {
+		embed
+		ScheduledExecutionTime *core.DateTime `json:"scheduledExecutionTime"`
+	}{
+		embed:                  embed(*e),
+		ScheduledExecutionTime: core.NewDateTime(e.ScheduledExecutionTime),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (e *EmailCollectionActionResponse) String() string {
+	if len(e._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type UpdateNextActionRequest struct {
+	// Natural language feedback to update the collection agent's next action
+	Feedback string `json:"feedback" url:"feedback"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (u *UpdateNextActionRequest) GetExtraProperties() map[string]interface{} {
+	return u.extraProperties
+}
+
+func (u *UpdateNextActionRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateNextActionRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateNextActionRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+
+	u._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateNextActionRequest) String() string {
+	if len(u._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(u._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 type Address struct {
 	AddressLine1 string  `json:"addressLine1" url:"addressLine1"`
 	AddressLine2 *string `json:"addressLine2,omitempty" url:"addressLine2,omitempty"`
@@ -1025,6 +1266,902 @@ func (g *GenerateContractResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", g)
+}
+
+type BankAccountPaymentMethodCustomizationRequest struct {
+	// If true, this method will will not be available to the entity.
+	Disabled bool `json:"disabled" url:"disabled"`
+	// The default delivery method for this payment method.
+	DefaultDeliveryMethod *BankDeliveryMethod `json:"defaultDeliveryMethod,omitempty" url:"defaultDeliveryMethod,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (b *BankAccountPaymentMethodCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BankAccountPaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler BankAccountPaymentMethodCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BankAccountPaymentMethodCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+
+	b._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BankAccountPaymentMethodCustomizationRequest) String() string {
+	if len(b._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(b._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type CheckPaymentMethodCustomizationRequest struct {
+	// If true, this method will will not be available to the entity.
+	Disabled bool `json:"disabled" url:"disabled"`
+	// The default delivery method for this payment method.
+	DefaultDeliveryMethod *CheckDeliveryMethod `json:"defaultDeliveryMethod,omitempty" url:"defaultDeliveryMethod,omitempty"`
+	// If true, the check will be printed with the description.
+	PrintDescription *bool `json:"printDescription,omitempty" url:"printDescription,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CheckPaymentMethodCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CheckPaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CheckPaymentMethodCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CheckPaymentMethodCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CheckPaymentMethodCustomizationRequest) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CustomPaymentMethodCustomizationRequest struct {
+	// If true, this method will will not be available to the entity.
+	Disabled bool `json:"disabled" url:"disabled"`
+	// The ID of the schema to use for this payment method.
+	SchemaID string `json:"schemaId" url:"schemaId"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (c *CustomPaymentMethodCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CustomPaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CustomPaymentMethodCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CustomPaymentMethodCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+
+	c._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CustomPaymentMethodCustomizationRequest) String() string {
+	if len(c._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type DefaultFee struct {
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (d *DefaultFee) GetExtraProperties() map[string]interface{} {
+	return d.extraProperties
+}
+
+func (d *DefaultFee) UnmarshalJSON(data []byte) error {
+	type unmarshaler DefaultFee
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DefaultFee(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+
+	d._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DefaultFee) String() string {
+	if len(d._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(d._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+type FeeCustomizationDetailRequest struct {
+	// Fees to be applied to the source of the transaction.
+	Source *FeeCustomizationRailRequest `json:"source,omitempty" url:"source,omitempty"`
+	// Fees to be applied to the destination of the transaction.
+	Destination *FeeCustomizationRailRequest `json:"destination,omitempty" url:"destination,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FeeCustomizationDetailRequest) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
+}
+
+func (f *FeeCustomizationDetailRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler FeeCustomizationDetailRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FeeCustomizationDetailRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
+	f._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FeeCustomizationDetailRequest) String() string {
+	if len(f._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(f._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type FeeCustomizationRailRequest struct {
+	// The fee for the ACH standard rail.
+	AchStandard *PaymentMethodFee `json:"ACH_STANDARD,omitempty" url:"ACH_STANDARD,omitempty"`
+	// The fee for the ACH same day rail.
+	AchSameDay *PaymentMethodFee `json:"ACH_SAME_DAY,omitempty" url:"ACH_SAME_DAY,omitempty"`
+	// The fee for the check print rail.
+	CheckPrint *PaymentMethodFee `json:"CHECK_PRINT,omitempty" url:"CHECK_PRINT,omitempty"`
+	// The fee for the check mail rail.
+	CheckMail *PaymentMethodFee `json:"CHECK_MAIL,omitempty" url:"CHECK_MAIL,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FeeCustomizationRailRequest) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
+}
+
+func (f *FeeCustomizationRailRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler FeeCustomizationRailRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FeeCustomizationRailRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
+	f._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FeeCustomizationRailRequest) String() string {
+	if len(f._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(f._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type FeeCustomizationRequest struct {
+	// When the entity creating the invoice is the payer, these fees will be applied to the transaction.
+	Payable *FeeCustomizationDetailRequest `json:"payable,omitempty" url:"payable,omitempty"`
+	// When the entity creating the invoice is the payee, these fees will be applied to the transaction.
+	Receivable *FeeCustomizationDetailRequest `json:"receivable,omitempty" url:"receivable,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FeeCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
+}
+
+func (f *FeeCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler FeeCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FeeCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
+	f._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FeeCustomizationRequest) String() string {
+	if len(f._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(f._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type FlatFee struct {
+	// The flat amount that will be charged as a fee. For example, if the fee is $2.50, set this to 2.5.
+	Amount float64 `json:"amount" url:"amount"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (f *FlatFee) GetExtraProperties() map[string]interface{} {
+	return f.extraProperties
+}
+
+func (f *FlatFee) UnmarshalJSON(data []byte) error {
+	type unmarshaler FlatFee
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FlatFee(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+
+	f._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FlatFee) String() string {
+	if len(f._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(f._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type GenericPaymentMethodCustomizationRequest struct {
+	// If true, this method will will not be available to the entity.
+	Disabled bool `json:"disabled" url:"disabled"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (g *GenericPaymentMethodCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return g.extraProperties
+}
+
+func (g *GenericPaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenericPaymentMethodCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GenericPaymentMethodCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+
+	g._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GenericPaymentMethodCustomizationRequest) String() string {
+	if len(g._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(g._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type MetadataCustomizationRequest struct {
+	// The key of the metadata field. This must be defined at the organization level, otherwise an error will be returned.
+	Key string `json:"key" url:"key"`
+	// If true, this field will not be available to the entity.
+	Disabled bool `json:"disabled" url:"disabled"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (m *MetadataCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return m.extraProperties
+}
+
+func (m *MetadataCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler MetadataCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MetadataCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+
+	m._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MetadataCustomizationRequest) String() string {
+	if len(m._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(m._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+type NotificationCustomizationRequest struct {
+	// If set, notifications to this role will be sent to the email address of the entity. Set as empty string to disable.
+	AssumeRole *string `json:"assumeRole,omitempty" url:"assumeRole,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (n *NotificationCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return n.extraProperties
+}
+
+func (n *NotificationCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler NotificationCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*n = NotificationCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *n)
+	if err != nil {
+		return err
+	}
+	n.extraProperties = extraProperties
+
+	n._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (n *NotificationCustomizationRequest) String() string {
+	if len(n._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(n._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(n); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", n)
+}
+
+type OcrCustomizationRequest struct {
+	// Extract line items from the invoice. Defaults to true.
+	LineItems *bool `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	// If true, the line items will be collapsed into a single line item. Defaults to false.
+	CollapseLineItems *bool `json:"collapseLineItems,omitempty" url:"collapseLineItems,omitempty"`
+	// Pull custom metadata at the invoice level. Defaults to true.
+	InvoiceMetadata *bool `json:"invoiceMetadata,omitempty" url:"invoiceMetadata,omitempty"`
+	// Pull custom metadata at the line item level. Defaults to true.
+	LineItemMetadata *bool `json:"lineItemMetadata,omitempty" url:"lineItemMetadata,omitempty"`
+	// Pull GL Account ID at the line item level. Defaults to true.
+	LineItemGlAccountID *bool `json:"lineItemGlAccountId,omitempty" url:"lineItemGlAccountId,omitempty"`
+	// Use AI to predict metadata from historical data. Defaults to true.
+	PredictMetadata *bool `json:"predictMetadata,omitempty" url:"predictMetadata,omitempty"`
+	// Pull tax and shipping information as line items. Defaults to true. If false, tax and shipping will extracted as invoice level fields.
+	TaxAndShippingAsLineItems *bool `json:"taxAndShippingAsLineItems,omitempty" url:"taxAndShippingAsLineItems,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OcrCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
+}
+
+func (o *OcrCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler OcrCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*o = OcrCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
+	o._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (o *OcrCustomizationRequest) String() string {
+	if len(o._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(o); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", o)
+}
+
+type OcrCustomizationResponse struct {
+	// Extract line items from the invoice. Defaults to true.
+	LineItems bool `json:"lineItems" url:"lineItems"`
+	// If true, the line items will be collapsed into a single line item. Defaults to false.
+	CollapseLineItems bool `json:"collapseLineItems" url:"collapseLineItems"`
+	// Pull custom metadata at the invoice level. Defaults to true.
+	InvoiceMetadata bool `json:"invoiceMetadata" url:"invoiceMetadata"`
+	// Pull custom metadata at the line item level. Defaults to true.
+	LineItemMetadata bool `json:"lineItemMetadata" url:"lineItemMetadata"`
+	// Pull GL Account ID at the line item level. Defaults to true.
+	LineItemGlAccountID bool `json:"lineItemGlAccountId" url:"lineItemGlAccountId"`
+	// Use AI to predict metadata from historical data. Defaults to true.
+	PredictMetadata bool `json:"predictMetadata" url:"predictMetadata"`
+	// Pull tax and shipping information as line items. Defaults to true. If false, tax and shipping will extracted as invoice level fields.
+	TaxAndShippingAsLineItems bool `json:"taxAndShippingAsLineItems" url:"taxAndShippingAsLineItems"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (o *OcrCustomizationResponse) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
+}
+
+func (o *OcrCustomizationResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler OcrCustomizationResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*o = OcrCustomizationResponse(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+
+	o._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (o *OcrCustomizationResponse) String() string {
+	if len(o._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(o); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", o)
+}
+
+type PaymentMethodCustomizationRequest struct {
+	Type        string
+	BankAccount *BankAccountPaymentMethodCustomizationRequest
+	Card        *GenericPaymentMethodCustomizationRequest
+	VirtualCard *GenericPaymentMethodCustomizationRequest
+	Check       *CheckPaymentMethodCustomizationRequest
+	Custom      *CustomPaymentMethodCustomizationRequest
+	Bnpl        *GenericPaymentMethodCustomizationRequest
+	OffPlatform *GenericPaymentMethodCustomizationRequest
+	Utility     *GenericPaymentMethodCustomizationRequest
+	Na          *GenericPaymentMethodCustomizationRequest
+}
+
+func (p *PaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	p.Type = unmarshaler.Type
+	switch unmarshaler.Type {
+	case "bankAccount":
+		value := new(BankAccountPaymentMethodCustomizationRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.BankAccount = value
+	case "card":
+		value := new(GenericPaymentMethodCustomizationRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Card = value
+	case "virtualCard":
+		value := new(GenericPaymentMethodCustomizationRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.VirtualCard = value
+	case "check":
+		value := new(CheckPaymentMethodCustomizationRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Check = value
+	case "custom":
+		value := new(CustomPaymentMethodCustomizationRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Custom = value
+	case "bnpl":
+		value := new(GenericPaymentMethodCustomizationRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Bnpl = value
+	case "offPlatform":
+		value := new(GenericPaymentMethodCustomizationRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.OffPlatform = value
+	case "utility":
+		value := new(GenericPaymentMethodCustomizationRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Utility = value
+	case "na":
+		value := new(GenericPaymentMethodCustomizationRequest)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Na = value
+	}
+	return nil
+}
+
+func (p PaymentMethodCustomizationRequest) MarshalJSON() ([]byte, error) {
+	if p.BankAccount != nil {
+		return core.MarshalJSONWithExtraProperty(p.BankAccount, "type", "bankAccount")
+	}
+	if p.Card != nil {
+		return core.MarshalJSONWithExtraProperty(p.Card, "type", "card")
+	}
+	if p.VirtualCard != nil {
+		return core.MarshalJSONWithExtraProperty(p.VirtualCard, "type", "virtualCard")
+	}
+	if p.Check != nil {
+		return core.MarshalJSONWithExtraProperty(p.Check, "type", "check")
+	}
+	if p.Custom != nil {
+		return core.MarshalJSONWithExtraProperty(p.Custom, "type", "custom")
+	}
+	if p.Bnpl != nil {
+		return core.MarshalJSONWithExtraProperty(p.Bnpl, "type", "bnpl")
+	}
+	if p.OffPlatform != nil {
+		return core.MarshalJSONWithExtraProperty(p.OffPlatform, "type", "offPlatform")
+	}
+	if p.Utility != nil {
+		return core.MarshalJSONWithExtraProperty(p.Utility, "type", "utility")
+	}
+	if p.Na != nil {
+		return core.MarshalJSONWithExtraProperty(p.Na, "type", "na")
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
+}
+
+type PaymentMethodCustomizationRequestVisitor interface {
+	VisitBankAccount(*BankAccountPaymentMethodCustomizationRequest) error
+	VisitCard(*GenericPaymentMethodCustomizationRequest) error
+	VisitVirtualCard(*GenericPaymentMethodCustomizationRequest) error
+	VisitCheck(*CheckPaymentMethodCustomizationRequest) error
+	VisitCustom(*CustomPaymentMethodCustomizationRequest) error
+	VisitBnpl(*GenericPaymentMethodCustomizationRequest) error
+	VisitOffPlatform(*GenericPaymentMethodCustomizationRequest) error
+	VisitUtility(*GenericPaymentMethodCustomizationRequest) error
+	VisitNa(*GenericPaymentMethodCustomizationRequest) error
+}
+
+func (p *PaymentMethodCustomizationRequest) Accept(visitor PaymentMethodCustomizationRequestVisitor) error {
+	if p.BankAccount != nil {
+		return visitor.VisitBankAccount(p.BankAccount)
+	}
+	if p.Card != nil {
+		return visitor.VisitCard(p.Card)
+	}
+	if p.VirtualCard != nil {
+		return visitor.VisitVirtualCard(p.VirtualCard)
+	}
+	if p.Check != nil {
+		return visitor.VisitCheck(p.Check)
+	}
+	if p.Custom != nil {
+		return visitor.VisitCustom(p.Custom)
+	}
+	if p.Bnpl != nil {
+		return visitor.VisitBnpl(p.Bnpl)
+	}
+	if p.OffPlatform != nil {
+		return visitor.VisitOffPlatform(p.OffPlatform)
+	}
+	if p.Utility != nil {
+		return visitor.VisitUtility(p.Utility)
+	}
+	if p.Na != nil {
+		return visitor.VisitNa(p.Na)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", p)
+}
+
+type PaymentMethodFee struct {
+	Type       string
+	Percentage *PercentageFee
+	Flat       *FlatFee
+	// The default fee for the payment method based on your organization's default fee.
+	Default *DefaultFee
+}
+
+func (p *PaymentMethodFee) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	p.Type = unmarshaler.Type
+	switch unmarshaler.Type {
+	case "percentage":
+		value := new(PercentageFee)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Percentage = value
+	case "flat":
+		value := new(FlatFee)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Flat = value
+	case "default":
+		value := new(DefaultFee)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Default = value
+	}
+	return nil
+}
+
+func (p PaymentMethodFee) MarshalJSON() ([]byte, error) {
+	if p.Percentage != nil {
+		return core.MarshalJSONWithExtraProperty(p.Percentage, "type", "percentage")
+	}
+	if p.Flat != nil {
+		return core.MarshalJSONWithExtraProperty(p.Flat, "type", "flat")
+	}
+	if p.Default != nil {
+		return core.MarshalJSONWithExtraProperty(p.Default, "type", "default")
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
+}
+
+type PaymentMethodFeeVisitor interface {
+	VisitPercentage(*PercentageFee) error
+	VisitFlat(*FlatFee) error
+	VisitDefault(*DefaultFee) error
+}
+
+func (p *PaymentMethodFee) Accept(visitor PaymentMethodFeeVisitor) error {
+	if p.Percentage != nil {
+		return visitor.VisitPercentage(p.Percentage)
+	}
+	if p.Flat != nil {
+		return visitor.VisitFlat(p.Flat)
+	}
+	if p.Default != nil {
+		return visitor.VisitDefault(p.Default)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", p)
+}
+
+type PercentageFee struct {
+	// The percentage of the payment amount that will be charged as a fee. For example, if the fee is 2.5%, set this to 2.5.
+	Amount float64 `json:"amount" url:"amount"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (p *PercentageFee) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PercentageFee) UnmarshalJSON(data []byte) error {
+	type unmarshaler PercentageFee
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PercentageFee(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+
+	p._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PercentageFee) String() string {
+	if len(p._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type WorkflowCustomizationRequest struct {
+	// If true, the invoice will be automatically advanced to the furthest stage in the payment workflow. For example, if the invoice is APPROVED, but has all necessary data to move to SCHEDULED, it will be advanced to SCHEDULED.
+	AutoAdvanceInvoiceStatus *bool `json:"autoAdvanceInvoiceStatus,omitempty" url:"autoAdvanceInvoiceStatus,omitempty"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (w *WorkflowCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return w.extraProperties
+}
+
+func (w *WorkflowCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler WorkflowCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WorkflowCustomizationRequest(value)
+
+	extraProperties, err := core.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+
+	w._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WorkflowCustomizationRequest) String() string {
+	if len(w._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(w._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
 }
 
 type EmailLog struct {
@@ -2065,50 +3202,6 @@ func (a *ApproverRule) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-type BankAccountPaymentMethodCustomizationRequest struct {
-	// If true, this method will will not be available to the entity.
-	Disabled bool `json:"disabled" url:"disabled"`
-	// The default delivery method for this payment method.
-	DefaultDeliveryMethod *BankDeliveryMethod `json:"defaultDeliveryMethod,omitempty" url:"defaultDeliveryMethod,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (b *BankAccountPaymentMethodCustomizationRequest) GetExtraProperties() map[string]interface{} {
-	return b.extraProperties
-}
-
-func (b *BankAccountPaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler BankAccountPaymentMethodCustomizationRequest
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*b = BankAccountPaymentMethodCustomizationRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *b)
-	if err != nil {
-		return err
-	}
-	b.extraProperties = extraProperties
-
-	b._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (b *BankAccountPaymentMethodCustomizationRequest) String() string {
-	if len(b._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(b._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(b); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", b)
-}
-
 type BulkConnectedEntity struct {
 	// The ID of the entity to connect to.
 	ID EntityID `json:"id" url:"id"`
@@ -2411,6 +3504,7 @@ type BusinessProfileResponse struct {
 	OwnersProvided                  *bool          `json:"ownersProvided,omitempty" url:"ownersProvided,omitempty"`
 	TaxIDProvided                   bool           `json:"taxIDProvided" url:"taxIDProvided"`
 	TaxID                           *TaxID         `json:"taxId,omitempty" url:"taxId,omitempty"`
+	FormationDate                   *time.Time     `json:"formationDate,omitempty" url:"formationDate,omitempty"`
 	IndustryCodes                   *IndustryCodes `json:"industryCodes,omitempty" url:"industryCodes,omitempty"`
 	AverageMonthlyTransactionVolume *float64       `json:"averageMonthlyTransactionVolume,omitempty" url:"averageMonthlyTransactionVolume,omitempty"`
 	AverageTransactionSize          *float64       `json:"averageTransactionSize,omitempty" url:"averageTransactionSize,omitempty"`
@@ -2425,12 +3519,18 @@ func (b *BusinessProfileResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (b *BusinessProfileResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler BusinessProfileResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
+	type embed BusinessProfileResponse
+	var unmarshaler = struct {
+		embed
+		FormationDate *core.DateTime `json:"formationDate,omitempty"`
+	}{
+		embed: embed(*b),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*b = BusinessProfileResponse(value)
+	*b = BusinessProfileResponse(unmarshaler.embed)
+	b.FormationDate = unmarshaler.FormationDate.TimePtr()
 
 	extraProperties, err := core.ExtractExtraProperties(data, *b)
 	if err != nil {
@@ -2440,6 +3540,18 @@ func (b *BusinessProfileResponse) UnmarshalJSON(data []byte) error {
 
 	b._rawJSON = json.RawMessage(data)
 	return nil
+}
+
+func (b *BusinessProfileResponse) MarshalJSON() ([]byte, error) {
+	type embed BusinessProfileResponse
+	var marshaler = struct {
+		embed
+		FormationDate *core.DateTime `json:"formationDate,omitempty"`
+	}{
+		embed:         embed(*b),
+		FormationDate: core.NewOptionalDateTime(b.FormationDate),
+	}
+	return json.Marshal(marshaler)
 }
 
 func (b *BusinessProfileResponse) String() string {
@@ -2528,52 +3640,6 @@ func (c *CardLinkTokenResponse) UnmarshalJSON(data []byte) error {
 }
 
 func (c *CardLinkTokenResponse) String() string {
-	if len(c._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-type CheckPaymentMethodCustomizationRequest struct {
-	// If true, this method will will not be available to the entity.
-	Disabled bool `json:"disabled" url:"disabled"`
-	// The default delivery method for this payment method.
-	DefaultDeliveryMethod *CheckDeliveryMethod `json:"defaultDeliveryMethod,omitempty" url:"defaultDeliveryMethod,omitempty"`
-	// If true, the check will be printed with the description.
-	PrintDescription *bool `json:"printDescription,omitempty" url:"printDescription,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (c *CheckPaymentMethodCustomizationRequest) GetExtraProperties() map[string]interface{} {
-	return c.extraProperties
-}
-
-func (c *CheckPaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CheckPaymentMethodCustomizationRequest
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CheckPaymentMethodCustomizationRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-
-	c._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CheckPaymentMethodCustomizationRequest) String() string {
 	if len(c._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
 			return value
@@ -2868,50 +3934,6 @@ func (c *CounterpartyResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CounterpartyResponse) String() string {
-	if len(c._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-type CustomPaymentMethodCustomizationRequest struct {
-	// If true, this method will will not be available to the entity.
-	Disabled bool `json:"disabled" url:"disabled"`
-	// The ID of the schema to use for this payment method.
-	SchemaID string `json:"schemaId" url:"schemaId"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (c *CustomPaymentMethodCustomizationRequest) GetExtraProperties() map[string]interface{} {
-	return c.extraProperties
-}
-
-func (c *CustomPaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CustomPaymentMethodCustomizationRequest
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CustomPaymentMethodCustomizationRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-
-	c._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CustomPaymentMethodCustomizationRequest) String() string {
 	if len(c._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
 			return value
@@ -3300,6 +4322,7 @@ type EntityCustomizationRequest struct {
 	Ocr                *OcrCustomizationRequest             `json:"ocr,omitempty" url:"ocr,omitempty"`
 	Notifications      *NotificationCustomizationRequest    `json:"notifications,omitempty" url:"notifications,omitempty"`
 	Workflow           *WorkflowCustomizationRequest        `json:"workflow,omitempty" url:"workflow,omitempty"`
+	Fees               *FeeCustomizationRequest             `json:"fees,omitempty" url:"fees,omitempty"`
 	RolePermissions    *RolePermissionRequest               `json:"rolePermissions,omitempty" url:"rolePermissions,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -3348,6 +4371,7 @@ type EntityCustomizationResponse struct {
 	Ocr                *OcrCustomizationResponse            `json:"ocr,omitempty" url:"ocr,omitempty"`
 	Notifications      *NotificationCustomizationRequest    `json:"notifications,omitempty" url:"notifications,omitempty"`
 	Workflow           *WorkflowCustomizationRequest        `json:"workflow,omitempty" url:"workflow,omitempty"`
+	Fees               *FeeCustomizationRequest             `json:"fees,omitempty" url:"fees,omitempty"`
 	RolePermissions    RolePermissionRequest                `json:"rolePermissions,omitempty" url:"rolePermissions,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -4268,48 +5292,6 @@ func (f *FindNotificationResponse) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-type GenericPaymentMethodCustomizationRequest struct {
-	// If true, this method will will not be available to the entity.
-	Disabled bool `json:"disabled" url:"disabled"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (g *GenericPaymentMethodCustomizationRequest) GetExtraProperties() map[string]interface{} {
-	return g.extraProperties
-}
-
-func (g *GenericPaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler GenericPaymentMethodCustomizationRequest
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*g = GenericPaymentMethodCustomizationRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *g)
-	if err != nil {
-		return err
-	}
-	g.extraProperties = extraProperties
-
-	g._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (g *GenericPaymentMethodCustomizationRequest) String() string {
-	if len(g._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(g._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(g); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", g)
-}
-
 type IdentifierList struct {
 	Type string
 	// List of entity user roles that should be used to determine approvers
@@ -4544,50 +5526,6 @@ func (l LineItemAvailabilities) Ptr() *LineItemAvailabilities {
 	return &l
 }
 
-type MetadataCustomizationRequest struct {
-	// The key of the metadata field. This must be defined at the organization level, otherwise an error will be returned.
-	Key string `json:"key" url:"key"`
-	// If true, this field will not be available to the entity.
-	Disabled bool `json:"disabled" url:"disabled"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (m *MetadataCustomizationRequest) GetExtraProperties() map[string]interface{} {
-	return m.extraProperties
-}
-
-func (m *MetadataCustomizationRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler MetadataCustomizationRequest
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MetadataCustomizationRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-
-	m._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MetadataCustomizationRequest) String() string {
-	if len(m._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(m._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
 type MetadataTrigger struct {
 	// The metadata key to match
 	Key string `json:"key" url:"key"`
@@ -4630,48 +5568,6 @@ func (m *MetadataTrigger) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", m)
-}
-
-type NotificationCustomizationRequest struct {
-	// If set, notifications to this role will be sent to the email address of the entity. Set as empty string to disable.
-	AssumeRole *string `json:"assumeRole,omitempty" url:"assumeRole,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (n *NotificationCustomizationRequest) GetExtraProperties() map[string]interface{} {
-	return n.extraProperties
-}
-
-func (n *NotificationCustomizationRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler NotificationCustomizationRequest
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*n = NotificationCustomizationRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *n)
-	if err != nil {
-		return err
-	}
-	n.extraProperties = extraProperties
-
-	n._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (n *NotificationCustomizationRequest) String() string {
-	if len(n._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(n._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(n); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", n)
 }
 
 type NotificationID = string
@@ -4957,268 +5853,6 @@ func (n *NotificationUpdateRequest) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", n)
-}
-
-type OcrCustomizationRequest struct {
-	// Extract line items from the invoice. Defaults to true.
-	LineItems *bool `json:"lineItems,omitempty" url:"lineItems,omitempty"`
-	// If true, the line items will be collapsed into a single line item. Defaults to false.
-	CollapseLineItems *bool `json:"collapseLineItems,omitempty" url:"collapseLineItems,omitempty"`
-	// Pull custom metadata at the invoice level. Defaults to true.
-	InvoiceMetadata *bool `json:"invoiceMetadata,omitempty" url:"invoiceMetadata,omitempty"`
-	// Pull custom metadata at the line item level. Defaults to true.
-	LineItemMetadata *bool `json:"lineItemMetadata,omitempty" url:"lineItemMetadata,omitempty"`
-	// Pull GL Account ID at the line item level. Defaults to true.
-	LineItemGlAccountID *bool `json:"lineItemGlAccountId,omitempty" url:"lineItemGlAccountId,omitempty"`
-	// Use AI to predict metadata from historical data. Defaults to true.
-	PredictMetadata *bool `json:"predictMetadata,omitempty" url:"predictMetadata,omitempty"`
-	// Pull tax and shipping information as line items. Defaults to true. If false, tax and shipping will extracted as invoice level fields.
-	TaxAndShippingAsLineItems *bool `json:"taxAndShippingAsLineItems,omitempty" url:"taxAndShippingAsLineItems,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (o *OcrCustomizationRequest) GetExtraProperties() map[string]interface{} {
-	return o.extraProperties
-}
-
-func (o *OcrCustomizationRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler OcrCustomizationRequest
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*o = OcrCustomizationRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *o)
-	if err != nil {
-		return err
-	}
-	o.extraProperties = extraProperties
-
-	o._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (o *OcrCustomizationRequest) String() string {
-	if len(o._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(o); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", o)
-}
-
-type OcrCustomizationResponse struct {
-	// Extract line items from the invoice. Defaults to true.
-	LineItems bool `json:"lineItems" url:"lineItems"`
-	// If true, the line items will be collapsed into a single line item. Defaults to false.
-	CollapseLineItems bool `json:"collapseLineItems" url:"collapseLineItems"`
-	// Pull custom metadata at the invoice level. Defaults to true.
-	InvoiceMetadata bool `json:"invoiceMetadata" url:"invoiceMetadata"`
-	// Pull custom metadata at the line item level. Defaults to true.
-	LineItemMetadata bool `json:"lineItemMetadata" url:"lineItemMetadata"`
-	// Pull GL Account ID at the line item level. Defaults to true.
-	LineItemGlAccountID bool `json:"lineItemGlAccountId" url:"lineItemGlAccountId"`
-	// Use AI to predict metadata from historical data. Defaults to true.
-	PredictMetadata bool `json:"predictMetadata" url:"predictMetadata"`
-	// Pull tax and shipping information as line items. Defaults to true. If false, tax and shipping will extracted as invoice level fields.
-	TaxAndShippingAsLineItems bool `json:"taxAndShippingAsLineItems" url:"taxAndShippingAsLineItems"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (o *OcrCustomizationResponse) GetExtraProperties() map[string]interface{} {
-	return o.extraProperties
-}
-
-func (o *OcrCustomizationResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler OcrCustomizationResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*o = OcrCustomizationResponse(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *o)
-	if err != nil {
-		return err
-	}
-	o.extraProperties = extraProperties
-
-	o._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (o *OcrCustomizationResponse) String() string {
-	if len(o._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(o); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", o)
-}
-
-type PaymentMethodCustomizationRequest struct {
-	Type        string
-	BankAccount *BankAccountPaymentMethodCustomizationRequest
-	Card        *GenericPaymentMethodCustomizationRequest
-	VirtualCard *GenericPaymentMethodCustomizationRequest
-	Check       *CheckPaymentMethodCustomizationRequest
-	Custom      *CustomPaymentMethodCustomizationRequest
-	Bnpl        *GenericPaymentMethodCustomizationRequest
-	OffPlatform *GenericPaymentMethodCustomizationRequest
-	Utility     *GenericPaymentMethodCustomizationRequest
-	Na          *GenericPaymentMethodCustomizationRequest
-}
-
-func (p *PaymentMethodCustomizationRequest) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Type string `json:"type"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	p.Type = unmarshaler.Type
-	switch unmarshaler.Type {
-	case "bankAccount":
-		value := new(BankAccountPaymentMethodCustomizationRequest)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.BankAccount = value
-	case "card":
-		value := new(GenericPaymentMethodCustomizationRequest)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Card = value
-	case "virtualCard":
-		value := new(GenericPaymentMethodCustomizationRequest)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.VirtualCard = value
-	case "check":
-		value := new(CheckPaymentMethodCustomizationRequest)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Check = value
-	case "custom":
-		value := new(CustomPaymentMethodCustomizationRequest)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Custom = value
-	case "bnpl":
-		value := new(GenericPaymentMethodCustomizationRequest)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Bnpl = value
-	case "offPlatform":
-		value := new(GenericPaymentMethodCustomizationRequest)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.OffPlatform = value
-	case "utility":
-		value := new(GenericPaymentMethodCustomizationRequest)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Utility = value
-	case "na":
-		value := new(GenericPaymentMethodCustomizationRequest)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Na = value
-	}
-	return nil
-}
-
-func (p PaymentMethodCustomizationRequest) MarshalJSON() ([]byte, error) {
-	if p.BankAccount != nil {
-		return core.MarshalJSONWithExtraProperty(p.BankAccount, "type", "bankAccount")
-	}
-	if p.Card != nil {
-		return core.MarshalJSONWithExtraProperty(p.Card, "type", "card")
-	}
-	if p.VirtualCard != nil {
-		return core.MarshalJSONWithExtraProperty(p.VirtualCard, "type", "virtualCard")
-	}
-	if p.Check != nil {
-		return core.MarshalJSONWithExtraProperty(p.Check, "type", "check")
-	}
-	if p.Custom != nil {
-		return core.MarshalJSONWithExtraProperty(p.Custom, "type", "custom")
-	}
-	if p.Bnpl != nil {
-		return core.MarshalJSONWithExtraProperty(p.Bnpl, "type", "bnpl")
-	}
-	if p.OffPlatform != nil {
-		return core.MarshalJSONWithExtraProperty(p.OffPlatform, "type", "offPlatform")
-	}
-	if p.Utility != nil {
-		return core.MarshalJSONWithExtraProperty(p.Utility, "type", "utility")
-	}
-	if p.Na != nil {
-		return core.MarshalJSONWithExtraProperty(p.Na, "type", "na")
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-type PaymentMethodCustomizationRequestVisitor interface {
-	VisitBankAccount(*BankAccountPaymentMethodCustomizationRequest) error
-	VisitCard(*GenericPaymentMethodCustomizationRequest) error
-	VisitVirtualCard(*GenericPaymentMethodCustomizationRequest) error
-	VisitCheck(*CheckPaymentMethodCustomizationRequest) error
-	VisitCustom(*CustomPaymentMethodCustomizationRequest) error
-	VisitBnpl(*GenericPaymentMethodCustomizationRequest) error
-	VisitOffPlatform(*GenericPaymentMethodCustomizationRequest) error
-	VisitUtility(*GenericPaymentMethodCustomizationRequest) error
-	VisitNa(*GenericPaymentMethodCustomizationRequest) error
-}
-
-func (p *PaymentMethodCustomizationRequest) Accept(visitor PaymentMethodCustomizationRequestVisitor) error {
-	if p.BankAccount != nil {
-		return visitor.VisitBankAccount(p.BankAccount)
-	}
-	if p.Card != nil {
-		return visitor.VisitCard(p.Card)
-	}
-	if p.VirtualCard != nil {
-		return visitor.VisitVirtualCard(p.VirtualCard)
-	}
-	if p.Check != nil {
-		return visitor.VisitCheck(p.Check)
-	}
-	if p.Custom != nil {
-		return visitor.VisitCustom(p.Custom)
-	}
-	if p.Bnpl != nil {
-		return visitor.VisitBnpl(p.Bnpl)
-	}
-	if p.OffPlatform != nil {
-		return visitor.VisitOffPlatform(p.OffPlatform)
-	}
-	if p.Utility != nil {
-		return visitor.VisitUtility(p.Utility)
-	}
-	if p.Na != nil {
-		return visitor.VisitNa(p.Na)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
 type ProfileRequest struct {
@@ -6107,48 +6741,6 @@ func (v *VendorTrigger) String() string {
 	return fmt.Sprintf("%#v", v)
 }
 
-type WorkflowCustomizationRequest struct {
-	// If true, the invoice will be automatically advanced to the furthest stage in the payment workflow. For example, if the invoice is APPROVED, but has all necessary data to move to SCHEDULED, it will be advanced to SCHEDULED.
-	AutoAdvanceInvoiceStatus *bool `json:"autoAdvanceInvoiceStatus,omitempty" url:"autoAdvanceInvoiceStatus,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (w *WorkflowCustomizationRequest) GetExtraProperties() map[string]interface{} {
-	return w.extraProperties
-}
-
-func (w *WorkflowCustomizationRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler WorkflowCustomizationRequest
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*w = WorkflowCustomizationRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *w)
-	if err != nil {
-		return err
-	}
-	w.extraProperties = extraProperties
-
-	w._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (w *WorkflowCustomizationRequest) String() string {
-	if len(w._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(w._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(w); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", w)
-}
-
 type AddApproverRequest struct {
 	// The identifier for the approval slot this user is assigned to.
 	ApprovalSlotID *ApprovalSlotID `json:"approvalSlotId,omitempty" url:"approvalSlotId,omitempty"`
@@ -6426,7 +7018,9 @@ func (a *AssociatedApprovalAction) String() string {
 type BankAccountPaymentDestinationOptions struct {
 	// Delivery method for ACH payments. Defaults to ACH_SAME_DAY.
 	Delivery *BankDeliveryMethod `json:"delivery,omitempty" url:"delivery,omitempty"`
-	// ACH Statement Description. By default, this will be 'AP' followed by the first 8 characters of the invoice ID. Must be at least 4 characters and no more than 10 characters, and follow this regex pattern ^[a-zA-Z0-9\-#.$&* ]{4,10}$
+	// ACH Statement Description.
+	// By default, this will be 'AP' followed by the first 8 characters of the invoice ID (for a single invoice) or the first 8 characters of the transaction ID (for a batch payment).
+	// Must be at least 4 characters and no more than 10 characters, and follow this regex pattern `^[a-zA-Z0-9\-#.$&* ]{4,10}$`
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 
 	extraProperties map[string]interface{}
@@ -13548,31 +14142,6 @@ func (c CurrencyCode) Ptr() *CurrencyCode {
 	return &c
 }
 
-type CustomPaymentMethodFeeType string
-
-const (
-	CustomPaymentMethodFeeTypeNone       CustomPaymentMethodFeeType = "none"
-	CustomPaymentMethodFeeTypeFlat       CustomPaymentMethodFeeType = "flat"
-	CustomPaymentMethodFeeTypePercentage CustomPaymentMethodFeeType = "percentage"
-)
-
-func NewCustomPaymentMethodFeeTypeFromString(s string) (CustomPaymentMethodFeeType, error) {
-	switch s {
-	case "none":
-		return CustomPaymentMethodFeeTypeNone, nil
-	case "flat":
-		return CustomPaymentMethodFeeTypeFlat, nil
-	case "percentage":
-		return CustomPaymentMethodFeeTypePercentage, nil
-	}
-	var t CustomPaymentMethodFeeType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CustomPaymentMethodFeeType) Ptr() *CustomPaymentMethodFeeType {
-	return &c
-}
-
 type CustomPaymentMethodRequest struct {
 	// If true, this payment method will be set as the default source. Only one payment method can be set as the default source. If another payment method is already set as the default source, it will be unset.
 	DefaultSource *bool `json:"defaultSource,omitempty" url:"defaultSource,omitempty"`
@@ -13720,49 +14289,6 @@ func (c *CustomPaymentMethodResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-type CustomPaymentMethodSchemaFee struct {
-	Type CustomPaymentMethodFeeType `json:"type" url:"type"`
-	// If type is 'flat', this is the flat amount that will be charged as a fee. For example, if the fee is $2.50, set this to 2.50. If type is 'percentage', this is the percentage of the payment amount that will be charged as a fee. For example, if the fee is 2.5%, set this to 2.5.
-	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (c *CustomPaymentMethodSchemaFee) GetExtraProperties() map[string]interface{} {
-	return c.extraProperties
-}
-
-func (c *CustomPaymentMethodSchemaFee) UnmarshalJSON(data []byte) error {
-	type unmarshaler CustomPaymentMethodSchemaFee
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CustomPaymentMethodSchemaFee(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-
-	c._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CustomPaymentMethodSchemaFee) String() string {
-	if len(c._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
 type CustomPaymentMethodSchemaField struct {
 	Name        string                             `json:"name" url:"name"`
 	DisplayName *string                            `json:"displayName,omitempty" url:"displayName,omitempty"`
@@ -13877,10 +14403,9 @@ type CustomPaymentMethodSchemaResponse struct {
 	// The maximum amount that can be transferred from this payment method in a single transaction.
 	MaxAmount *float64 `json:"maxAmount,omitempty" url:"maxAmount,omitempty"`
 	// The minimum amount that can be transferred from this payment method in a single transaction. Default is 1.
-	MinAmount *float64                      `json:"minAmount,omitempty" url:"minAmount,omitempty"`
-	Fees      *CustomPaymentMethodSchemaFee `json:"fees,omitempty" url:"fees,omitempty"`
-	CreatedAt time.Time                     `json:"createdAt" url:"createdAt"`
-	UpdatedAt time.Time                     `json:"updatedAt" url:"updatedAt"`
+	MinAmount *float64  `json:"minAmount,omitempty" url:"minAmount,omitempty"`
+	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	_rawJSON        json.RawMessage
@@ -14878,7 +15403,7 @@ func (t *TransactionFailureReason) String() string {
 
 type TransactionID = string
 
-type TransactionResponseBankToBankBase struct {
+type TransactionResponseAchBase struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
 	Amount                    int                        `json:"amount" url:"amount"`
@@ -14902,12 +15427,12 @@ type TransactionResponseBankToBankBase struct {
 	_rawJSON        json.RawMessage
 }
 
-func (t *TransactionResponseBankToBankBase) GetExtraProperties() map[string]interface{} {
+func (t *TransactionResponseAchBase) GetExtraProperties() map[string]interface{} {
 	return t.extraProperties
 }
 
-func (t *TransactionResponseBankToBankBase) UnmarshalJSON(data []byte) error {
-	type embed TransactionResponseBankToBankBase
+func (t *TransactionResponseAchBase) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseAchBase
 	var unmarshaler = struct {
 		embed
 		CreatedAt *core.DateTime `json:"createdAt"`
@@ -14918,7 +15443,7 @@ func (t *TransactionResponseBankToBankBase) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*t = TransactionResponseBankToBankBase(unmarshaler.embed)
+	*t = TransactionResponseAchBase(unmarshaler.embed)
 	t.CreatedAt = unmarshaler.CreatedAt.Time()
 	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
 
@@ -14932,8 +15457,8 @@ func (t *TransactionResponseBankToBankBase) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (t *TransactionResponseBankToBankBase) MarshalJSON() ([]byte, error) {
-	type embed TransactionResponseBankToBankBase
+func (t *TransactionResponseAchBase) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseAchBase
 	var marshaler = struct {
 		embed
 		CreatedAt *core.DateTime `json:"createdAt"`
@@ -14946,87 +15471,7 @@ func (t *TransactionResponseBankToBankBase) MarshalJSON() ([]byte, error) {
 	return json.Marshal(marshaler)
 }
 
-func (t *TransactionResponseBankToBankBase) String() string {
-	if len(t._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(t); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", t)
-}
-
-type TransactionResponseBankToMailedCheckBase struct {
-	ID                        TransactionID              `json:"id" url:"id"`
-	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
-	Currency                  string                     `json:"currency" url:"currency"`
-	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
-	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
-	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
-	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
-	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
-	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
-	CreatedAt                 time.Time                  `json:"createdAt" url:"createdAt"`
-	UpdatedAt                 time.Time                  `json:"updatedAt" url:"updatedAt"`
-	// The number of the check
-	CheckNumber int `json:"checkNumber" url:"checkNumber"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (t *TransactionResponseBankToMailedCheckBase) GetExtraProperties() map[string]interface{} {
-	return t.extraProperties
-}
-
-func (t *TransactionResponseBankToMailedCheckBase) UnmarshalJSON(data []byte) error {
-	type embed TransactionResponseBankToMailedCheckBase
-	var unmarshaler = struct {
-		embed
-		CreatedAt *core.DateTime `json:"createdAt"`
-		UpdatedAt *core.DateTime `json:"updatedAt"`
-	}{
-		embed: embed(*t),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*t = TransactionResponseBankToMailedCheckBase(unmarshaler.embed)
-	t.CreatedAt = unmarshaler.CreatedAt.Time()
-	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
-
-	extraProperties, err := core.ExtractExtraProperties(data, *t)
-	if err != nil {
-		return err
-	}
-	t.extraProperties = extraProperties
-
-	t._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (t *TransactionResponseBankToMailedCheckBase) MarshalJSON() ([]byte, error) {
-	type embed TransactionResponseBankToMailedCheckBase
-	var marshaler = struct {
-		embed
-		CreatedAt *core.DateTime `json:"createdAt"`
-		UpdatedAt *core.DateTime `json:"updatedAt"`
-	}{
-		embed:     embed(*t),
-		CreatedAt: core.NewDateTime(t.CreatedAt),
-		UpdatedAt: core.NewDateTime(t.UpdatedAt),
-	}
-	return json.Marshal(marshaler)
-}
-
-func (t *TransactionResponseBankToMailedCheckBase) String() string {
+func (t *TransactionResponseAchBase) String() string {
 	if len(t._rawJSON) > 0 {
 		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
 			return value
@@ -15116,10 +15561,93 @@ func (t *TransactionResponseBase) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
+type TransactionResponseMailedCheckBase struct {
+	ID                        TransactionID              `json:"id" url:"id"`
+	Status                    TransactionStatus          `json:"status" url:"status"`
+	Amount                    int                        `json:"amount" url:"amount"`
+	Currency                  string                     `json:"currency" url:"currency"`
+	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
+	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
+	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
+	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
+	CreatedAt                 time.Time                  `json:"createdAt" url:"createdAt"`
+	UpdatedAt                 time.Time                  `json:"updatedAt" url:"updatedAt"`
+	// The number of the check
+	CheckNumber int `json:"checkNumber" url:"checkNumber"`
+
+	extraProperties map[string]interface{}
+	_rawJSON        json.RawMessage
+}
+
+func (t *TransactionResponseMailedCheckBase) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseMailedCheckBase) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseMailedCheckBase
+	var unmarshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseMailedCheckBase(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+
+	extraProperties, err := core.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+
+	t._rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseMailedCheckBase) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseMailedCheckBase
+	var marshaler = struct {
+		embed
+		CreatedAt *core.DateTime `json:"createdAt"`
+		UpdatedAt *core.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*t),
+		CreatedAt: core.NewDateTime(t.CreatedAt),
+		UpdatedAt: core.NewDateTime(t.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseMailedCheckBase) String() string {
+	if len(t._rawJSON) > 0 {
+		if value, err := core.StringifyJSON(t._rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := core.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
 type TransactionResponseWithoutInvoices struct {
 	Type                     string
-	BankAccountToBankAccount *TransactionResponseBankToBankBase
-	BankAccountToMailedCheck *TransactionResponseBankToMailedCheckBase
+	BankAccountToBankAccount *TransactionResponseAchBase
+	BankAccountToMailedCheck *TransactionResponseMailedCheckBase
+	BankAccountToWallet      *TransactionResponseAchBase
+	CardToWallet             *TransactionResponseBase
+	WalletToBankAccount      *TransactionResponseAchBase
 	Custom                   *TransactionResponseBase
 	OffPlatform              *TransactionResponseBase
 }
@@ -15134,17 +15662,35 @@ func (t *TransactionResponseWithoutInvoices) UnmarshalJSON(data []byte) error {
 	t.Type = unmarshaler.Type
 	switch unmarshaler.Type {
 	case "bankAccountToBankAccount":
-		value := new(TransactionResponseBankToBankBase)
+		value := new(TransactionResponseAchBase)
 		if err := json.Unmarshal(data, &value); err != nil {
 			return err
 		}
 		t.BankAccountToBankAccount = value
 	case "bankAccountToMailedCheck":
-		value := new(TransactionResponseBankToMailedCheckBase)
+		value := new(TransactionResponseMailedCheckBase)
 		if err := json.Unmarshal(data, &value); err != nil {
 			return err
 		}
 		t.BankAccountToMailedCheck = value
+	case "bankAccountToWallet":
+		value := new(TransactionResponseAchBase)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.BankAccountToWallet = value
+	case "cardToWallet":
+		value := new(TransactionResponseBase)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.CardToWallet = value
+	case "walletToBankAccount":
+		value := new(TransactionResponseAchBase)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.WalletToBankAccount = value
 	case "custom":
 		value := new(TransactionResponseBase)
 		if err := json.Unmarshal(data, &value); err != nil {
@@ -15168,6 +15714,15 @@ func (t TransactionResponseWithoutInvoices) MarshalJSON() ([]byte, error) {
 	if t.BankAccountToMailedCheck != nil {
 		return core.MarshalJSONWithExtraProperty(t.BankAccountToMailedCheck, "type", "bankAccountToMailedCheck")
 	}
+	if t.BankAccountToWallet != nil {
+		return core.MarshalJSONWithExtraProperty(t.BankAccountToWallet, "type", "bankAccountToWallet")
+	}
+	if t.CardToWallet != nil {
+		return core.MarshalJSONWithExtraProperty(t.CardToWallet, "type", "cardToWallet")
+	}
+	if t.WalletToBankAccount != nil {
+		return core.MarshalJSONWithExtraProperty(t.WalletToBankAccount, "type", "walletToBankAccount")
+	}
 	if t.Custom != nil {
 		return core.MarshalJSONWithExtraProperty(t.Custom, "type", "custom")
 	}
@@ -15178,8 +15733,11 @@ func (t TransactionResponseWithoutInvoices) MarshalJSON() ([]byte, error) {
 }
 
 type TransactionResponseWithoutInvoicesVisitor interface {
-	VisitBankAccountToBankAccount(*TransactionResponseBankToBankBase) error
-	VisitBankAccountToMailedCheck(*TransactionResponseBankToMailedCheckBase) error
+	VisitBankAccountToBankAccount(*TransactionResponseAchBase) error
+	VisitBankAccountToMailedCheck(*TransactionResponseMailedCheckBase) error
+	VisitBankAccountToWallet(*TransactionResponseAchBase) error
+	VisitCardToWallet(*TransactionResponseBase) error
+	VisitWalletToBankAccount(*TransactionResponseAchBase) error
 	VisitCustom(*TransactionResponseBase) error
 	VisitOffPlatform(*TransactionResponseBase) error
 }
@@ -15190,6 +15748,15 @@ func (t *TransactionResponseWithoutInvoices) Accept(visitor TransactionResponseW
 	}
 	if t.BankAccountToMailedCheck != nil {
 		return visitor.VisitBankAccountToMailedCheck(t.BankAccountToMailedCheck)
+	}
+	if t.BankAccountToWallet != nil {
+		return visitor.VisitBankAccountToWallet(t.BankAccountToWallet)
+	}
+	if t.CardToWallet != nil {
+		return visitor.VisitCardToWallet(t.CardToWallet)
+	}
+	if t.WalletToBankAccount != nil {
+		return visitor.VisitWalletToBankAccount(t.WalletToBankAccount)
 	}
 	if t.Custom != nil {
 		return visitor.VisitCustom(t.Custom)
@@ -15210,6 +15777,7 @@ const (
 	TransactionStatusReversed  TransactionStatus = "REVERSED"
 	TransactionStatusQueued    TransactionStatus = "QUEUED"
 	TransactionStatusCanceled  TransactionStatus = "CANCELED"
+	TransactionStatusReturned  TransactionStatus = "RETURNED"
 )
 
 func NewTransactionStatusFromString(s string) (TransactionStatus, error) {
@@ -15228,6 +15796,8 @@ func NewTransactionStatusFromString(s string) (TransactionStatus, error) {
 		return TransactionStatusQueued, nil
 	case "CANCELED":
 		return TransactionStatusCanceled, nil
+	case "RETURNED":
+		return TransactionStatusReturned, nil
 	}
 	var t TransactionStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -15242,6 +15812,9 @@ type TransactionType string
 const (
 	TransactionTypeBankAccountToBankAccount TransactionType = "bankAccountToBankAccount"
 	TransactionTypeBankAccountToMailedCheck TransactionType = "bankAccountToMailedCheck"
+	TransactionTypeBankAccountToWallet      TransactionType = "bankAccountToWallet"
+	TransactionTypeCardToWallet             TransactionType = "cardToWallet"
+	TransactionTypeWalletToBankAccount      TransactionType = "walletToBankAccount"
 	TransactionTypeCustom                   TransactionType = "custom"
 	TransactionTypeOffPlatform              TransactionType = "offPlatform"
 )
@@ -15252,6 +15825,12 @@ func NewTransactionTypeFromString(s string) (TransactionType, error) {
 		return TransactionTypeBankAccountToBankAccount, nil
 	case "bankAccountToMailedCheck":
 		return TransactionTypeBankAccountToMailedCheck, nil
+	case "bankAccountToWallet":
+		return TransactionTypeBankAccountToWallet, nil
+	case "cardToWallet":
+		return TransactionTypeCardToWallet, nil
+	case "walletToBankAccount":
+		return TransactionTypeWalletToBankAccount, nil
 	case "custom":
 		return TransactionTypeCustom, nil
 	case "offPlatform":
