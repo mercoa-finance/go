@@ -5,7 +5,7 @@ package mercoa
 import (
 	json "encoding/json"
 	fmt "fmt"
-	core "github.com/mercoa-finance/go/core"
+	internal "github.com/mercoa-finance/go/internal"
 	time "time"
 )
 
@@ -26,7 +26,56 @@ type CalculateFeesRequest struct {
 	Type *FeeCalculationType `json:"type,omitempty" url:"type,omitempty"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (c *CalculateFeesRequest) GetAmount() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.Amount
+}
+
+func (c *CalculateFeesRequest) GetCurrency() *CurrencyCode {
+	if c == nil {
+		return nil
+	}
+	return c.Currency
+}
+
+func (c *CalculateFeesRequest) GetCreatorEntityID() *EntityID {
+	if c == nil {
+		return nil
+	}
+	return c.CreatorEntityID
+}
+
+func (c *CalculateFeesRequest) GetPaymentSourceID() PaymentMethodID {
+	if c == nil {
+		return ""
+	}
+	return c.PaymentSourceID
+}
+
+func (c *CalculateFeesRequest) GetPaymentDestinationID() PaymentMethodID {
+	if c == nil {
+		return ""
+	}
+	return c.PaymentDestinationID
+}
+
+func (c *CalculateFeesRequest) GetPaymentDestinationOptions() *PaymentDestinationOptions {
+	if c == nil {
+		return nil
+	}
+	return c.PaymentDestinationOptions
+}
+
+func (c *CalculateFeesRequest) GetType() *FeeCalculationType {
+	if c == nil {
+		return nil
+	}
+	return c.Type
 }
 
 func (c *CalculateFeesRequest) GetExtraProperties() map[string]interface{} {
@@ -40,24 +89,22 @@ func (c *CalculateFeesRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CalculateFeesRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
-
-	c._rawJSON = json.RawMessage(data)
+	c.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (c *CalculateFeesRequest) String() string {
-	if len(c._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(c); err == nil {
+	if value, err := internal.StringifyJSON(c); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
@@ -66,16 +113,34 @@ func (c *CalculateFeesRequest) String() string {
 type CalculatePaymentTimingRequest struct {
 	EstimatedTiming *EstimatedTiming
 	InvoiceTiming   *InvoiceTiming
+
+	typ string
+}
+
+func (c *CalculatePaymentTimingRequest) GetEstimatedTiming() *EstimatedTiming {
+	if c == nil {
+		return nil
+	}
+	return c.EstimatedTiming
+}
+
+func (c *CalculatePaymentTimingRequest) GetInvoiceTiming() *InvoiceTiming {
+	if c == nil {
+		return nil
+	}
+	return c.InvoiceTiming
 }
 
 func (c *CalculatePaymentTimingRequest) UnmarshalJSON(data []byte) error {
 	valueEstimatedTiming := new(EstimatedTiming)
 	if err := json.Unmarshal(data, &valueEstimatedTiming); err == nil {
+		c.typ = "EstimatedTiming"
 		c.EstimatedTiming = valueEstimatedTiming
 		return nil
 	}
 	valueInvoiceTiming := new(InvoiceTiming)
 	if err := json.Unmarshal(data, &valueInvoiceTiming); err == nil {
+		c.typ = "InvoiceTiming"
 		c.InvoiceTiming = valueInvoiceTiming
 		return nil
 	}
@@ -83,10 +148,10 @@ func (c *CalculatePaymentTimingRequest) UnmarshalJSON(data []byte) error {
 }
 
 func (c CalculatePaymentTimingRequest) MarshalJSON() ([]byte, error) {
-	if c.EstimatedTiming != nil {
+	if c.typ == "EstimatedTiming" || c.EstimatedTiming != nil {
 		return json.Marshal(c.EstimatedTiming)
 	}
-	if c.InvoiceTiming != nil {
+	if c.typ == "InvoiceTiming" || c.InvoiceTiming != nil {
 		return json.Marshal(c.InvoiceTiming)
 	}
 	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
@@ -98,10 +163,10 @@ type CalculatePaymentTimingRequestVisitor interface {
 }
 
 func (c *CalculatePaymentTimingRequest) Accept(visitor CalculatePaymentTimingRequestVisitor) error {
-	if c.EstimatedTiming != nil {
+	if c.typ == "EstimatedTiming" || c.EstimatedTiming != nil {
 		return visitor.VisitEstimatedTiming(c.EstimatedTiming)
 	}
-	if c.InvoiceTiming != nil {
+	if c.typ == "InvoiceTiming" || c.InvoiceTiming != nil {
 		return visitor.VisitInvoiceTiming(c.InvoiceTiming)
 	}
 	return fmt.Errorf("type %T does not include a non-empty union type", c)
@@ -118,7 +183,35 @@ type CalculatePaymentTimingResponse struct {
 	EstimatedSettlementDate time.Time `json:"estimatedSettlementDate" url:"estimatedSettlementDate"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (c *CalculatePaymentTimingResponse) GetEstimatedProcessingDate() time.Time {
+	if c == nil {
+		return time.Time{}
+	}
+	return c.EstimatedProcessingDate
+}
+
+func (c *CalculatePaymentTimingResponse) GetBusinessDays() int {
+	if c == nil {
+		return 0
+	}
+	return c.BusinessDays
+}
+
+func (c *CalculatePaymentTimingResponse) GetEstimatedProcessingTime() int {
+	if c == nil {
+		return 0
+	}
+	return c.EstimatedProcessingTime
+}
+
+func (c *CalculatePaymentTimingResponse) GetEstimatedSettlementDate() time.Time {
+	if c == nil {
+		return time.Time{}
+	}
+	return c.EstimatedSettlementDate
 }
 
 func (c *CalculatePaymentTimingResponse) GetExtraProperties() map[string]interface{} {
@@ -129,8 +222,8 @@ func (c *CalculatePaymentTimingResponse) UnmarshalJSON(data []byte) error {
 	type embed CalculatePaymentTimingResponse
 	var unmarshaler = struct {
 		embed
-		EstimatedProcessingDate *core.DateTime `json:"estimatedProcessingDate"`
-		EstimatedSettlementDate *core.DateTime `json:"estimatedSettlementDate"`
+		EstimatedProcessingDate *internal.DateTime `json:"estimatedProcessingDate"`
+		EstimatedSettlementDate *internal.DateTime `json:"estimatedSettlementDate"`
 	}{
 		embed: embed(*c),
 	}
@@ -140,14 +233,12 @@ func (c *CalculatePaymentTimingResponse) UnmarshalJSON(data []byte) error {
 	*c = CalculatePaymentTimingResponse(unmarshaler.embed)
 	c.EstimatedProcessingDate = unmarshaler.EstimatedProcessingDate.Time()
 	c.EstimatedSettlementDate = unmarshaler.EstimatedSettlementDate.Time()
-
-	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
-
-	c._rawJSON = json.RawMessage(data)
+	c.rawJSON = json.RawMessage(data)
 	return nil
 }
 
@@ -155,23 +246,23 @@ func (c *CalculatePaymentTimingResponse) MarshalJSON() ([]byte, error) {
 	type embed CalculatePaymentTimingResponse
 	var marshaler = struct {
 		embed
-		EstimatedProcessingDate *core.DateTime `json:"estimatedProcessingDate"`
-		EstimatedSettlementDate *core.DateTime `json:"estimatedSettlementDate"`
+		EstimatedProcessingDate *internal.DateTime `json:"estimatedProcessingDate"`
+		EstimatedSettlementDate *internal.DateTime `json:"estimatedSettlementDate"`
 	}{
 		embed:                   embed(*c),
-		EstimatedProcessingDate: core.NewDateTime(c.EstimatedProcessingDate),
-		EstimatedSettlementDate: core.NewDateTime(c.EstimatedSettlementDate),
+		EstimatedProcessingDate: internal.NewDateTime(c.EstimatedProcessingDate),
+		EstimatedSettlementDate: internal.NewDateTime(c.EstimatedSettlementDate),
 	}
 	return json.Marshal(marshaler)
 }
 
 func (c *CalculatePaymentTimingResponse) String() string {
-	if len(c._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(c); err == nil {
+	if value, err := internal.StringifyJSON(c); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
@@ -190,7 +281,42 @@ type EstimatedTiming struct {
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (e *EstimatedTiming) GetEstimatedDeductionDate() *time.Time {
+	if e == nil {
+		return nil
+	}
+	return e.EstimatedDeductionDate
+}
+
+func (e *EstimatedTiming) GetProcessedAt() *time.Time {
+	if e == nil {
+		return nil
+	}
+	return e.ProcessedAt
+}
+
+func (e *EstimatedTiming) GetPaymentSourceID() PaymentMethodID {
+	if e == nil {
+		return ""
+	}
+	return e.PaymentSourceID
+}
+
+func (e *EstimatedTiming) GetPaymentDestinationID() PaymentMethodID {
+	if e == nil {
+		return ""
+	}
+	return e.PaymentDestinationID
+}
+
+func (e *EstimatedTiming) GetPaymentDestinationOptions() *PaymentDestinationOptions {
+	if e == nil {
+		return nil
+	}
+	return e.PaymentDestinationOptions
 }
 
 func (e *EstimatedTiming) GetExtraProperties() map[string]interface{} {
@@ -201,8 +327,8 @@ func (e *EstimatedTiming) UnmarshalJSON(data []byte) error {
 	type embed EstimatedTiming
 	var unmarshaler = struct {
 		embed
-		EstimatedDeductionDate *core.DateTime `json:"estimatedDeductionDate,omitempty"`
-		ProcessedAt            *core.DateTime `json:"processedAt,omitempty"`
+		EstimatedDeductionDate *internal.DateTime `json:"estimatedDeductionDate,omitempty"`
+		ProcessedAt            *internal.DateTime `json:"processedAt,omitempty"`
 	}{
 		embed: embed(*e),
 	}
@@ -212,14 +338,12 @@ func (e *EstimatedTiming) UnmarshalJSON(data []byte) error {
 	*e = EstimatedTiming(unmarshaler.embed)
 	e.EstimatedDeductionDate = unmarshaler.EstimatedDeductionDate.TimePtr()
 	e.ProcessedAt = unmarshaler.ProcessedAt.TimePtr()
-
-	extraProperties, err := core.ExtractExtraProperties(data, *e)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
 	if err != nil {
 		return err
 	}
 	e.extraProperties = extraProperties
-
-	e._rawJSON = json.RawMessage(data)
+	e.rawJSON = json.RawMessage(data)
 	return nil
 }
 
@@ -227,23 +351,23 @@ func (e *EstimatedTiming) MarshalJSON() ([]byte, error) {
 	type embed EstimatedTiming
 	var marshaler = struct {
 		embed
-		EstimatedDeductionDate *core.DateTime `json:"estimatedDeductionDate,omitempty"`
-		ProcessedAt            *core.DateTime `json:"processedAt,omitempty"`
+		EstimatedDeductionDate *internal.DateTime `json:"estimatedDeductionDate,omitempty"`
+		ProcessedAt            *internal.DateTime `json:"processedAt,omitempty"`
 	}{
 		embed:                  embed(*e),
-		EstimatedDeductionDate: core.NewOptionalDateTime(e.EstimatedDeductionDate),
-		ProcessedAt:            core.NewOptionalDateTime(e.ProcessedAt),
+		EstimatedDeductionDate: internal.NewOptionalDateTime(e.EstimatedDeductionDate),
+		ProcessedAt:            internal.NewOptionalDateTime(e.ProcessedAt),
 	}
 	return json.Marshal(marshaler)
 }
 
 func (e *EstimatedTiming) String() string {
-	if len(e._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(e._rawJSON); err == nil {
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(e); err == nil {
+	if value, err := internal.StringifyJSON(e); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
@@ -276,7 +400,14 @@ type InvoiceTiming struct {
 	InvoiceID InvoiceID `json:"invoiceId" url:"invoiceId"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceTiming) GetInvoiceID() InvoiceID {
+	if i == nil {
+		return ""
+	}
+	return i.InvoiceID
 }
 
 func (i *InvoiceTiming) GetExtraProperties() map[string]interface{} {
@@ -290,24 +421,22 @@ func (i *InvoiceTiming) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*i = InvoiceTiming(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *i)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
 	if err != nil {
 		return err
 	}
 	i.extraProperties = extraProperties
-
-	i._rawJSON = json.RawMessage(data)
+	i.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (i *InvoiceTiming) String() string {
-	if len(i._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(i._rawJSON); err == nil {
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(i); err == nil {
+	if value, err := internal.StringifyJSON(i); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", i)

@@ -9,6 +9,7 @@ import (
 	errors "errors"
 	mercoafinancego "github.com/mercoa-finance/go"
 	core "github.com/mercoa-finance/go/core"
+	internal "github.com/mercoa-finance/go/internal"
 	invoicetemplate "github.com/mercoa-finance/go/invoicetemplate"
 	approval "github.com/mercoa-finance/go/invoicetemplate/approval"
 	document "github.com/mercoa-finance/go/invoicetemplate/document"
@@ -20,7 +21,7 @@ import (
 
 type Client struct {
 	baseURL string
-	caller  *core.Caller
+	caller  *internal.Caller
 	header  http.Header
 
 	LineItem *lineitemclient.Client
@@ -32,8 +33,8 @@ func NewClient(opts ...option.RequestOption) *Client {
 	options := core.NewRequestOptions(opts...)
 	return &Client{
 		baseURL: options.BaseURL,
-		caller: core.NewCaller(
-			&core.CallerParams{
+		caller: internal.NewCaller(
+			&internal.CallerParams{
 				Client:      options.HTTPClient,
 				MaxAttempts: options.MaxAttempts,
 			},
@@ -52,26 +53,23 @@ func (c *Client) Find(
 	opts ...option.RequestOption,
 ) (*mercoafinancego.FindInvoiceTemplateResponse, error) {
 	options := core.NewRequestOptions(opts...)
-
-	baseURL := "https://api.mercoa.com"
-	if c.baseURL != "" {
-		baseURL = c.baseURL
-	}
-	if options.BaseURL != "" {
-		baseURL = options.BaseURL
-	}
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
 	endpointURL := baseURL + "/invoice-templates"
-
-	queryParams, err := core.QueryValues(request)
+	queryParams, err := internal.QueryValues(request)
 	if err != nil {
 		return nil, err
 	}
 	if len(queryParams) > 0 {
 		endpointURL += "?" + queryParams.Encode()
 	}
-
-	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
-
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
 	errorDecoder := func(statusCode int, body io.Reader) error {
 		raw, err := io.ReadAll(body)
 		if err != nil {
@@ -143,14 +141,16 @@ func (c *Client) Find(
 	var response *mercoafinancego.FindInvoiceTemplateResponse
 	if err := c.caller.Call(
 		ctx,
-		&core.CallParams{
-			URL:          endpointURL,
-			Method:       http.MethodGet,
-			MaxAttempts:  options.MaxAttempts,
-			Headers:      headers,
-			Client:       options.HTTPClient,
-			Response:     &response,
-			ErrorDecoder: errorDecoder,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    errorDecoder,
 		},
 	); err != nil {
 		return nil, err
@@ -164,18 +164,16 @@ func (c *Client) Create(
 	opts ...option.RequestOption,
 ) (*mercoafinancego.InvoiceTemplateResponse, error) {
 	options := core.NewRequestOptions(opts...)
-
-	baseURL := "https://api.mercoa.com"
-	if c.baseURL != "" {
-		baseURL = c.baseURL
-	}
-	if options.BaseURL != "" {
-		baseURL = options.BaseURL
-	}
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
 	endpointURL := baseURL + "/invoice-template"
-
-	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
-
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
 	errorDecoder := func(statusCode int, body io.Reader) error {
 		raw, err := io.ReadAll(body)
 		if err != nil {
@@ -247,15 +245,17 @@ func (c *Client) Create(
 	var response *mercoafinancego.InvoiceTemplateResponse
 	if err := c.caller.Call(
 		ctx,
-		&core.CallParams{
-			URL:          endpointURL,
-			Method:       http.MethodPost,
-			MaxAttempts:  options.MaxAttempts,
-			Headers:      headers,
-			Client:       options.HTTPClient,
-			Request:      request,
-			Response:     &response,
-			ErrorDecoder: errorDecoder,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    errorDecoder,
 		},
 	); err != nil {
 		return nil, err
@@ -270,18 +270,19 @@ func (c *Client) Get(
 	opts ...option.RequestOption,
 ) (*mercoafinancego.InvoiceTemplateResponse, error) {
 	options := core.NewRequestOptions(opts...)
-
-	baseURL := "https://api.mercoa.com"
-	if c.baseURL != "" {
-		baseURL = c.baseURL
-	}
-	if options.BaseURL != "" {
-		baseURL = options.BaseURL
-	}
-	endpointURL := core.EncodeURL(baseURL+"/invoice-template/%v", invoiceTemplateID)
-
-	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
-
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/invoice-template/%v",
+		invoiceTemplateID,
+	)
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
 	errorDecoder := func(statusCode int, body io.Reader) error {
 		raw, err := io.ReadAll(body)
 		if err != nil {
@@ -353,14 +354,16 @@ func (c *Client) Get(
 	var response *mercoafinancego.InvoiceTemplateResponse
 	if err := c.caller.Call(
 		ctx,
-		&core.CallParams{
-			URL:          endpointURL,
-			Method:       http.MethodGet,
-			MaxAttempts:  options.MaxAttempts,
-			Headers:      headers,
-			Client:       options.HTTPClient,
-			Response:     &response,
-			ErrorDecoder: errorDecoder,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    errorDecoder,
 		},
 	); err != nil {
 		return nil, err
@@ -376,18 +379,19 @@ func (c *Client) Update(
 	opts ...option.RequestOption,
 ) (*mercoafinancego.InvoiceTemplateResponse, error) {
 	options := core.NewRequestOptions(opts...)
-
-	baseURL := "https://api.mercoa.com"
-	if c.baseURL != "" {
-		baseURL = c.baseURL
-	}
-	if options.BaseURL != "" {
-		baseURL = options.BaseURL
-	}
-	endpointURL := core.EncodeURL(baseURL+"/invoice-template/%v", invoiceTemplateID)
-
-	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
-
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/invoice-template/%v",
+		invoiceTemplateID,
+	)
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
 	errorDecoder := func(statusCode int, body io.Reader) error {
 		raw, err := io.ReadAll(body)
 		if err != nil {
@@ -459,15 +463,17 @@ func (c *Client) Update(
 	var response *mercoafinancego.InvoiceTemplateResponse
 	if err := c.caller.Call(
 		ctx,
-		&core.CallParams{
-			URL:          endpointURL,
-			Method:       http.MethodPost,
-			MaxAttempts:  options.MaxAttempts,
-			Headers:      headers,
-			Client:       options.HTTPClient,
-			Request:      request,
-			Response:     &response,
-			ErrorDecoder: errorDecoder,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    errorDecoder,
 		},
 	); err != nil {
 		return nil, err
@@ -483,18 +489,19 @@ func (c *Client) Delete(
 	opts ...option.RequestOption,
 ) error {
 	options := core.NewRequestOptions(opts...)
-
-	baseURL := "https://api.mercoa.com"
-	if c.baseURL != "" {
-		baseURL = c.baseURL
-	}
-	if options.BaseURL != "" {
-		baseURL = options.BaseURL
-	}
-	endpointURL := core.EncodeURL(baseURL+"/invoice-template/%v", invoiceTemplateID)
-
-	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
-
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/invoice-template/%v",
+		invoiceTemplateID,
+	)
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
 	errorDecoder := func(statusCode int, body io.Reader) error {
 		raw, err := io.ReadAll(body)
 		if err != nil {
@@ -565,13 +572,15 @@ func (c *Client) Delete(
 
 	if err := c.caller.Call(
 		ctx,
-		&core.CallParams{
-			URL:          endpointURL,
-			Method:       http.MethodDelete,
-			MaxAttempts:  options.MaxAttempts,
-			Headers:      headers,
-			Client:       options.HTTPClient,
-			ErrorDecoder: errorDecoder,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodDelete,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			ErrorDecoder:    errorDecoder,
 		},
 	); err != nil {
 		return err

@@ -2,12 +2,6 @@
 
 package mercoa
 
-import (
-	json "encoding/json"
-	fmt "fmt"
-	core "github.com/mercoa-finance/go/core"
-)
-
 type FindPaymentMethodsRequest struct {
 	// Number of payment methods to return. Limit can range between 1 and 100, and the default is 10.
 	Limit *int `json:"-" url:"limit,omitempty"`
@@ -17,89 +11,4 @@ type FindPaymentMethodsRequest struct {
 	Type []*PaymentMethodType `json:"-" url:"type,omitempty"`
 	// Entity ID to filter
 	EntityID []*EntityID `json:"-" url:"entityId,omitempty"`
-}
-
-type PaymentMethodWithEntityFindResponse struct {
-	Count   int                                `json:"count" url:"count"`
-	HasMore bool                               `json:"hasMore" url:"hasMore"`
-	Data    []*PaymentMethodWithEntityResponse `json:"data,omitempty" url:"data,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (p *PaymentMethodWithEntityFindResponse) GetExtraProperties() map[string]interface{} {
-	return p.extraProperties
-}
-
-func (p *PaymentMethodWithEntityFindResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentMethodWithEntityFindResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentMethodWithEntityFindResponse(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-
-	p._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentMethodWithEntityFindResponse) String() string {
-	if len(p._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-type PaymentMethodWithEntityResponse struct {
-	PaymentMethod *PaymentMethodResponse `json:"paymentMethod,omitempty" url:"paymentMethod,omitempty"`
-	Entity        *EntityResponse        `json:"entity,omitempty" url:"entity,omitempty"`
-
-	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
-}
-
-func (p *PaymentMethodWithEntityResponse) GetExtraProperties() map[string]interface{} {
-	return p.extraProperties
-}
-
-func (p *PaymentMethodWithEntityResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentMethodWithEntityResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentMethodWithEntityResponse(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-
-	p._rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentMethodWithEntityResponse) String() string {
-	if len(p._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(p._rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := core.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
 }

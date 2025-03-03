@@ -5,7 +5,7 @@ package entity
 import (
 	json "encoding/json"
 	fmt "fmt"
-	core "github.com/mercoa-finance/go/core"
+	internal "github.com/mercoa-finance/go/internal"
 )
 
 type SyncExternalSystemRequest struct {
@@ -22,7 +22,14 @@ type CodatCompanyCreationRequest struct {
 	CompanyID *string `json:"companyId,omitempty" url:"companyId,omitempty"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (c *CodatCompanyCreationRequest) GetCompanyID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.CompanyID
 }
 
 func (c *CodatCompanyCreationRequest) GetExtraProperties() map[string]interface{} {
@@ -36,24 +43,22 @@ func (c *CodatCompanyCreationRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CodatCompanyCreationRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
-
-	c._rawJSON = json.RawMessage(data)
+	c.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (c *CodatCompanyCreationRequest) String() string {
-	if len(c._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(c); err == nil {
+	if value, err := internal.StringifyJSON(c); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
@@ -63,7 +68,14 @@ type CodatCompanyResponse struct {
 	CompanyID string `json:"companyId" url:"companyId"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (c *CodatCompanyResponse) GetCompanyID() string {
+	if c == nil {
+		return ""
+	}
+	return c.CompanyID
 }
 
 func (c *CodatCompanyResponse) GetExtraProperties() map[string]interface{} {
@@ -77,24 +89,22 @@ func (c *CodatCompanyResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CodatCompanyResponse(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *c)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
-
-	c._rawJSON = json.RawMessage(data)
+	c.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (c *CodatCompanyResponse) String() string {
-	if len(c._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(c._rawJSON); err == nil {
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(c); err == nil {
+	if value, err := internal.StringifyJSON(c); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
@@ -106,6 +116,27 @@ type ExternalAccountingSystemCompanyCreationRequest struct {
 	Rutter *RutterCompanyCreationRequest
 }
 
+func (e *ExternalAccountingSystemCompanyCreationRequest) GetType() string {
+	if e == nil {
+		return ""
+	}
+	return e.Type
+}
+
+func (e *ExternalAccountingSystemCompanyCreationRequest) GetCodat() *CodatCompanyCreationRequest {
+	if e == nil {
+		return nil
+	}
+	return e.Codat
+}
+
+func (e *ExternalAccountingSystemCompanyCreationRequest) GetRutter() *RutterCompanyCreationRequest {
+	if e == nil {
+		return nil
+	}
+	return e.Rutter
+}
+
 func (e *ExternalAccountingSystemCompanyCreationRequest) UnmarshalJSON(data []byte) error {
 	var unmarshaler struct {
 		Type string `json:"type"`
@@ -114,6 +145,9 @@ func (e *ExternalAccountingSystemCompanyCreationRequest) UnmarshalJSON(data []by
 		return err
 	}
 	e.Type = unmarshaler.Type
+	if unmarshaler.Type == "" {
+		return fmt.Errorf("%T did not include discriminant type", e)
+	}
 	switch unmarshaler.Type {
 	case "codat":
 		value := new(CodatCompanyCreationRequest)
@@ -132,11 +166,14 @@ func (e *ExternalAccountingSystemCompanyCreationRequest) UnmarshalJSON(data []by
 }
 
 func (e ExternalAccountingSystemCompanyCreationRequest) MarshalJSON() ([]byte, error) {
+	if err := e.validate(); err != nil {
+		return nil, err
+	}
 	if e.Codat != nil {
-		return core.MarshalJSONWithExtraProperty(e.Codat, "type", "codat")
+		return internal.MarshalJSONWithExtraProperty(e.Codat, "type", "codat")
 	}
 	if e.Rutter != nil {
-		return core.MarshalJSONWithExtraProperty(e.Rutter, "type", "rutter")
+		return internal.MarshalJSONWithExtraProperty(e.Rutter, "type", "rutter")
 	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", e)
 }
@@ -156,11 +193,73 @@ func (e *ExternalAccountingSystemCompanyCreationRequest) Accept(visitor External
 	return fmt.Errorf("type %T does not define a non-empty union type", e)
 }
 
+func (e *ExternalAccountingSystemCompanyCreationRequest) validate() error {
+	if e == nil {
+		return fmt.Errorf("type %T is nil", e)
+	}
+	var fields []string
+	if e.Codat != nil {
+		fields = append(fields, "codat")
+	}
+	if e.Rutter != nil {
+		fields = append(fields, "rutter")
+	}
+	if len(fields) == 0 {
+		if e.Type != "" {
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", e, e.Type)
+		}
+		return fmt.Errorf("type %T is empty", e)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", e, fields)
+	}
+	if e.Type != "" {
+		field := fields[0]
+		if e.Type != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				e,
+				e.Type,
+				e,
+			)
+		}
+	}
+	return nil
+}
+
 type ExternalAccountingSystemCompanyResponse struct {
 	Type   string
 	Codat  *CodatCompanyResponse
 	Rutter *RutterCompanyResponse
 	None   *CodatCompanyResponse
+}
+
+func (e *ExternalAccountingSystemCompanyResponse) GetType() string {
+	if e == nil {
+		return ""
+	}
+	return e.Type
+}
+
+func (e *ExternalAccountingSystemCompanyResponse) GetCodat() *CodatCompanyResponse {
+	if e == nil {
+		return nil
+	}
+	return e.Codat
+}
+
+func (e *ExternalAccountingSystemCompanyResponse) GetRutter() *RutterCompanyResponse {
+	if e == nil {
+		return nil
+	}
+	return e.Rutter
+}
+
+func (e *ExternalAccountingSystemCompanyResponse) GetNone() *CodatCompanyResponse {
+	if e == nil {
+		return nil
+	}
+	return e.None
 }
 
 func (e *ExternalAccountingSystemCompanyResponse) UnmarshalJSON(data []byte) error {
@@ -171,6 +270,9 @@ func (e *ExternalAccountingSystemCompanyResponse) UnmarshalJSON(data []byte) err
 		return err
 	}
 	e.Type = unmarshaler.Type
+	if unmarshaler.Type == "" {
+		return fmt.Errorf("%T did not include discriminant type", e)
+	}
 	switch unmarshaler.Type {
 	case "codat":
 		value := new(CodatCompanyResponse)
@@ -195,14 +297,17 @@ func (e *ExternalAccountingSystemCompanyResponse) UnmarshalJSON(data []byte) err
 }
 
 func (e ExternalAccountingSystemCompanyResponse) MarshalJSON() ([]byte, error) {
+	if err := e.validate(); err != nil {
+		return nil, err
+	}
 	if e.Codat != nil {
-		return core.MarshalJSONWithExtraProperty(e.Codat, "type", "codat")
+		return internal.MarshalJSONWithExtraProperty(e.Codat, "type", "codat")
 	}
 	if e.Rutter != nil {
-		return core.MarshalJSONWithExtraProperty(e.Rutter, "type", "rutter")
+		return internal.MarshalJSONWithExtraProperty(e.Rutter, "type", "rutter")
 	}
 	if e.None != nil {
-		return core.MarshalJSONWithExtraProperty(e.None, "type", "none")
+		return internal.MarshalJSONWithExtraProperty(e.None, "type", "none")
 	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", e)
 }
@@ -226,12 +331,56 @@ func (e *ExternalAccountingSystemCompanyResponse) Accept(visitor ExternalAccount
 	return fmt.Errorf("type %T does not define a non-empty union type", e)
 }
 
+func (e *ExternalAccountingSystemCompanyResponse) validate() error {
+	if e == nil {
+		return fmt.Errorf("type %T is nil", e)
+	}
+	var fields []string
+	if e.Codat != nil {
+		fields = append(fields, "codat")
+	}
+	if e.Rutter != nil {
+		fields = append(fields, "rutter")
+	}
+	if e.None != nil {
+		fields = append(fields, "none")
+	}
+	if len(fields) == 0 {
+		if e.Type != "" {
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", e, e.Type)
+		}
+		return fmt.Errorf("type %T is empty", e)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", e, fields)
+	}
+	if e.Type != "" {
+		field := fields[0]
+		if e.Type != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				e,
+				e.Type,
+				e,
+			)
+		}
+	}
+	return nil
+}
+
 type RutterCompanyCreationRequest struct {
 	// The access token for the existing Rutter connection. If the connection does not exist, leave this field blank and Rutter will create a new connection.
 	AccessToken *string `json:"accessToken,omitempty" url:"accessToken,omitempty"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (r *RutterCompanyCreationRequest) GetAccessToken() *string {
+	if r == nil {
+		return nil
+	}
+	return r.AccessToken
 }
 
 func (r *RutterCompanyCreationRequest) GetExtraProperties() map[string]interface{} {
@@ -245,24 +394,22 @@ func (r *RutterCompanyCreationRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*r = RutterCompanyCreationRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
 	}
 	r.extraProperties = extraProperties
-
-	r._rawJSON = json.RawMessage(data)
+	r.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (r *RutterCompanyCreationRequest) String() string {
-	if len(r._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(r._rawJSON); err == nil {
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(r); err == nil {
+	if value, err := internal.StringifyJSON(r); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
@@ -272,7 +419,14 @@ type RutterCompanyResponse struct {
 	AccessToken string `json:"accessToken" url:"accessToken"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (r *RutterCompanyResponse) GetAccessToken() string {
+	if r == nil {
+		return ""
+	}
+	return r.AccessToken
 }
 
 func (r *RutterCompanyResponse) GetExtraProperties() map[string]interface{} {
@@ -286,24 +440,22 @@ func (r *RutterCompanyResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*r = RutterCompanyResponse(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *r)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
 	}
 	r.extraProperties = extraProperties
-
-	r._rawJSON = json.RawMessage(data)
+	r.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (r *RutterCompanyResponse) String() string {
-	if len(r._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(r._rawJSON); err == nil {
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(r); err == nil {
+	if value, err := internal.StringifyJSON(r); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)

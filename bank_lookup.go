@@ -5,7 +5,7 @@ package mercoa
 import (
 	json "encoding/json"
 	fmt "fmt"
-	core "github.com/mercoa-finance/go/core"
+	internal "github.com/mercoa-finance/go/internal"
 )
 
 type BankLookupRequest struct {
@@ -21,7 +21,42 @@ type BankAddress struct {
 	PostalCodeExtension string `json:"postalCodeExtension" url:"postalCodeExtension"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (b *BankAddress) GetAddress() string {
+	if b == nil {
+		return ""
+	}
+	return b.Address
+}
+
+func (b *BankAddress) GetCity() string {
+	if b == nil {
+		return ""
+	}
+	return b.City
+}
+
+func (b *BankAddress) GetState() string {
+	if b == nil {
+		return ""
+	}
+	return b.State
+}
+
+func (b *BankAddress) GetPostalCode() string {
+	if b == nil {
+		return ""
+	}
+	return b.PostalCode
+}
+
+func (b *BankAddress) GetPostalCodeExtension() string {
+	if b == nil {
+		return ""
+	}
+	return b.PostalCodeExtension
 }
 
 func (b *BankAddress) GetExtraProperties() map[string]interface{} {
@@ -35,24 +70,22 @@ func (b *BankAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*b = BankAddress(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
 	if err != nil {
 		return err
 	}
 	b.extraProperties = extraProperties
-
-	b._rawJSON = json.RawMessage(data)
+	b.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (b *BankAddress) String() string {
-	if len(b._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(b._rawJSON); err == nil {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(b); err == nil {
+	if value, err := internal.StringifyJSON(b); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", b)
@@ -63,7 +96,21 @@ type BankLookupResponse struct {
 	BankAddress *BankAddress `json:"bankAddress,omitempty" url:"bankAddress,omitempty"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (b *BankLookupResponse) GetBankName() string {
+	if b == nil {
+		return ""
+	}
+	return b.BankName
+}
+
+func (b *BankLookupResponse) GetBankAddress() *BankAddress {
+	if b == nil {
+		return nil
+	}
+	return b.BankAddress
 }
 
 func (b *BankLookupResponse) GetExtraProperties() map[string]interface{} {
@@ -77,24 +124,22 @@ func (b *BankLookupResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*b = BankLookupResponse(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *b)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
 	if err != nil {
 		return err
 	}
 	b.extraProperties = extraProperties
-
-	b._rawJSON = json.RawMessage(data)
+	b.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (b *BankLookupResponse) String() string {
-	if len(b._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(b._rawJSON); err == nil {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(b); err == nil {
+	if value, err := internal.StringifyJSON(b); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", b)

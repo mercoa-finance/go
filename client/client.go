@@ -10,6 +10,7 @@ import (
 	custompaymentmethodschema "github.com/mercoa-finance/go/custompaymentmethodschema"
 	entityclient "github.com/mercoa-finance/go/entity/client"
 	entitygroupclient "github.com/mercoa-finance/go/entitygroup/client"
+	internal "github.com/mercoa-finance/go/internal"
 	invoiceclient "github.com/mercoa-finance/go/invoice/client"
 	invoicetemplateclient "github.com/mercoa-finance/go/invoicetemplate/client"
 	ocr "github.com/mercoa-finance/go/ocr"
@@ -22,7 +23,7 @@ import (
 
 type Client struct {
 	baseURL string
-	caller  *core.Caller
+	caller  *internal.Caller
 	header  http.Header
 
 	Contract                  *contractclient.Client
@@ -43,8 +44,8 @@ func NewClient(opts ...option.RequestOption) *Client {
 	options := core.NewRequestOptions(opts...)
 	return &Client{
 		baseURL: options.BaseURL,
-		caller: core.NewCaller(
-			&core.CallerParams{
+		caller: internal.NewCaller(
+			&internal.CallerParams{
 				Client:      options.HTTPClient,
 				MaxAttempts: options.MaxAttempts,
 			},

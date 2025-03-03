@@ -9,6 +9,7 @@ import (
 	errors "errors"
 	mercoafinancego "github.com/mercoa-finance/go"
 	core "github.com/mercoa-finance/go/core"
+	internal "github.com/mercoa-finance/go/internal"
 	option "github.com/mercoa-finance/go/option"
 	io "io"
 	http "net/http"
@@ -16,7 +17,7 @@ import (
 
 type Client struct {
 	baseURL string
-	caller  *core.Caller
+	caller  *internal.Caller
 	header  http.Header
 }
 
@@ -24,8 +25,8 @@ func NewClient(opts ...option.RequestOption) *Client {
 	options := core.NewRequestOptions(opts...)
 	return &Client{
 		baseURL: options.BaseURL,
-		caller: core.NewCaller(
-			&core.CallerParams{
+		caller: internal.NewCaller(
+			&internal.CallerParams{
 				Client:      options.HTTPClient,
 				MaxAttempts: options.MaxAttempts,
 			},
@@ -42,18 +43,19 @@ func (c *Client) GetNextAction(
 	opts ...option.RequestOption,
 ) (*mercoafinancego.ActionResponse, error) {
 	options := core.NewRequestOptions(opts...)
-
-	baseURL := "https://api.mercoa.com"
-	if c.baseURL != "" {
-		baseURL = c.baseURL
-	}
-	if options.BaseURL != "" {
-		baseURL = options.BaseURL
-	}
-	endpointURL := core.EncodeURL(baseURL+"/invoice/%v/collection/next-action", invoiceID)
-
-	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
-
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/invoice/%v/collection/next-action",
+		invoiceID,
+	)
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
 	errorDecoder := func(statusCode int, body io.Reader) error {
 		raw, err := io.ReadAll(body)
 		if err != nil {
@@ -125,11 +127,13 @@ func (c *Client) GetNextAction(
 	var response *mercoafinancego.ActionResponse
 	if err := c.caller.Call(
 		ctx,
-		&core.CallParams{
+		&internal.CallParams{
 			URL:                endpointURL,
 			Method:             http.MethodGet,
-			MaxAttempts:        options.MaxAttempts,
 			Headers:            headers,
+			MaxAttempts:        options.MaxAttempts,
+			BodyProperties:     options.BodyProperties,
+			QueryParameters:    options.QueryParameters,
 			Client:             options.HTTPClient,
 			Response:           &response,
 			ResponseIsOptional: true,
@@ -150,18 +154,19 @@ func (c *Client) UpdateNextAction(
 	opts ...option.RequestOption,
 ) (*mercoafinancego.ActionResponse, error) {
 	options := core.NewRequestOptions(opts...)
-
-	baseURL := "https://api.mercoa.com"
-	if c.baseURL != "" {
-		baseURL = c.baseURL
-	}
-	if options.BaseURL != "" {
-		baseURL = options.BaseURL
-	}
-	endpointURL := core.EncodeURL(baseURL+"/invoice/%v/collection/next-action", invoiceID)
-
-	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
-
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/invoice/%v/collection/next-action",
+		invoiceID,
+	)
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
 	errorDecoder := func(statusCode int, body io.Reader) error {
 		raw, err := io.ReadAll(body)
 		if err != nil {
@@ -233,15 +238,17 @@ func (c *Client) UpdateNextAction(
 	var response *mercoafinancego.ActionResponse
 	if err := c.caller.Call(
 		ctx,
-		&core.CallParams{
-			URL:          endpointURL,
-			Method:       http.MethodPatch,
-			MaxAttempts:  options.MaxAttempts,
-			Headers:      headers,
-			Client:       options.HTTPClient,
-			Request:      request,
-			Response:     &response,
-			ErrorDecoder: errorDecoder,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPatch,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    errorDecoder,
 		},
 	); err != nil {
 		return nil, err
@@ -257,18 +264,19 @@ func (c *Client) ApproveNextAction(
 	opts ...option.RequestOption,
 ) (*mercoafinancego.ActionResponse, error) {
 	options := core.NewRequestOptions(opts...)
-
-	baseURL := "https://api.mercoa.com"
-	if c.baseURL != "" {
-		baseURL = c.baseURL
-	}
-	if options.BaseURL != "" {
-		baseURL = options.BaseURL
-	}
-	endpointURL := core.EncodeURL(baseURL+"/invoice/%v/collection/next-action/approve", invoiceID)
-
-	headers := core.MergeHeaders(c.header.Clone(), options.ToHeader())
-
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/invoice/%v/collection/next-action/approve",
+		invoiceID,
+	)
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
 	errorDecoder := func(statusCode int, body io.Reader) error {
 		raw, err := io.ReadAll(body)
 		if err != nil {
@@ -340,14 +348,16 @@ func (c *Client) ApproveNextAction(
 	var response *mercoafinancego.ActionResponse
 	if err := c.caller.Call(
 		ctx,
-		&core.CallParams{
-			URL:          endpointURL,
-			Method:       http.MethodPatch,
-			MaxAttempts:  options.MaxAttempts,
-			Headers:      headers,
-			Client:       options.HTTPClient,
-			Response:     &response,
-			ErrorDecoder: errorDecoder,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPatch,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    errorDecoder,
 		},
 	); err != nil {
 		return nil, err

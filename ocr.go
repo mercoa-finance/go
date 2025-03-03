@@ -5,14 +5,21 @@ package mercoa
 import (
 	json "encoding/json"
 	fmt "fmt"
-	core "github.com/mercoa-finance/go/core"
+	internal "github.com/mercoa-finance/go/internal"
 )
 
 type OcrAsyncResponse struct {
 	JobID OcrJobID `json:"jobId" url:"jobId"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (o *OcrAsyncResponse) GetJobID() OcrJobID {
+	if o == nil {
+		return ""
+	}
+	return o.JobID
 }
 
 func (o *OcrAsyncResponse) GetExtraProperties() map[string]interface{} {
@@ -26,28 +33,28 @@ func (o *OcrAsyncResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OcrAsyncResponse(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	extraProperties, err := internal.ExtractExtraProperties(data, *o)
 	if err != nil {
 		return err
 	}
 	o.extraProperties = extraProperties
-
-	o._rawJSON = json.RawMessage(data)
+	o.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (o *OcrAsyncResponse) String() string {
-	if len(o._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
+	if len(o.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(o); err == nil {
+	if value, err := internal.StringifyJSON(o); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", o)
 }
+
+type OcrJobID = string
 
 type OcrJobResponse struct {
 	JobID  OcrJobID     `json:"jobId" url:"jobId"`
@@ -55,7 +62,28 @@ type OcrJobResponse struct {
 	Data   *OcrResponse `json:"data,omitempty" url:"data,omitempty"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (o *OcrJobResponse) GetJobID() OcrJobID {
+	if o == nil {
+		return ""
+	}
+	return o.JobID
+}
+
+func (o *OcrJobResponse) GetStatus() OcrJobStatus {
+	if o == nil {
+		return ""
+	}
+	return o.Status
+}
+
+func (o *OcrJobResponse) GetData() *OcrResponse {
+	if o == nil {
+		return nil
+	}
+	return o.Data
 }
 
 func (o *OcrJobResponse) GetExtraProperties() map[string]interface{} {
@@ -69,24 +97,22 @@ func (o *OcrJobResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OcrJobResponse(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	extraProperties, err := internal.ExtractExtraProperties(data, *o)
 	if err != nil {
 		return err
 	}
 	o.extraProperties = extraProperties
-
-	o._rawJSON = json.RawMessage(data)
+	o.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (o *OcrJobResponse) String() string {
-	if len(o._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
+	if len(o.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(o); err == nil {
+	if value, err := internal.StringifyJSON(o); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", o)
@@ -128,7 +154,35 @@ type OcrRequest struct {
 	EntityID *EntityID `json:"entityId,omitempty" url:"entityId,omitempty"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (o *OcrRequest) GetMimeType() string {
+	if o == nil {
+		return ""
+	}
+	return o.MimeType
+}
+
+func (o *OcrRequest) GetImage() string {
+	if o == nil {
+		return ""
+	}
+	return o.Image
+}
+
+func (o *OcrRequest) GetVendorNetwork() *VendorNetwork {
+	if o == nil {
+		return nil
+	}
+	return o.VendorNetwork
+}
+
+func (o *OcrRequest) GetEntityID() *EntityID {
+	if o == nil {
+		return nil
+	}
+	return o.EntityID
 }
 
 func (o *OcrRequest) GetExtraProperties() map[string]interface{} {
@@ -142,24 +196,22 @@ func (o *OcrRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OcrRequest(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	extraProperties, err := internal.ExtractExtraProperties(data, *o)
 	if err != nil {
 		return err
 	}
 	o.extraProperties = extraProperties
-
-	o._rawJSON = json.RawMessage(data)
+	o.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (o *OcrRequest) String() string {
-	if len(o._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
+	if len(o.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(o); err == nil {
+	if value, err := internal.StringifyJSON(o); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", o)
@@ -174,7 +226,49 @@ type OcrResponse struct {
 	Payer       *EntityResponse       `json:"payer,omitempty" url:"payer,omitempty"`
 
 	extraProperties map[string]interface{}
-	_rawJSON        json.RawMessage
+	rawJSON         json.RawMessage
+}
+
+func (o *OcrResponse) GetJobID() OcrJobID {
+	if o == nil {
+		return ""
+	}
+	return o.JobID
+}
+
+func (o *OcrResponse) GetInvoice() *InvoiceResponse {
+	if o == nil {
+		return nil
+	}
+	return o.Invoice
+}
+
+func (o *OcrResponse) GetVendor() *CounterpartyResponse {
+	if o == nil {
+		return nil
+	}
+	return o.Vendor
+}
+
+func (o *OcrResponse) GetCheck() *CheckResponse {
+	if o == nil {
+		return nil
+	}
+	return o.Check
+}
+
+func (o *OcrResponse) GetBankAccount() *BankAccountResponse {
+	if o == nil {
+		return nil
+	}
+	return o.BankAccount
+}
+
+func (o *OcrResponse) GetPayer() *EntityResponse {
+	if o == nil {
+		return nil
+	}
+	return o.Payer
 }
 
 func (o *OcrResponse) GetExtraProperties() map[string]interface{} {
@@ -188,24 +282,22 @@ func (o *OcrResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OcrResponse(value)
-
-	extraProperties, err := core.ExtractExtraProperties(data, *o)
+	extraProperties, err := internal.ExtractExtraProperties(data, *o)
 	if err != nil {
 		return err
 	}
 	o.extraProperties = extraProperties
-
-	o._rawJSON = json.RawMessage(data)
+	o.rawJSON = json.RawMessage(data)
 	return nil
 }
 
 func (o *OcrResponse) String() string {
-	if len(o._rawJSON) > 0 {
-		if value, err := core.StringifyJSON(o._rawJSON); err == nil {
+	if len(o.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := core.StringifyJSON(o); err == nil {
+	if value, err := internal.StringifyJSON(o); err == nil {
 		return value
 	}
 	return fmt.Sprintf("%#v", o)
