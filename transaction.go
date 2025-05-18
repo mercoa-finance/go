@@ -478,7 +478,7 @@ func (t *TransactionResponse) validate() error {
 type TransactionResponseAchBase struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
+	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
 	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
@@ -513,7 +513,7 @@ func (t *TransactionResponseAchBase) GetStatus() TransactionStatus {
 	return t.Status
 }
 
-func (t *TransactionResponseAchBase) GetAmount() int {
+func (t *TransactionResponseAchBase) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}
@@ -675,7 +675,7 @@ func (t *TransactionResponseAchBase) String() string {
 type TransactionResponseBankToBankWithInvoices struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
+	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
 	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
@@ -712,7 +712,7 @@ func (t *TransactionResponseBankToBankWithInvoices) GetStatus() TransactionStatu
 	return t.Status
 }
 
-func (t *TransactionResponseBankToBankWithInvoices) GetAmount() int {
+func (t *TransactionResponseBankToBankWithInvoices) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}
@@ -881,7 +881,7 @@ func (t *TransactionResponseBankToBankWithInvoices) String() string {
 type TransactionResponseBankToCheckWithInvoices struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
+	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
 	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
@@ -918,7 +918,7 @@ func (t *TransactionResponseBankToCheckWithInvoices) GetStatus() TransactionStat
 	return t.Status
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetAmount() int {
+func (t *TransactionResponseBankToCheckWithInvoices) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}
@@ -1087,7 +1087,7 @@ func (t *TransactionResponseBankToCheckWithInvoices) String() string {
 type TransactionResponseBankToWalletWithInvoices struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
+	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
 	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
@@ -1124,7 +1124,7 @@ func (t *TransactionResponseBankToWalletWithInvoices) GetStatus() TransactionSta
 	return t.Status
 }
 
-func (t *TransactionResponseBankToWalletWithInvoices) GetAmount() int {
+func (t *TransactionResponseBankToWalletWithInvoices) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}
@@ -1293,7 +1293,7 @@ func (t *TransactionResponseBankToWalletWithInvoices) String() string {
 type TransactionResponseBase struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
+	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
 	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
@@ -1326,7 +1326,7 @@ func (t *TransactionResponseBase) GetStatus() TransactionStatus {
 	return t.Status
 }
 
-func (t *TransactionResponseBase) GetAmount() int {
+func (t *TransactionResponseBase) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}
@@ -1481,7 +1481,7 @@ func (t *TransactionResponseBase) String() string {
 type TransactionResponseCardToBankAccountWithInvoices struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
+	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
 	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
@@ -1518,7 +1518,7 @@ func (t *TransactionResponseCardToBankAccountWithInvoices) GetStatus() Transacti
 	return t.Status
 }
 
-func (t *TransactionResponseCardToBankAccountWithInvoices) GetAmount() int {
+func (t *TransactionResponseCardToBankAccountWithInvoices) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}
@@ -1687,7 +1687,7 @@ func (t *TransactionResponseCardToBankAccountWithInvoices) String() string {
 type TransactionResponseCardToWalletWithInvoices struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
+	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
 	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
@@ -1722,7 +1722,7 @@ func (t *TransactionResponseCardToWalletWithInvoices) GetStatus() TransactionSta
 	return t.Status
 }
 
-func (t *TransactionResponseCardToWalletWithInvoices) GetAmount() int {
+func (t *TransactionResponseCardToWalletWithInvoices) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}
@@ -1884,7 +1884,7 @@ func (t *TransactionResponseCardToWalletWithInvoices) String() string {
 type TransactionResponseCheckBase struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
+	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
 	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
@@ -1919,7 +1919,7 @@ func (t *TransactionResponseCheckBase) GetStatus() TransactionStatus {
 	return t.Status
 }
 
-func (t *TransactionResponseCheckBase) GetAmount() int {
+func (t *TransactionResponseCheckBase) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}
@@ -2081,7 +2081,7 @@ func (t *TransactionResponseCheckBase) String() string {
 type TransactionResponseCustomWithInvoices struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
+	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
 	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
@@ -2116,7 +2116,7 @@ func (t *TransactionResponseCustomWithInvoices) GetStatus() TransactionStatus {
 	return t.Status
 }
 
-func (t *TransactionResponseCustomWithInvoices) GetAmount() int {
+func (t *TransactionResponseCustomWithInvoices) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}
@@ -2278,7 +2278,7 @@ func (t *TransactionResponseCustomWithInvoices) String() string {
 type TransactionResponseWalletToBankWithInvoices struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
+	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
 	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
@@ -2315,7 +2315,7 @@ func (t *TransactionResponseWalletToBankWithInvoices) GetStatus() TransactionSta
 	return t.Status
 }
 
-func (t *TransactionResponseWalletToBankWithInvoices) GetAmount() int {
+func (t *TransactionResponseWalletToBankWithInvoices) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}
@@ -2484,7 +2484,7 @@ func (t *TransactionResponseWalletToBankWithInvoices) String() string {
 type TransactionResponseWalletToWalletWithInvoices struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
-	Amount                    int                        `json:"amount" url:"amount"`
+	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
 	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
@@ -2519,7 +2519,7 @@ func (t *TransactionResponseWalletToWalletWithInvoices) GetStatus() TransactionS
 	return t.Status
 }
 
-func (t *TransactionResponseWalletToWalletWithInvoices) GetAmount() int {
+func (t *TransactionResponseWalletToWalletWithInvoices) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}

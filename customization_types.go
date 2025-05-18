@@ -15,6 +15,8 @@ type BankAccountPaymentMethodCustomizationRequest struct {
 	DefaultDeliveryMethod *BankDeliveryMethod `json:"defaultDeliveryMethod,omitempty" url:"defaultDeliveryMethod,omitempty"`
 	// The delivery methods that are available for this payment method.
 	AvailableDeliveryMethods []BankDeliveryMethod `json:"availableDeliveryMethods,omitempty" url:"availableDeliveryMethods,omitempty"`
+	// The originating company name for this payment method. If not set, the entity name will be used.
+	OriginatingCompanyName *OriginatingCompanyNameOptions `json:"originatingCompanyName,omitempty" url:"originatingCompanyName,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -39,6 +41,13 @@ func (b *BankAccountPaymentMethodCustomizationRequest) GetAvailableDeliveryMetho
 		return nil
 	}
 	return b.AvailableDeliveryMethods
+}
+
+func (b *BankAccountPaymentMethodCustomizationRequest) GetOriginatingCompanyName() *OriginatingCompanyNameOptions {
+	if b == nil {
+		return nil
+	}
+	return b.OriginatingCompanyName
 }
 
 func (b *BankAccountPaymentMethodCustomizationRequest) GetExtraProperties() map[string]interface{} {
@@ -859,6 +868,30 @@ func (o *OcrCustomizationResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", o)
+}
+
+type OriginatingCompanyNameOptions string
+
+const (
+	// The name of the entity (default).
+	OriginatingCompanyNameOptionsEntityName OriginatingCompanyNameOptions = "ENTITY_NAME"
+	// The name of the bank account.
+	OriginatingCompanyNameOptionsBankName OriginatingCompanyNameOptions = "BANK_NAME"
+)
+
+func NewOriginatingCompanyNameOptionsFromString(s string) (OriginatingCompanyNameOptions, error) {
+	switch s {
+	case "ENTITY_NAME":
+		return OriginatingCompanyNameOptionsEntityName, nil
+	case "BANK_NAME":
+		return OriginatingCompanyNameOptionsBankName, nil
+	}
+	var t OriginatingCompanyNameOptions
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (o OriginatingCompanyNameOptions) Ptr() *OriginatingCompanyNameOptions {
+	return &o
 }
 
 type PaymentMethodCustomizationRequest struct {
