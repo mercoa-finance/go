@@ -373,6 +373,7 @@ func (c *Client) EmailLog(
 // Invalidate all JWT tokens for the current organization. This is considered a break-glass action and should be used only if tokens have been compromised. All tokens will be invalidated, including tokens on links, emails, and currently logged in sessions. API keys are not affected by this action. This action may take 60 seconds to propagate.
 func (c *Client) InvalidateTokens(
 	ctx context.Context,
+	request *organization.InvalidateTokensRequest,
 	opts ...option.RequestOption,
 ) error {
 	options := core.NewRequestOptions(opts...)
@@ -464,6 +465,7 @@ func (c *Client) InvalidateTokens(
 			BodyProperties:  options.BodyProperties,
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
+			Request:         request,
 			ErrorDecoder:    errorDecoder,
 		},
 	); err != nil {

@@ -3663,16 +3663,17 @@ type InvoiceResponse struct {
 	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
 	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
 	// Net terms in days. Must be a positive number.
-	NetTerms                  *int                       `json:"netTerms,omitempty" url:"netTerms,omitempty"`
-	PayerID                   *EntityID                  `json:"payerId,omitempty" url:"payerId,omitempty"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
-	PaymentSourceID           *PaymentMethodID           `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
-	VendorID                  *EntityID                  `json:"vendorId,omitempty" url:"vendorId,omitempty"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
-	PaymentDestinationID      *PaymentMethodID           `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
-	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	NetTerms                  *int                            `json:"netTerms,omitempty" url:"netTerms,omitempty"`
+	PayerID                   *EntityID                       `json:"payerId,omitempty" url:"payerId,omitempty"`
+	Payer                     *CounterpartyResponse           `json:"payer,omitempty" url:"payer,omitempty"`
+	PaymentSource             *PaymentMethodResponse          `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	PaymentSourceID           *PaymentMethodID                `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	VendorID                  *EntityID                       `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	Vendor                    *CounterpartyResponse           `json:"vendor,omitempty" url:"vendor,omitempty"`
+	PaymentDestination        *PaymentMethodResponse          `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	PaymentDestinationID      *PaymentMethodID                `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
+	PaymentDestinationOptions *PaymentDestinationOptions      `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	PaymentTiming             *CalculatePaymentTimingResponse `json:"paymentTiming,omitempty" url:"paymentTiming,omitempty"`
 	// True if the payment destination has been confirmed by the vendor. False if the payment destination has been set (for example, a check to an address) but has not been confirmed by the vendor.
 	PaymentDestinationConfirmed bool `json:"paymentDestinationConfirmed" url:"paymentDestinationConfirmed"`
 	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
@@ -3866,6 +3867,13 @@ func (i *InvoiceResponse) GetPaymentDestinationOptions() *PaymentDestinationOpti
 		return nil
 	}
 	return i.PaymentDestinationOptions
+}
+
+func (i *InvoiceResponse) GetPaymentTiming() *CalculatePaymentTimingResponse {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentTiming
 }
 
 func (i *InvoiceResponse) GetPaymentDestinationConfirmed() bool {
@@ -4148,16 +4156,17 @@ type InvoiceResponseBase struct {
 	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
 	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
 	// Net terms in days. Must be a positive number.
-	NetTerms                  *int                       `json:"netTerms,omitempty" url:"netTerms,omitempty"`
-	PayerID                   *EntityID                  `json:"payerId,omitempty" url:"payerId,omitempty"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
-	PaymentSourceID           *PaymentMethodID           `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
-	VendorID                  *EntityID                  `json:"vendorId,omitempty" url:"vendorId,omitempty"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
-	PaymentDestinationID      *PaymentMethodID           `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
-	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	NetTerms                  *int                            `json:"netTerms,omitempty" url:"netTerms,omitempty"`
+	PayerID                   *EntityID                       `json:"payerId,omitempty" url:"payerId,omitempty"`
+	Payer                     *CounterpartyResponse           `json:"payer,omitempty" url:"payer,omitempty"`
+	PaymentSource             *PaymentMethodResponse          `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	PaymentSourceID           *PaymentMethodID                `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	VendorID                  *EntityID                       `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	Vendor                    *CounterpartyResponse           `json:"vendor,omitempty" url:"vendor,omitempty"`
+	PaymentDestination        *PaymentMethodResponse          `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	PaymentDestinationID      *PaymentMethodID                `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
+	PaymentDestinationOptions *PaymentDestinationOptions      `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	PaymentTiming             *CalculatePaymentTimingResponse `json:"paymentTiming,omitempty" url:"paymentTiming,omitempty"`
 	// True if the payment destination has been confirmed by the vendor. False if the payment destination has been set (for example, a check to an address) but has not been confirmed by the vendor.
 	PaymentDestinationConfirmed bool `json:"paymentDestinationConfirmed" url:"paymentDestinationConfirmed"`
 	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
@@ -4338,6 +4347,13 @@ func (i *InvoiceResponseBase) GetPaymentDestinationOptions() *PaymentDestination
 		return nil
 	}
 	return i.PaymentDestinationOptions
+}
+
+func (i *InvoiceResponseBase) GetPaymentTiming() *CalculatePaymentTimingResponse {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentTiming
 }
 
 func (i *InvoiceResponseBase) GetPaymentDestinationConfirmed() bool {
@@ -5199,16 +5215,17 @@ type InvoiceTemplateResponse struct {
 	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
 	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
 	// Net terms in days. Must be a positive number.
-	NetTerms                  *int                       `json:"netTerms,omitempty" url:"netTerms,omitempty"`
-	PayerID                   *EntityID                  `json:"payerId,omitempty" url:"payerId,omitempty"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
-	PaymentSourceID           *PaymentMethodID           `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
-	VendorID                  *EntityID                  `json:"vendorId,omitempty" url:"vendorId,omitempty"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
-	PaymentDestinationID      *PaymentMethodID           `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
-	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	NetTerms                  *int                            `json:"netTerms,omitempty" url:"netTerms,omitempty"`
+	PayerID                   *EntityID                       `json:"payerId,omitempty" url:"payerId,omitempty"`
+	Payer                     *CounterpartyResponse           `json:"payer,omitempty" url:"payer,omitempty"`
+	PaymentSource             *PaymentMethodResponse          `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	PaymentSourceID           *PaymentMethodID                `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	VendorID                  *EntityID                       `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	Vendor                    *CounterpartyResponse           `json:"vendor,omitempty" url:"vendor,omitempty"`
+	PaymentDestination        *PaymentMethodResponse          `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	PaymentDestinationID      *PaymentMethodID                `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
+	PaymentDestinationOptions *PaymentDestinationOptions      `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	PaymentTiming             *CalculatePaymentTimingResponse `json:"paymentTiming,omitempty" url:"paymentTiming,omitempty"`
 	// True if the payment destination has been confirmed by the vendor. False if the payment destination has been set (for example, a check to an address) but has not been confirmed by the vendor.
 	PaymentDestinationConfirmed bool `json:"paymentDestinationConfirmed" url:"paymentDestinationConfirmed"`
 	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
@@ -5390,6 +5407,13 @@ func (i *InvoiceTemplateResponse) GetPaymentDestinationOptions() *PaymentDestina
 		return nil
 	}
 	return i.PaymentDestinationOptions
+}
+
+func (i *InvoiceTemplateResponse) GetPaymentTiming() *CalculatePaymentTimingResponse {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentTiming
 }
 
 func (i *InvoiceTemplateResponse) GetPaymentDestinationConfirmed() bool {

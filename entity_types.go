@@ -5575,6 +5575,8 @@ type TokenGenerationOptions struct {
 	Style     *TokenGenerationStyleOptions   `json:"style,omitempty" url:"style,omitempty"`
 	Vendors   *TokenGenerationVendorOptions  `json:"vendors,omitempty" url:"vendors,omitempty"`
 	Entity    *TokenGenerationEntityOptions  `json:"entity,omitempty" url:"entity,omitempty"`
+	// Optional session ID to use for the token. If not provided, this token will not be associated with a session.
+	SessionID *string `json:"sessionId,omitempty" url:"sessionId,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -5620,6 +5622,13 @@ func (t *TokenGenerationOptions) GetEntity() *TokenGenerationEntityOptions {
 		return nil
 	}
 	return t.Entity
+}
+
+func (t *TokenGenerationOptions) GetSessionID() *string {
+	if t == nil {
+		return nil
+	}
+	return t.SessionID
 }
 
 func (t *TokenGenerationOptions) GetExtraProperties() map[string]interface{} {

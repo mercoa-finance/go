@@ -41,3 +41,8 @@ type GetOrganizationRequest struct {
 	// include custom domains in response
 	CustomDomains *bool `json:"-" url:"customDomains,omitempty"`
 }
+
+type InvalidateTokensRequest struct {
+	// Optional list of session IDs to invalidate. If not provided, all sessions will be invalidated.
+	SessionID []string `json:"sessionId,omitempty" url:"-"`
+}
