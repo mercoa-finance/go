@@ -121,6 +121,71 @@ func (a *ApprovalRequest) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
+type ApprovalRequestWithID struct {
+	// Comment associated with this approval action.
+	Text *string `json:"text,omitempty" url:"text,omitempty"`
+	// The ID or the Foreign ID of the user
+	UserID EntityUserID `json:"userId" url:"userId"`
+	// The ID or foreign ID of the invoice to approve
+	InvoiceID InvoiceID `json:"invoiceId" url:"invoiceId"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *ApprovalRequestWithID) GetText() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Text
+}
+
+func (a *ApprovalRequestWithID) GetUserID() EntityUserID {
+	if a == nil {
+		return ""
+	}
+	return a.UserID
+}
+
+func (a *ApprovalRequestWithID) GetInvoiceID() InvoiceID {
+	if a == nil {
+		return ""
+	}
+	return a.InvoiceID
+}
+
+func (a *ApprovalRequestWithID) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
+}
+
+func (a *ApprovalRequestWithID) UnmarshalJSON(data []byte) error {
+	type unmarshaler ApprovalRequestWithID
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = ApprovalRequestWithID(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *ApprovalRequestWithID) String() string {
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
 type ApprovalSlot struct {
 	// The identifier for the upstream policy this slot is associated with.
 	UpstreamPolicyID *ApprovalPolicyID `json:"upstreamPolicyId,omitempty" url:"upstreamPolicyId,omitempty"`
@@ -475,6 +540,163 @@ func (b BankDeliveryMethod) Ptr() *BankDeliveryMethod {
 	return &b
 }
 
+type BulkInvoiceApprovalFromObjectResponse struct {
+	// The ID of the invoice that was approved. If the invoice was not approved, this will be undefined
+	ID *InvoiceID `json:"id,omitempty" url:"id,omitempty"`
+	// If provided, this is the foreign ID of the invoice that was approved.
+	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	// The error message if the invoice was not approved
+	Error *string `json:"error,omitempty" url:"error,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BulkInvoiceApprovalFromObjectResponse) GetID() *InvoiceID {
+	if b == nil {
+		return nil
+	}
+	return b.ID
+}
+
+func (b *BulkInvoiceApprovalFromObjectResponse) GetForeignID() *string {
+	if b == nil {
+		return nil
+	}
+	return b.ForeignID
+}
+
+func (b *BulkInvoiceApprovalFromObjectResponse) GetError() *string {
+	if b == nil {
+		return nil
+	}
+	return b.Error
+}
+
+func (b *BulkInvoiceApprovalFromObjectResponse) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BulkInvoiceApprovalFromObjectResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkInvoiceApprovalFromObjectResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BulkInvoiceApprovalFromObjectResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BulkInvoiceApprovalFromObjectResponse) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BulkInvoiceApprovalRequest struct {
+	Invoices []*ApprovalRequestWithID `json:"invoices,omitempty" url:"invoices,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BulkInvoiceApprovalRequest) GetInvoices() []*ApprovalRequestWithID {
+	if b == nil {
+		return nil
+	}
+	return b.Invoices
+}
+
+func (b *BulkInvoiceApprovalRequest) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BulkInvoiceApprovalRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkInvoiceApprovalRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BulkInvoiceApprovalRequest(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BulkInvoiceApprovalRequest) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BulkInvoiceApprovalResponse struct {
+	Data []*BulkInvoiceApprovalFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BulkInvoiceApprovalResponse) GetData() []*BulkInvoiceApprovalFromObjectResponse {
+	if b == nil {
+		return nil
+	}
+	return b.Data
+}
+
+func (b *BulkInvoiceApprovalResponse) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BulkInvoiceApprovalResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkInvoiceApprovalResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BulkInvoiceApprovalResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BulkInvoiceApprovalResponse) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
 type BulkInvoiceCreationFromObjectResponse struct {
 	// The ID of the invoice that was created. If the invoice was not created, this will be undefined
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -621,6 +843,163 @@ func (b *BulkInvoiceCreationResponse) UnmarshalJSON(data []byte) error {
 }
 
 func (b *BulkInvoiceCreationResponse) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BulkInvoiceUpdateFromObjectResponse struct {
+	// The ID of the invoice that was updated. If the invoice was not updated, this will be undefined
+	ID *InvoiceID `json:"id,omitempty" url:"id,omitempty"`
+	// If provided, this is the foreign ID of the invoice that was updated.
+	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	// The error message if the invoice was not updated
+	Error *string `json:"error,omitempty" url:"error,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BulkInvoiceUpdateFromObjectResponse) GetID() *InvoiceID {
+	if b == nil {
+		return nil
+	}
+	return b.ID
+}
+
+func (b *BulkInvoiceUpdateFromObjectResponse) GetForeignID() *string {
+	if b == nil {
+		return nil
+	}
+	return b.ForeignID
+}
+
+func (b *BulkInvoiceUpdateFromObjectResponse) GetError() *string {
+	if b == nil {
+		return nil
+	}
+	return b.Error
+}
+
+func (b *BulkInvoiceUpdateFromObjectResponse) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BulkInvoiceUpdateFromObjectResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkInvoiceUpdateFromObjectResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BulkInvoiceUpdateFromObjectResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BulkInvoiceUpdateFromObjectResponse) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BulkInvoiceUpdateRequest struct {
+	Invoices []*InvoiceUpdateRequestWithID `json:"invoices,omitempty" url:"invoices,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BulkInvoiceUpdateRequest) GetInvoices() []*InvoiceUpdateRequestWithID {
+	if b == nil {
+		return nil
+	}
+	return b.Invoices
+}
+
+func (b *BulkInvoiceUpdateRequest) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BulkInvoiceUpdateRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkInvoiceUpdateRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BulkInvoiceUpdateRequest(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BulkInvoiceUpdateRequest) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BulkInvoiceUpdateResponse struct {
+	Data []*BulkInvoiceUpdateFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BulkInvoiceUpdateResponse) GetData() []*BulkInvoiceUpdateFromObjectResponse {
+	if b == nil {
+		return nil
+	}
+	return b.Data
+}
+
+func (b *BulkInvoiceUpdateResponse) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BulkInvoiceUpdateResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkInvoiceUpdateResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BulkInvoiceUpdateResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BulkInvoiceUpdateResponse) String() string {
 	if len(b.rawJSON) > 0 {
 		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
 			return value
@@ -6285,6 +6664,383 @@ func (i *InvoiceUpdateRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (i *InvoiceUpdateRequest) String() string {
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceUpdateRequestWithID struct {
+	Status *InvoiceStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Total amount of invoice in major units. If the entered amount has more decimal places than the currency supports, trailing decimals will be truncated.
+	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+	// Currency code for the amount. Defaults to USD.
+	Currency *CurrencyCode `json:"currency,omitempty" url:"currency,omitempty"`
+	// Date the invoice was issued.
+	InvoiceDate *time.Time `json:"invoiceDate,omitempty" url:"invoiceDate,omitempty"`
+	// Initial date when funds are scheduled to be deducted from payer's account.
+	DeductionDate *time.Time `json:"deductionDate,omitempty" url:"deductionDate,omitempty"`
+	// Date of funds settlement.
+	SettlementDate *time.Time `json:"settlementDate,omitempty" url:"settlementDate,omitempty"`
+	// Due date of invoice.
+	DueDate       *time.Time `json:"dueDate,omitempty" url:"dueDate,omitempty"`
+	InvoiceNumber *string    `json:"invoiceNumber,omitempty" url:"invoiceNumber,omitempty"`
+	// Note to self or memo on invoice.
+	NoteToSelf       *string    `json:"noteToSelf,omitempty" url:"noteToSelf,omitempty"`
+	ServiceStartDate *time.Time `json:"serviceStartDate,omitempty" url:"serviceStartDate,omitempty"`
+	ServiceEndDate   *time.Time `json:"serviceEndDate,omitempty" url:"serviceEndDate,omitempty"`
+	// Net terms in days. Must be a positive number.
+	NetTerms *int `json:"netTerms,omitempty" url:"netTerms,omitempty"`
+	// ID or foreign ID of the payer of this invoice.
+	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
+	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
+	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	// ID or foreign ID of the vendor of this invoice.
+	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
+	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
+	PaymentDestinationID *PaymentMethodID `json:"paymentDestinationId,omitempty" url:"paymentDestinationId,omitempty"`
+	// Options for the payment destination. Depending on the payment destination, this may include things such as check delivery method.
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	// Set approvers for this invoice.
+	Approvers []*ApprovalSlotAssignment `json:"approvers,omitempty" url:"approvers,omitempty"`
+	// Metadata associated with this invoice.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// The ID used to identify this invoice in your system. This ID must be unique within each creatorEntity in your system, e.g. two invoices with the same creatorEntity may not have the same foreign ID.
+	ForeignID *string `json:"foreignId,omitempty" url:"foreignId,omitempty"`
+	// Base64-encoded string. Supported file types include PNG, JPG, WEBP, PDF, and all Microsoft Office formats (automatically converted to PDF). Max file size 10MB. If the invoice already has a document, this will add a new document to the invoice.
+	Document *string `json:"document,omitempty" url:"document,omitempty"`
+	// DEPRECATED. Use document field instead.
+	UploadedImage *string `json:"uploadedImage,omitempty" url:"uploadedImage,omitempty"`
+	// User ID or Foreign ID of entity user who created this invoice.
+	CreatorUserID *EntityUserID `json:"creatorUserId,omitempty" url:"creatorUserId,omitempty"`
+	// If the invoice failed to be paid, indicate the failure reason. Only applicable for invoices with custom payment methods.
+	FailureType *InvoiceFailureType `json:"failureType,omitempty" url:"failureType,omitempty"`
+	// If using a custom payment method, you can override the default fees for this invoice. If not provided, the default fees for the custom payment method will be used.
+	Fees *InvoiceFeesRequest `json:"fees,omitempty" url:"fees,omitempty"`
+	// If true, this invoice will be paid as a batch payment. Batches are automatically determined by Mercoa based on the payment source, destination, and scheduled payment date.
+	BatchPayment *bool `json:"batchPayment,omitempty" url:"batchPayment,omitempty"`
+	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
+	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
+	// The IDs of the vendor credits to be applied to this invoice. Passing this field will un-apply any previously applied vendor credits.
+	VendorCreditIDs []VendorCreditID `json:"vendorCreditIds,omitempty" url:"vendorCreditIds,omitempty"`
+	// Tax amount for this invoice.
+	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
+	// Shipping amount for this invoice.
+	ShippingAmount *float64 `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
+	// ID of the OCR job that processed this invoice.
+	OcrJobID  *OcrJobID                       `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
+	LineItems []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	// ID or foreign ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
+	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
+	// The ID or foreign ID of the invoice to update
+	InvoiceID InvoiceID `json:"invoiceId" url:"invoiceId"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceUpdateRequestWithID) GetStatus() *InvoiceStatus {
+	if i == nil {
+		return nil
+	}
+	return i.Status
+}
+
+func (i *InvoiceUpdateRequestWithID) GetAmount() *float64 {
+	if i == nil {
+		return nil
+	}
+	return i.Amount
+}
+
+func (i *InvoiceUpdateRequestWithID) GetCurrency() *CurrencyCode {
+	if i == nil {
+		return nil
+	}
+	return i.Currency
+}
+
+func (i *InvoiceUpdateRequestWithID) GetInvoiceDate() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.InvoiceDate
+}
+
+func (i *InvoiceUpdateRequestWithID) GetDeductionDate() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.DeductionDate
+}
+
+func (i *InvoiceUpdateRequestWithID) GetSettlementDate() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.SettlementDate
+}
+
+func (i *InvoiceUpdateRequestWithID) GetDueDate() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.DueDate
+}
+
+func (i *InvoiceUpdateRequestWithID) GetInvoiceNumber() *string {
+	if i == nil {
+		return nil
+	}
+	return i.InvoiceNumber
+}
+
+func (i *InvoiceUpdateRequestWithID) GetNoteToSelf() *string {
+	if i == nil {
+		return nil
+	}
+	return i.NoteToSelf
+}
+
+func (i *InvoiceUpdateRequestWithID) GetServiceStartDate() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.ServiceStartDate
+}
+
+func (i *InvoiceUpdateRequestWithID) GetServiceEndDate() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.ServiceEndDate
+}
+
+func (i *InvoiceUpdateRequestWithID) GetNetTerms() *int {
+	if i == nil {
+		return nil
+	}
+	return i.NetTerms
+}
+
+func (i *InvoiceUpdateRequestWithID) GetPayerID() *EntityID {
+	if i == nil {
+		return nil
+	}
+	return i.PayerID
+}
+
+func (i *InvoiceUpdateRequestWithID) GetPaymentSourceID() *PaymentMethodID {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentSourceID
+}
+
+func (i *InvoiceUpdateRequestWithID) GetVendorID() *EntityID {
+	if i == nil {
+		return nil
+	}
+	return i.VendorID
+}
+
+func (i *InvoiceUpdateRequestWithID) GetPaymentDestinationID() *PaymentMethodID {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentDestinationID
+}
+
+func (i *InvoiceUpdateRequestWithID) GetPaymentDestinationOptions() *PaymentDestinationOptions {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentDestinationOptions
+}
+
+func (i *InvoiceUpdateRequestWithID) GetApprovers() []*ApprovalSlotAssignment {
+	if i == nil {
+		return nil
+	}
+	return i.Approvers
+}
+
+func (i *InvoiceUpdateRequestWithID) GetMetadata() map[string]string {
+	if i == nil {
+		return nil
+	}
+	return i.Metadata
+}
+
+func (i *InvoiceUpdateRequestWithID) GetForeignID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ForeignID
+}
+
+func (i *InvoiceUpdateRequestWithID) GetDocument() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Document
+}
+
+func (i *InvoiceUpdateRequestWithID) GetUploadedImage() *string {
+	if i == nil {
+		return nil
+	}
+	return i.UploadedImage
+}
+
+func (i *InvoiceUpdateRequestWithID) GetCreatorUserID() *EntityUserID {
+	if i == nil {
+		return nil
+	}
+	return i.CreatorUserID
+}
+
+func (i *InvoiceUpdateRequestWithID) GetFailureType() *InvoiceFailureType {
+	if i == nil {
+		return nil
+	}
+	return i.FailureType
+}
+
+func (i *InvoiceUpdateRequestWithID) GetFees() *InvoiceFeesRequest {
+	if i == nil {
+		return nil
+	}
+	return i.Fees
+}
+
+func (i *InvoiceUpdateRequestWithID) GetBatchPayment() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.BatchPayment
+}
+
+func (i *InvoiceUpdateRequestWithID) GetPaymentSchedule() *PaymentSchedule {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentSchedule
+}
+
+func (i *InvoiceUpdateRequestWithID) GetVendorCreditIDs() []VendorCreditID {
+	if i == nil {
+		return nil
+	}
+	return i.VendorCreditIDs
+}
+
+func (i *InvoiceUpdateRequestWithID) GetTaxAmount() *float64 {
+	if i == nil {
+		return nil
+	}
+	return i.TaxAmount
+}
+
+func (i *InvoiceUpdateRequestWithID) GetShippingAmount() *float64 {
+	if i == nil {
+		return nil
+	}
+	return i.ShippingAmount
+}
+
+func (i *InvoiceUpdateRequestWithID) GetOcrJobID() *OcrJobID {
+	if i == nil {
+		return nil
+	}
+	return i.OcrJobID
+}
+
+func (i *InvoiceUpdateRequestWithID) GetLineItems() []*InvoiceLineItemUpdateRequest {
+	if i == nil {
+		return nil
+	}
+	return i.LineItems
+}
+
+func (i *InvoiceUpdateRequestWithID) GetCreatorEntityID() *EntityID {
+	if i == nil {
+		return nil
+	}
+	return i.CreatorEntityID
+}
+
+func (i *InvoiceUpdateRequestWithID) GetInvoiceID() InvoiceID {
+	if i == nil {
+		return ""
+	}
+	return i.InvoiceID
+}
+
+func (i *InvoiceUpdateRequestWithID) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceUpdateRequestWithID) UnmarshalJSON(data []byte) error {
+	type embed InvoiceUpdateRequestWithID
+	var unmarshaler = struct {
+		embed
+		InvoiceDate      *internal.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *internal.DateTime `json:"deductionDate,omitempty"`
+		SettlementDate   *internal.DateTime `json:"settlementDate,omitempty"`
+		DueDate          *internal.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *internal.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *internal.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceUpdateRequestWithID(unmarshaler.embed)
+	i.InvoiceDate = unmarshaler.InvoiceDate.TimePtr()
+	i.DeductionDate = unmarshaler.DeductionDate.TimePtr()
+	i.SettlementDate = unmarshaler.SettlementDate.TimePtr()
+	i.DueDate = unmarshaler.DueDate.TimePtr()
+	i.ServiceStartDate = unmarshaler.ServiceStartDate.TimePtr()
+	i.ServiceEndDate = unmarshaler.ServiceEndDate.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceUpdateRequestWithID) MarshalJSON() ([]byte, error) {
+	type embed InvoiceUpdateRequestWithID
+	var marshaler = struct {
+		embed
+		InvoiceDate      *internal.DateTime `json:"invoiceDate,omitempty"`
+		DeductionDate    *internal.DateTime `json:"deductionDate,omitempty"`
+		SettlementDate   *internal.DateTime `json:"settlementDate,omitempty"`
+		DueDate          *internal.DateTime `json:"dueDate,omitempty"`
+		ServiceStartDate *internal.DateTime `json:"serviceStartDate,omitempty"`
+		ServiceEndDate   *internal.DateTime `json:"serviceEndDate,omitempty"`
+	}{
+		embed:            embed(*i),
+		InvoiceDate:      internal.NewOptionalDateTime(i.InvoiceDate),
+		DeductionDate:    internal.NewOptionalDateTime(i.DeductionDate),
+		SettlementDate:   internal.NewOptionalDateTime(i.SettlementDate),
+		DueDate:          internal.NewOptionalDateTime(i.DueDate),
+		ServiceStartDate: internal.NewOptionalDateTime(i.ServiceStartDate),
+		ServiceEndDate:   internal.NewOptionalDateTime(i.ServiceEndDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (i *InvoiceUpdateRequestWithID) String() string {
 	if len(i.rawJSON) > 0 {
 		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
 			return value

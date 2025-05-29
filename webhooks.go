@@ -64,6 +64,62 @@ func (b *BulkEntityCreationWebhook) String() string {
 	return fmt.Sprintf("%#v", b)
 }
 
+type BulkInvoiceApprovalWebhook struct {
+	// The type of the event.
+	EventType string `json:"eventType" url:"eventType"`
+	// A list of bulk invoice approval responses.
+	Data []*BulkInvoiceApprovalFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BulkInvoiceApprovalWebhook) GetEventType() string {
+	if b == nil {
+		return ""
+	}
+	return b.EventType
+}
+
+func (b *BulkInvoiceApprovalWebhook) GetData() []*BulkInvoiceApprovalFromObjectResponse {
+	if b == nil {
+		return nil
+	}
+	return b.Data
+}
+
+func (b *BulkInvoiceApprovalWebhook) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BulkInvoiceApprovalWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkInvoiceApprovalWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BulkInvoiceApprovalWebhook(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BulkInvoiceApprovalWebhook) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
 type BulkInvoiceCreationWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
@@ -109,6 +165,62 @@ func (b *BulkInvoiceCreationWebhook) UnmarshalJSON(data []byte) error {
 }
 
 func (b *BulkInvoiceCreationWebhook) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BulkInvoiceUpdateWebhook struct {
+	// The type of the event.
+	EventType string `json:"eventType" url:"eventType"`
+	// A list of bulk invoice update responses.
+	Data []*BulkInvoiceUpdateFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BulkInvoiceUpdateWebhook) GetEventType() string {
+	if b == nil {
+		return ""
+	}
+	return b.EventType
+}
+
+func (b *BulkInvoiceUpdateWebhook) GetData() []*BulkInvoiceUpdateFromObjectResponse {
+	if b == nil {
+		return nil
+	}
+	return b.Data
+}
+
+func (b *BulkInvoiceUpdateWebhook) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BulkInvoiceUpdateWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkInvoiceUpdateWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BulkInvoiceUpdateWebhook(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BulkInvoiceUpdateWebhook) String() string {
 	if len(b.rawJSON) > 0 {
 		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
 			return value

@@ -2318,6 +2318,62 @@ func (i *InvoiceNotificationConfigurationResponse) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
+type MetadataOcrRules struct {
+	// Attempt to extract this field from reading the document. Only applicable to line item metadata fields. Defaults to false.
+	ExtractFromDocument *bool `json:"extractFromDocument,omitempty" url:"extractFromDocument,omitempty"`
+	// Attempt to predict this field from historical invoice metadata. Only applicable to line item metadata fields. Defaults to true.
+	PredictFromHistory *bool `json:"predictFromHistory,omitempty" url:"predictFromHistory,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MetadataOcrRules) GetExtractFromDocument() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.ExtractFromDocument
+}
+
+func (m *MetadataOcrRules) GetPredictFromHistory() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.PredictFromHistory
+}
+
+func (m *MetadataOcrRules) GetExtraProperties() map[string]interface{} {
+	return m.extraProperties
+}
+
+func (m *MetadataOcrRules) UnmarshalJSON(data []byte) error {
+	type unmarshaler MetadataOcrRules
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MetadataOcrRules(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MetadataOcrRules) String() string {
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
 type MetadataRegexValidationRule struct {
 	// A regular expression that the value must match.
 	Regex string `json:"regex" url:"regex"`
@@ -2387,6 +2443,8 @@ type MetadataSchema struct {
 	ValidationRules *MetadataValidationRule `json:"validationRules,omitempty" url:"validationRules,omitempty"`
 	// A list of conditional rules that determine whether or not this field should be shown. The field will only be shown if all of the conditions are met. If no conditions are specified, the field will always be shown.
 	ShowConditions *MetadataShowConditions `json:"showConditions,omitempty" url:"showConditions,omitempty"`
+	// A collection of rules that determine how this field is populated during OCR.
+	OcrRules *MetadataOcrRules `json:"ocrRules,omitempty" url:"ocrRules,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2446,6 +2504,13 @@ func (m *MetadataSchema) GetShowConditions() *MetadataShowConditions {
 		return nil
 	}
 	return m.ShowConditions
+}
+
+func (m *MetadataSchema) GetOcrRules() *MetadataOcrRules {
+	if m == nil {
+		return nil
+	}
+	return m.OcrRules
 }
 
 func (m *MetadataSchema) GetExtraProperties() map[string]interface{} {
