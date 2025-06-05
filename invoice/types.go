@@ -65,4 +65,6 @@ type GetAllInvoicesRequest struct {
 	ReturnPayerMetadata *bool `json:"-" url:"returnPayerMetadata,omitempty"`
 	// Whether to return vendor metadata in the response
 	ReturnVendorMetadata *bool `json:"-" url:"returnVendorMetadata,omitempty"`
+	// Whether to return payment timing in the response
+	ReturnPaymentTiming *bool `json:"-" url:"returnPaymentTiming,omitempty"`
 }

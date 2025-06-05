@@ -1118,6 +1118,43 @@ func (c *CardLinkTokenResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+type CatchallTrigger struct {
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CatchallTrigger) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CatchallTrigger) UnmarshalJSON(data []byte) error {
+	type unmarshaler CatchallTrigger
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CatchallTrigger(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CatchallTrigger) String() string {
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 type CounterpartyCustomizationAccount struct {
 	// The ID the counterparty has assigned to this account.
 	AccountID string `json:"accountId" url:"accountId"`
@@ -5855,6 +5892,8 @@ type Trigger struct {
 	Amount   *AmountTrigger
 	Vendor   *VendorTrigger
 	Metadata *MetadataTrigger
+	// A catchall trigger will trigger if no other triggers match.
+	Catchall *CatchallTrigger
 }
 
 func (t *Trigger) GetType() string {
@@ -5883,6 +5922,13 @@ func (t *Trigger) GetMetadata() *MetadataTrigger {
 		return nil
 	}
 	return t.Metadata
+}
+
+func (t *Trigger) GetCatchall() *CatchallTrigger {
+	if t == nil {
+		return nil
+	}
+	return t.Catchall
 }
 
 func (t *Trigger) UnmarshalJSON(data []byte) error {
@@ -5915,6 +5961,12 @@ func (t *Trigger) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		t.Metadata = value
+	case "catchall":
+		value := new(CatchallTrigger)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		t.Catchall = value
 	}
 	return nil
 }
@@ -5932,6 +5984,9 @@ func (t Trigger) MarshalJSON() ([]byte, error) {
 	if t.Metadata != nil {
 		return internal.MarshalJSONWithExtraProperty(t.Metadata, "type", "metadata")
 	}
+	if t.Catchall != nil {
+		return internal.MarshalJSONWithExtraProperty(t.Catchall, "type", "catchall")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", t)
 }
 
@@ -5939,6 +5994,7 @@ type TriggerVisitor interface {
 	VisitAmount(*AmountTrigger) error
 	VisitVendor(*VendorTrigger) error
 	VisitMetadata(*MetadataTrigger) error
+	VisitCatchall(*CatchallTrigger) error
 }
 
 func (t *Trigger) Accept(visitor TriggerVisitor) error {
@@ -5950,6 +6006,9 @@ func (t *Trigger) Accept(visitor TriggerVisitor) error {
 	}
 	if t.Metadata != nil {
 		return visitor.VisitMetadata(t.Metadata)
+	}
+	if t.Catchall != nil {
+		return visitor.VisitCatchall(t.Catchall)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", t)
 }
@@ -5967,6 +6026,9 @@ func (t *Trigger) validate() error {
 	}
 	if t.Metadata != nil {
 		fields = append(fields, "metadata")
+	}
+	if t.Catchall != nil {
+		fields = append(fields, "catchall")
 	}
 	if len(fields) == 0 {
 		if t.Type != "" {
