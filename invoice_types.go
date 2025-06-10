@@ -7054,7 +7054,7 @@ func (i *InvoiceUpdateRequestWithID) String() string {
 
 type MetadataFilter struct {
 	Key string `json:"key" url:"key"`
-	// If multiple values are provided, the filter will match if any of the values match (OR filter). To filter for the absence of a key, use the value 'NULL'.
+	// If multiple values are provided, the filter will match if any of the values match (OR filter). To filter for the absence of a key, use the value 'NULL'. To filter for the presence of a key, use the value 'NOT NULL'.
 	Value *StringOrStringArray `json:"value,omitempty" url:"value,omitempty"`
 
 	extraProperties map[string]interface{}

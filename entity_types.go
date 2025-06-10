@@ -85,6 +85,96 @@ func (a *AmountTrigger) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
+type ApprovalPolicyHistoryResponse struct {
+	// The ID of the approval policy history
+	ID       string                    `json:"id" url:"id"`
+	Policies []*ApprovalPolicyResponse `json:"policies,omitempty" url:"policies,omitempty"`
+	// The user ID of the user who edited the approval policy
+	UserID    EntityUserID `json:"userId" url:"userId"`
+	CreatedAt time.Time    `json:"createdAt" url:"createdAt"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *ApprovalPolicyHistoryResponse) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *ApprovalPolicyHistoryResponse) GetPolicies() []*ApprovalPolicyResponse {
+	if a == nil {
+		return nil
+	}
+	return a.Policies
+}
+
+func (a *ApprovalPolicyHistoryResponse) GetUserID() EntityUserID {
+	if a == nil {
+		return ""
+	}
+	return a.UserID
+}
+
+func (a *ApprovalPolicyHistoryResponse) GetCreatedAt() time.Time {
+	if a == nil {
+		return time.Time{}
+	}
+	return a.CreatedAt
+}
+
+func (a *ApprovalPolicyHistoryResponse) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
+}
+
+func (a *ApprovalPolicyHistoryResponse) UnmarshalJSON(data []byte) error {
+	type embed ApprovalPolicyHistoryResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+	}{
+		embed: embed(*a),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*a = ApprovalPolicyHistoryResponse(unmarshaler.embed)
+	a.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *ApprovalPolicyHistoryResponse) MarshalJSON() ([]byte, error) {
+	type embed ApprovalPolicyHistoryResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+	}{
+		embed:     embed(*a),
+		CreatedAt: internal.NewDateTime(a.CreatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (a *ApprovalPolicyHistoryResponse) String() string {
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
 type ApprovalPolicyID = string
 
 type ApprovalPolicyRequest struct {

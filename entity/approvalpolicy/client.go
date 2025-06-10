@@ -587,3 +587,223 @@ func (c *Client) Delete(
 	}
 	return nil
 }
+
+// Retrieve the history of approval policy changes for an entity
+func (c *Client) History(
+	ctx context.Context,
+	// Entity ID or Entity ForeignID
+	entityID mercoafinancego.EntityID,
+	opts ...option.RequestOption,
+) ([]*mercoafinancego.ApprovalPolicyHistoryResponse, error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/entity/%v/approval-policies/history",
+		entityID,
+	)
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
+	errorDecoder := func(statusCode int, body io.Reader) error {
+		raw, err := io.ReadAll(body)
+		if err != nil {
+			return err
+		}
+		apiError := core.NewAPIError(statusCode, errors.New(string(raw)))
+		decoder := json.NewDecoder(bytes.NewReader(raw))
+		var discriminant struct {
+			ErrorName string          `json:"errorName"`
+			Content   json.RawMessage `json:"content"`
+		}
+		if err := decoder.Decode(&discriminant); err != nil {
+			return apiError
+		}
+		switch discriminant.ErrorName {
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Unauthorized":
+			value := new(mercoafinancego.Unauthorized)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Forbidden":
+			value := new(mercoafinancego.Forbidden)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "NotFound":
+			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Unimplemented":
+			value := new(mercoafinancego.Unimplemented)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		}
+		return apiError
+	}
+
+	var response []*mercoafinancego.ApprovalPolicyHistoryResponse
+	if err := c.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    errorDecoder,
+		},
+	); err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// Restore approval policies from a history entry.
+func (c *Client) Restore(
+	ctx context.Context,
+	// Entity ID or Entity ForeignID
+	entityID mercoafinancego.EntityID,
+	approvalPolicyHistoryID string,
+	opts ...option.RequestOption,
+) ([]*mercoafinancego.ApprovalPolicyResponse, error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/entity/%v/approval-policies/history/%v/restore",
+		entityID,
+		approvalPolicyHistoryID,
+	)
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
+	errorDecoder := func(statusCode int, body io.Reader) error {
+		raw, err := io.ReadAll(body)
+		if err != nil {
+			return err
+		}
+		apiError := core.NewAPIError(statusCode, errors.New(string(raw)))
+		decoder := json.NewDecoder(bytes.NewReader(raw))
+		var discriminant struct {
+			ErrorName string          `json:"errorName"`
+			Content   json.RawMessage `json:"content"`
+		}
+		if err := decoder.Decode(&discriminant); err != nil {
+			return apiError
+		}
+		switch discriminant.ErrorName {
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Unauthorized":
+			value := new(mercoafinancego.Unauthorized)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Forbidden":
+			value := new(mercoafinancego.Forbidden)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "NotFound":
+			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Unimplemented":
+			value := new(mercoafinancego.Unimplemented)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		}
+		return apiError
+	}
+
+	var response []*mercoafinancego.ApprovalPolicyResponse
+	if err := c.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    errorDecoder,
+		},
+	); err != nil {
+		return nil, err
+	}
+	return response, nil
+}

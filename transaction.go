@@ -34,9 +34,7 @@ type FindTransactionsRequest struct {
 	PayerID []*EntityID `json:"-" url:"payerId,omitempty"`
 	// Filter transactions by vendor ID or vendor foreign ID.
 	VendorID []*EntityID `json:"-" url:"vendorId,omitempty"`
-	// Filter transactions by the ID or foreign ID of the user that created the invoice that created the transaction.
-	CreatorUserID []*EntityUserID `json:"-" url:"creatorUserId,omitempty"`
-	// Filter transactions by invoice ID. Does not support foreign ID.
+	// Filter transactions by invoice ID or invoice foreign ID.
 	InvoiceID []*InvoiceID `json:"-" url:"invoiceId,omitempty"`
 	// Filter transactions by transaction ID.
 	TransactionID []*TransactionID `json:"-" url:"transactionId,omitempty"`
@@ -44,6 +42,8 @@ type FindTransactionsRequest struct {
 	Status []*TransactionStatus `json:"-" url:"status,omitempty"`
 	// Filter transactions by transaction type
 	TransactionType []*TransactionType `json:"-" url:"transactionType,omitempty"`
+	// Filter transactions by creator user ID. Does not work, do not use.
+	CreatorUserID []*string `json:"-" url:"creatorUserId,omitempty"`
 }
 
 type FindTransactionsResponse struct {

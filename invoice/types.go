@@ -21,6 +21,8 @@ type InvoiceInvoiceGetEventsRequest struct {
 type GetAllInvoicesRequest struct {
 	// Filter invoices by the ID or foreign ID of the entity that is the payer or the vendor of the invoice.
 	EntityID []*mercoafinancego.EntityID `json:"-" url:"entityId,omitempty"`
+	// Filter invoices by the ID or foreign ID of the entity group that the entity belongs to.
+	EntityGroupID *mercoafinancego.EntityGroupID `json:"-" url:"entityGroupId,omitempty"`
 	// Start date filter. Defaults to CREATED_AT unless specified the dateType is specified
 	StartDate *time.Time `json:"-" url:"startDate,omitempty"`
 	// End date filter. Defaults to CREATED_AT unless specified the dateType is specified
