@@ -2219,7 +2219,10 @@ func (i *IndividualOnboardingOptionsResponse) String() string {
 }
 
 type InvoiceNotificationConfigurationRequest struct {
+	// The URL that the email will link to.
 	URL string `json:"url" url:"url"`
+	// The subject of the email. If not provided, the default subject will be used.
+	Subject *string `json:"subject,omitempty" url:"subject,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2230,6 +2233,13 @@ func (i *InvoiceNotificationConfigurationRequest) GetURL() string {
 		return ""
 	}
 	return i.URL
+}
+
+func (i *InvoiceNotificationConfigurationRequest) GetSubject() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Subject
 }
 
 func (i *InvoiceNotificationConfigurationRequest) GetExtraProperties() map[string]interface{} {
@@ -2265,8 +2275,11 @@ func (i *InvoiceNotificationConfigurationRequest) String() string {
 }
 
 type InvoiceNotificationConfigurationResponse struct {
-	URL  string           `json:"url" url:"url"`
-	Type NotificationType `json:"type" url:"type"`
+	// The URL that the email will link to.
+	URL string `json:"url" url:"url"`
+	// The subject of the email. If not provided, the default subject will be used.
+	Subject *string          `json:"subject,omitempty" url:"subject,omitempty"`
+	Type    NotificationType `json:"type" url:"type"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2277,6 +2290,13 @@ func (i *InvoiceNotificationConfigurationResponse) GetURL() string {
 		return ""
 	}
 	return i.URL
+}
+
+func (i *InvoiceNotificationConfigurationResponse) GetSubject() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Subject
 }
 
 func (i *InvoiceNotificationConfigurationResponse) GetType() NotificationType {

@@ -476,6 +476,43 @@ func (a *ApproverRule) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
+type AutomaticRule struct {
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AutomaticRule) GetExtraProperties() map[string]interface{} {
+	return a.extraProperties
+}
+
+func (a *AutomaticRule) UnmarshalJSON(data []byte) error {
+	type unmarshaler AutomaticRule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AutomaticRule(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AutomaticRule) String() string {
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
 type BulkConnectedEntity struct {
 	// The ID of the entity to connect to.
 	ID EntityID `json:"id" url:"id"`
@@ -5445,8 +5482,11 @@ func (r *Responsibilities) String() string {
 }
 
 type Rule struct {
-	Type     string
+	Type string
+	// A rule that will assign approvers to an invoice.
 	Approver *ApproverRule
+	// A rule that will automatically approve an invoice, regardless of any other rules that were triggered.
+	Automatic *AutomaticRule
 }
 
 func (r *Rule) GetType() string {
@@ -5461,6 +5501,13 @@ func (r *Rule) GetApprover() *ApproverRule {
 		return nil
 	}
 	return r.Approver
+}
+
+func (r *Rule) GetAutomatic() *AutomaticRule {
+	if r == nil {
+		return nil
+	}
+	return r.Automatic
 }
 
 func (r *Rule) UnmarshalJSON(data []byte) error {
@@ -5481,6 +5528,12 @@ func (r *Rule) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		r.Approver = value
+	case "automatic":
+		value := new(AutomaticRule)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		r.Automatic = value
 	}
 	return nil
 }
@@ -5492,16 +5545,23 @@ func (r Rule) MarshalJSON() ([]byte, error) {
 	if r.Approver != nil {
 		return internal.MarshalJSONWithExtraProperty(r.Approver, "type", "approver")
 	}
+	if r.Automatic != nil {
+		return internal.MarshalJSONWithExtraProperty(r.Automatic, "type", "automatic")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", r)
 }
 
 type RuleVisitor interface {
 	VisitApprover(*ApproverRule) error
+	VisitAutomatic(*AutomaticRule) error
 }
 
 func (r *Rule) Accept(visitor RuleVisitor) error {
 	if r.Approver != nil {
 		return visitor.VisitApprover(r.Approver)
+	}
+	if r.Automatic != nil {
+		return visitor.VisitAutomatic(r.Automatic)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", r)
 }
@@ -5513,6 +5573,9 @@ func (r *Rule) validate() error {
 	var fields []string
 	if r.Approver != nil {
 		fields = append(fields, "approver")
+	}
+	if r.Automatic != nil {
+		fields = append(fields, "automatic")
 	}
 	if len(fields) == 0 {
 		if r.Type != "" {
