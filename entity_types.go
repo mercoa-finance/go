@@ -34,6 +34,8 @@ func (a AccountType) Ptr() *AccountType {
 type AmountTrigger struct {
 	Amount   float64      `json:"amount" url:"amount"`
 	Currency CurrencyCode `json:"currency" url:"currency"`
+	// The comparison operator to use when comparing the amount to the trigger amount. Defaults to gte.
+	Comparison *Comparison `json:"comparison,omitempty" url:"comparison,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -51,6 +53,13 @@ func (a *AmountTrigger) GetCurrency() CurrencyCode {
 		return ""
 	}
 	return a.Currency
+}
+
+func (a *AmountTrigger) GetComparison() *Comparison {
+	if a == nil {
+		return nil
+	}
+	return a.Comparison
 }
 
 func (a *AmountTrigger) GetExtraProperties() map[string]interface{} {
@@ -1280,6 +1289,37 @@ func (c *CatchallTrigger) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+type Comparison string
+
+const (
+	ComparisonEq  Comparison = "eq"
+	ComparisonGt  Comparison = "gt"
+	ComparisonGte Comparison = "gte"
+	ComparisonLt  Comparison = "lt"
+	ComparisonLte Comparison = "lte"
+)
+
+func NewComparisonFromString(s string) (Comparison, error) {
+	switch s {
+	case "eq":
+		return ComparisonEq, nil
+	case "gt":
+		return ComparisonGt, nil
+	case "gte":
+		return ComparisonGte, nil
+	case "lt":
+		return ComparisonLt, nil
+	case "lte":
+		return ComparisonLte, nil
+	}
+	var t Comparison
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c Comparison) Ptr() *Comparison {
+	return &c
 }
 
 type CounterpartyCustomizationAccount struct {

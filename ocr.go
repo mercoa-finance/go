@@ -223,8 +223,10 @@ type OcrRequest struct {
 	Image string `json:"image" url:"image"`
 	// Limit OCR vendor search to a specific network
 	VendorNetwork *VendorNetwork `json:"vendorNetwork,omitempty" url:"vendorNetwork,omitempty"`
-	// When using the Entity vendor network, specify the entity to use if. EntityId on an auth token will take precedence over this parameter.
+	// When using the Entity vendor network, specify the entity to use. EntityId on an auth token will take precedence over this parameter.
 	EntityID *EntityID `json:"entityId,omitempty" url:"entityId,omitempty"`
+	// If true, attempt to split the document into subdocuments before processing. Default is false. If a document is split into subdocuments, the linked OCR jobs will be accessible via the linkedJobIds field on each OCR job response.
+	SplitDocument *bool `json:"splitDocument,omitempty" url:"splitDocument,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -256,6 +258,13 @@ func (o *OcrRequest) GetEntityID() *EntityID {
 		return nil
 	}
 	return o.EntityID
+}
+
+func (o *OcrRequest) GetSplitDocument() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.SplitDocument
 }
 
 func (o *OcrRequest) GetExtraProperties() map[string]interface{} {

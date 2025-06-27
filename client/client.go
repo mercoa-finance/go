@@ -5,7 +5,6 @@ package client
 import (
 	banklookup "github.com/mercoa-finance/go/banklookup"
 	calculate "github.com/mercoa-finance/go/calculate"
-	contractclient "github.com/mercoa-finance/go/contract/client"
 	core "github.com/mercoa-finance/go/core"
 	custompaymentmethodschema "github.com/mercoa-finance/go/custompaymentmethodschema"
 	entityclient "github.com/mercoa-finance/go/entity/client"
@@ -16,6 +15,7 @@ import (
 	ocr "github.com/mercoa-finance/go/ocr"
 	option "github.com/mercoa-finance/go/option"
 	organizationclient "github.com/mercoa-finance/go/organization/client"
+	paymentgatewayclient "github.com/mercoa-finance/go/paymentgateway/client"
 	paymentmethods "github.com/mercoa-finance/go/paymentmethods"
 	transaction "github.com/mercoa-finance/go/transaction"
 	http "net/http"
@@ -26,12 +26,12 @@ type Client struct {
 	caller  *internal.Caller
 	header  http.Header
 
-	Contract                  *contractclient.Client
 	EntityGroup               *entitygroupclient.Client
 	Entity                    *entityclient.Client
 	InvoiceTemplate           *invoicetemplateclient.Client
 	Invoice                   *invoiceclient.Client
 	Organization              *organizationclient.Client
+	PaymentGateway            *paymentgatewayclient.Client
 	BankLookup                *banklookup.Client
 	Calculate                 *calculate.Client
 	CustomPaymentMethodSchema *custompaymentmethodschema.Client
@@ -51,12 +51,12 @@ func NewClient(opts ...option.RequestOption) *Client {
 			},
 		),
 		header:                    options.ToHeader(),
-		Contract:                  contractclient.NewClient(opts...),
 		EntityGroup:               entitygroupclient.NewClient(opts...),
 		Entity:                    entityclient.NewClient(opts...),
 		InvoiceTemplate:           invoicetemplateclient.NewClient(opts...),
 		Invoice:                   invoiceclient.NewClient(opts...),
 		Organization:              organizationclient.NewClient(opts...),
+		PaymentGateway:            paymentgatewayclient.NewClient(opts...),
 		BankLookup:                banklookup.NewClient(opts...),
 		Calculate:                 calculate.NewClient(opts...),
 		CustomPaymentMethodSchema: custompaymentmethodschema.NewClient(opts...),

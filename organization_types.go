@@ -3442,8 +3442,11 @@ func (o *OnboardingOptionsResponse) String() string {
 type OrganizationID = string
 
 type OrganizationRequest struct {
-	Name                             *string                                  `json:"name,omitempty" url:"name,omitempty"`
-	Logo                             *string                                  `json:"logo,omitempty" url:"logo,omitempty"`
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Base64 encoded logo image.
+	Logo *string `json:"logo,omitempty" url:"logo,omitempty"`
+	// Base64 encoded favicon image.
+	Favicon                          *string                                  `json:"favicon,omitempty" url:"favicon,omitempty"`
 	WebsiteURL                       *string                                  `json:"websiteUrl,omitempty" url:"websiteUrl,omitempty"`
 	SupportEmail                     *string                                  `json:"supportEmail,omitempty" url:"supportEmail,omitempty"`
 	PaymentMethods                   *PaymentMethodsRequest                   `json:"paymentMethods,omitempty" url:"paymentMethods,omitempty"`
@@ -3473,6 +3476,13 @@ func (o *OrganizationRequest) GetLogo() *string {
 		return nil
 	}
 	return o.Logo
+}
+
+func (o *OrganizationRequest) GetFavicon() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Favicon
 }
 
 func (o *OrganizationRequest) GetWebsiteURL() *string {
@@ -3596,6 +3606,7 @@ type OrganizationResponse struct {
 	Sandbox                          bool                                      `json:"sandbox" url:"sandbox"`
 	Name                             string                                    `json:"name" url:"name"`
 	LogoURL                          *string                                   `json:"logoUrl,omitempty" url:"logoUrl,omitempty"`
+	FaviconURL                       *string                                   `json:"faviconUrl,omitempty" url:"faviconUrl,omitempty"`
 	WebsiteURL                       *string                                   `json:"websiteUrl,omitempty" url:"websiteUrl,omitempty"`
 	SupportEmail                     *string                                   `json:"supportEmail,omitempty" url:"supportEmail,omitempty"`
 	PaymentMethods                   *PaymentMethodsResponse                   `json:"paymentMethods,omitempty" url:"paymentMethods,omitempty"`
@@ -3640,6 +3651,13 @@ func (o *OrganizationResponse) GetLogoURL() *string {
 		return nil
 	}
 	return o.LogoURL
+}
+
+func (o *OrganizationResponse) GetFaviconURL() *string {
+	if o == nil {
+		return nil
+	}
+	return o.FaviconURL
 }
 
 func (o *OrganizationResponse) GetWebsiteURL() *string {
