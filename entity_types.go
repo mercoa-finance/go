@@ -1605,6 +1605,10 @@ type CounterpartyResponse struct {
 	// URL for the entity logo
 	Logo   *string      `json:"logo,omitempty" url:"logo,omitempty"`
 	Status EntityStatus `json:"status" url:"status"`
+	// The OatFi status of this entity
+	OatfiStatus *string `json:"oatfiStatus,omitempty" url:"oatfiStatus,omitempty"`
+	// The OatFi underwriting response of this entity
+	OatfiUnderwritingResponse map[string]string `json:"oatfiUnderwritingResponse,omitempty" url:"oatfiUnderwritingResponse,omitempty"`
 	// True if this entity has accepted the terms of service.
 	AcceptedTos bool `json:"acceptedTos" url:"acceptedTos"`
 	// True if this entity can pay invoices.
@@ -1704,6 +1708,20 @@ func (c *CounterpartyResponse) GetStatus() EntityStatus {
 		return ""
 	}
 	return c.Status
+}
+
+func (c *CounterpartyResponse) GetOatfiStatus() *string {
+	if c == nil {
+		return nil
+	}
+	return c.OatfiStatus
+}
+
+func (c *CounterpartyResponse) GetOatfiUnderwritingResponse() map[string]string {
+	if c == nil {
+		return nil
+	}
+	return c.OatfiUnderwritingResponse
 }
 
 func (c *CounterpartyResponse) GetAcceptedTos() bool {
@@ -3089,6 +3107,10 @@ type EntityResponse struct {
 	// URL for the entity logo
 	Logo   *string      `json:"logo,omitempty" url:"logo,omitempty"`
 	Status EntityStatus `json:"status" url:"status"`
+	// The OatFi status of this entity
+	OatfiStatus *string `json:"oatfiStatus,omitempty" url:"oatfiStatus,omitempty"`
+	// The OatFi underwriting response of this entity
+	OatfiUnderwritingResponse map[string]string `json:"oatfiUnderwritingResponse,omitempty" url:"oatfiUnderwritingResponse,omitempty"`
 	// True if this entity has accepted the terms of service.
 	AcceptedTos bool `json:"acceptedTos" url:"acceptedTos"`
 	// True if this entity can pay invoices.
@@ -3183,6 +3205,20 @@ func (e *EntityResponse) GetStatus() EntityStatus {
 		return ""
 	}
 	return e.Status
+}
+
+func (e *EntityResponse) GetOatfiStatus() *string {
+	if e == nil {
+		return nil
+	}
+	return e.OatfiStatus
+}
+
+func (e *EntityResponse) GetOatfiUnderwritingResponse() map[string]string {
+	if e == nil {
+		return nil
+	}
+	return e.OatfiUnderwritingResponse
 }
 
 func (e *EntityResponse) GetAcceptedTos() bool {
@@ -3690,6 +3726,10 @@ type EntityWithPaymentMethodResponse struct {
 	// URL for the entity logo
 	Logo   *string      `json:"logo,omitempty" url:"logo,omitempty"`
 	Status EntityStatus `json:"status" url:"status"`
+	// The OatFi status of this entity
+	OatfiStatus *string `json:"oatfiStatus,omitempty" url:"oatfiStatus,omitempty"`
+	// The OatFi underwriting response of this entity
+	OatfiUnderwritingResponse map[string]string `json:"oatfiUnderwritingResponse,omitempty" url:"oatfiUnderwritingResponse,omitempty"`
 	// True if this entity has accepted the terms of service.
 	AcceptedTos bool `json:"acceptedTos" url:"acceptedTos"`
 	// True if this entity can pay invoices.
@@ -3785,6 +3825,20 @@ func (e *EntityWithPaymentMethodResponse) GetStatus() EntityStatus {
 		return ""
 	}
 	return e.Status
+}
+
+func (e *EntityWithPaymentMethodResponse) GetOatfiStatus() *string {
+	if e == nil {
+		return nil
+	}
+	return e.OatfiStatus
+}
+
+func (e *EntityWithPaymentMethodResponse) GetOatfiUnderwritingResponse() map[string]string {
+	if e == nil {
+		return nil
+	}
+	return e.OatfiUnderwritingResponse
 }
 
 func (e *EntityWithPaymentMethodResponse) GetAcceptedTos() bool {

@@ -3459,6 +3459,8 @@ type OrganizationRequest struct {
 	NotificationEmailTemplate        *NotificationEmailTemplateRequest        `json:"notificationEmailTemplate,omitempty" url:"notificationEmailTemplate,omitempty"`
 	CustomDomains                    []string                                 `json:"customDomains,omitempty" url:"customDomains,omitempty"`
 	RolePermissions                  *RolePermissionRequest                   `json:"rolePermissions,omitempty" url:"rolePermissions,omitempty"`
+	// If true, all notifications for this organization will be disabled.
+	NotificationsDisabled *bool `json:"notificationsDisabled,omitempty" url:"notificationsDisabled,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -3569,6 +3571,13 @@ func (o *OrganizationRequest) GetRolePermissions() *RolePermissionRequest {
 	return o.RolePermissions
 }
 
+func (o *OrganizationRequest) GetNotificationsDisabled() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.NotificationsDisabled
+}
+
 func (o *OrganizationRequest) GetExtraProperties() map[string]interface{} {
 	return o.extraProperties
 }
@@ -3620,6 +3629,7 @@ type OrganizationResponse struct {
 	CustomDomains                    []string                                  `json:"customDomains,omitempty" url:"customDomains,omitempty"`
 	OrganizationEntityID             *EntityID                                 `json:"organizationEntityId,omitempty" url:"organizationEntityId,omitempty"`
 	RolePermissions                  *RolePermissionResponse                   `json:"rolePermissions,omitempty" url:"rolePermissions,omitempty"`
+	NotificationsDisabled            *bool                                     `json:"notificationsDisabled,omitempty" url:"notificationsDisabled,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -3749,6 +3759,13 @@ func (o *OrganizationResponse) GetRolePermissions() *RolePermissionResponse {
 		return nil
 	}
 	return o.RolePermissions
+}
+
+func (o *OrganizationResponse) GetNotificationsDisabled() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.NotificationsDisabled
 }
 
 func (o *OrganizationResponse) GetExtraProperties() map[string]interface{} {

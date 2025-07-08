@@ -11,6 +11,7 @@ import (
 	core "github.com/mercoa-finance/go/core"
 	entity "github.com/mercoa-finance/go/entity"
 	approvalpolicy "github.com/mercoa-finance/go/entity/approvalpolicy"
+	bnpl "github.com/mercoa-finance/go/entity/bnpl"
 	bulk "github.com/mercoa-finance/go/entity/bulk"
 	counterpartyclient "github.com/mercoa-finance/go/entity/counterparty/client"
 	customization "github.com/mercoa-finance/go/entity/customization"
@@ -40,6 +41,7 @@ type Client struct {
 	PaymentMethod            *paymentmethodclient.Client
 	User                     *userclient.Client
 	ApprovalPolicy           *approvalpolicy.Client
+	Bnpl                     *bnpl.Client
 	Bulk                     *bulk.Client
 	Customization            *customization.Client
 	Document                 *document.Client
@@ -67,6 +69,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		PaymentMethod:            paymentmethodclient.NewClient(opts...),
 		User:                     userclient.NewClient(opts...),
 		ApprovalPolicy:           approvalpolicy.NewClient(opts...),
+		Bnpl:                     bnpl.NewClient(opts...),
 		Bulk:                     bulk.NewClient(opts...),
 		Customization:            customization.NewClient(opts...),
 		Document:                 document.NewClient(opts...),

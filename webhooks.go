@@ -900,6 +900,98 @@ func (i *InvoiceWebhook) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
+type OcrJobCompletedWebhook struct {
+	// The type of the event.
+	EventType string `json:"eventType" url:"eventType"`
+	// The ID of the OCR job that completed.
+	JobID OcrJobID `json:"jobId" url:"jobId"`
+	// The final status of the OCR job.
+	Status OcrJobStatus `json:"status" url:"status"`
+	// The OCR job results. Only present if the job was successful.
+	Data *OcrResponse `json:"data,omitempty" url:"data,omitempty"`
+	// The IDs of any linked OCR jobs that are processing other subdocuments of the same document.
+	LinkedJobIDs []OcrJobID `json:"linkedJobIds,omitempty" url:"linkedJobIds,omitempty"`
+	// The start and end page numbers of the corresponding subdocument (zero-indexed, inclusive). If not provided, the document was not split during OCR.
+	PageRange *OcrPageRange `json:"pageRange,omitempty" url:"pageRange,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (o *OcrJobCompletedWebhook) GetEventType() string {
+	if o == nil {
+		return ""
+	}
+	return o.EventType
+}
+
+func (o *OcrJobCompletedWebhook) GetJobID() OcrJobID {
+	if o == nil {
+		return ""
+	}
+	return o.JobID
+}
+
+func (o *OcrJobCompletedWebhook) GetStatus() OcrJobStatus {
+	if o == nil {
+		return ""
+	}
+	return o.Status
+}
+
+func (o *OcrJobCompletedWebhook) GetData() *OcrResponse {
+	if o == nil {
+		return nil
+	}
+	return o.Data
+}
+
+func (o *OcrJobCompletedWebhook) GetLinkedJobIDs() []OcrJobID {
+	if o == nil {
+		return nil
+	}
+	return o.LinkedJobIDs
+}
+
+func (o *OcrJobCompletedWebhook) GetPageRange() *OcrPageRange {
+	if o == nil {
+		return nil
+	}
+	return o.PageRange
+}
+
+func (o *OcrJobCompletedWebhook) GetExtraProperties() map[string]interface{} {
+	return o.extraProperties
+}
+
+func (o *OcrJobCompletedWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler OcrJobCompletedWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*o = OcrJobCompletedWebhook(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+	o.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (o *OcrJobCompletedWebhook) String() string {
+	if len(o.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(o); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", o)
+}
+
 type PaymentMethodWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`

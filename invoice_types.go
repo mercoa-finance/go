@@ -540,6 +540,1041 @@ func (b BankDeliveryMethod) Ptr() *BankDeliveryMethod {
 	return &b
 }
 
+type BnplCadence string
+
+const (
+	BnplCadenceWeekly   BnplCadence = "WEEKLY"
+	BnplCadenceBiweekly BnplCadence = "BIWEEKLY"
+	BnplCadenceMonthly  BnplCadence = "MONTHLY"
+)
+
+func NewBnplCadenceFromString(s string) (BnplCadence, error) {
+	switch s {
+	case "WEEKLY":
+		return BnplCadenceWeekly, nil
+	case "BIWEEKLY":
+		return BnplCadenceBiweekly, nil
+	case "MONTHLY":
+		return BnplCadenceMonthly, nil
+	}
+	var t BnplCadence
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (b BnplCadence) Ptr() *BnplCadence {
+	return &b
+}
+
+type BnplDayOfWeek string
+
+const (
+	BnplDayOfWeekMonday    BnplDayOfWeek = "MONDAY"
+	BnplDayOfWeekTuesday   BnplDayOfWeek = "TUESDAY"
+	BnplDayOfWeekWednesday BnplDayOfWeek = "WEDNESDAY"
+	BnplDayOfWeekThursday  BnplDayOfWeek = "THURSDAY"
+	BnplDayOfWeekFriday    BnplDayOfWeek = "FRIDAY"
+	BnplDayOfWeekSaturday  BnplDayOfWeek = "SATURDAY"
+	BnplDayOfWeekSunday    BnplDayOfWeek = "SUNDAY"
+)
+
+func NewBnplDayOfWeekFromString(s string) (BnplDayOfWeek, error) {
+	switch s {
+	case "MONDAY":
+		return BnplDayOfWeekMonday, nil
+	case "TUESDAY":
+		return BnplDayOfWeekTuesday, nil
+	case "WEDNESDAY":
+		return BnplDayOfWeekWednesday, nil
+	case "THURSDAY":
+		return BnplDayOfWeekThursday, nil
+	case "FRIDAY":
+		return BnplDayOfWeekFriday, nil
+	case "SATURDAY":
+		return BnplDayOfWeekSaturday, nil
+	case "SUNDAY":
+		return BnplDayOfWeekSunday, nil
+	}
+	var t BnplDayOfWeek
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (b BnplDayOfWeek) Ptr() *BnplDayOfWeek {
+	return &b
+}
+
+type BnplFees struct {
+	// Total fees in cents
+	BaseFeeAmount int `json:"baseFeeAmount" url:"baseFeeAmount"`
+	// Fee percentage as a decimal (e.g., 1.4 for 1.4%)
+	BaseFeePercentage float64 `json:"baseFeePercentage" url:"baseFeePercentage"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BnplFees) GetBaseFeeAmount() int {
+	if b == nil {
+		return 0
+	}
+	return b.BaseFeeAmount
+}
+
+func (b *BnplFees) GetBaseFeePercentage() float64 {
+	if b == nil {
+		return 0
+	}
+	return b.BaseFeePercentage
+}
+
+func (b *BnplFees) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BnplFees) UnmarshalJSON(data []byte) error {
+	type unmarshaler BnplFees
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BnplFees(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BnplFees) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BnplInstallment struct {
+	Number  int                 `json:"number" url:"number"`
+	DueDate string              `json:"dueDate" url:"dueDate"`
+	Amount  int                 `json:"amount" url:"amount"`
+	Type    BnplInstallmentType `json:"type" url:"type"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BnplInstallment) GetNumber() int {
+	if b == nil {
+		return 0
+	}
+	return b.Number
+}
+
+func (b *BnplInstallment) GetDueDate() string {
+	if b == nil {
+		return ""
+	}
+	return b.DueDate
+}
+
+func (b *BnplInstallment) GetAmount() int {
+	if b == nil {
+		return 0
+	}
+	return b.Amount
+}
+
+func (b *BnplInstallment) GetType() BnplInstallmentType {
+	if b == nil {
+		return ""
+	}
+	return b.Type
+}
+
+func (b *BnplInstallment) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BnplInstallment) UnmarshalJSON(data []byte) error {
+	type unmarshaler BnplInstallment
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BnplInstallment(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BnplInstallment) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BnplInstallmentTotalPaid struct {
+	// Total principal paid in cents
+	PrincipalBalance int `json:"principalBalance" url:"principalBalance"`
+	// Total interest paid in cents
+	DueInterest int `json:"dueInterest" url:"dueInterest"`
+	// Total late fees paid in cents
+	TotalLateFees int `json:"totalLateFees" url:"totalLateFees"`
+	// Total fees paid in cents
+	FeeAmount int `json:"feeAmount" url:"feeAmount"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BnplInstallmentTotalPaid) GetPrincipalBalance() int {
+	if b == nil {
+		return 0
+	}
+	return b.PrincipalBalance
+}
+
+func (b *BnplInstallmentTotalPaid) GetDueInterest() int {
+	if b == nil {
+		return 0
+	}
+	return b.DueInterest
+}
+
+func (b *BnplInstallmentTotalPaid) GetTotalLateFees() int {
+	if b == nil {
+		return 0
+	}
+	return b.TotalLateFees
+}
+
+func (b *BnplInstallmentTotalPaid) GetFeeAmount() int {
+	if b == nil {
+		return 0
+	}
+	return b.FeeAmount
+}
+
+func (b *BnplInstallmentTotalPaid) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BnplInstallmentTotalPaid) UnmarshalJSON(data []byte) error {
+	type unmarshaler BnplInstallmentTotalPaid
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BnplInstallmentTotalPaid(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BnplInstallmentTotalPaid) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BnplInstallmentType string
+
+const (
+	BnplInstallmentTypeDownPayment BnplInstallmentType = "DOWN_PAYMENT"
+	BnplInstallmentTypeRegular     BnplInstallmentType = "REGULAR"
+)
+
+func NewBnplInstallmentTypeFromString(s string) (BnplInstallmentType, error) {
+	switch s {
+	case "DOWN_PAYMENT":
+		return BnplInstallmentTypeDownPayment, nil
+	case "REGULAR":
+		return BnplInstallmentTypeRegular, nil
+	}
+	var t BnplInstallmentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (b BnplInstallmentType) Ptr() *BnplInstallmentType {
+	return &b
+}
+
+type BnplLoanInstallment struct {
+	// Installment number (0 for down payment)
+	Number int `json:"number" url:"number"`
+	// Start date as timestamp in milliseconds
+	StartDate int `json:"startDate" url:"startDate"`
+	// Due date as timestamp in milliseconds
+	DueDate int `json:"dueDate" url:"dueDate"`
+	// Maturity date as timestamp in milliseconds
+	MaturityDate int `json:"maturityDate" url:"maturityDate"`
+	// Outstanding balance for this installment in cents
+	OutstandingBalance int `json:"outstandingBalance" url:"outstandingBalance"`
+	// Total amount for this installment in cents
+	Amount int `json:"amount" url:"amount"`
+	// Status of this installment
+	Status BnplLoanStatus `json:"status" url:"status"`
+	// Type of installment
+	Type BnplInstallmentType `json:"type" url:"type"`
+	// Total amounts paid for this installment
+	TotalPaid *BnplInstallmentTotalPaid `json:"totalPaid,omitempty" url:"totalPaid,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BnplLoanInstallment) GetNumber() int {
+	if b == nil {
+		return 0
+	}
+	return b.Number
+}
+
+func (b *BnplLoanInstallment) GetStartDate() int {
+	if b == nil {
+		return 0
+	}
+	return b.StartDate
+}
+
+func (b *BnplLoanInstallment) GetDueDate() int {
+	if b == nil {
+		return 0
+	}
+	return b.DueDate
+}
+
+func (b *BnplLoanInstallment) GetMaturityDate() int {
+	if b == nil {
+		return 0
+	}
+	return b.MaturityDate
+}
+
+func (b *BnplLoanInstallment) GetOutstandingBalance() int {
+	if b == nil {
+		return 0
+	}
+	return b.OutstandingBalance
+}
+
+func (b *BnplLoanInstallment) GetAmount() int {
+	if b == nil {
+		return 0
+	}
+	return b.Amount
+}
+
+func (b *BnplLoanInstallment) GetStatus() BnplLoanStatus {
+	if b == nil {
+		return ""
+	}
+	return b.Status
+}
+
+func (b *BnplLoanInstallment) GetType() BnplInstallmentType {
+	if b == nil {
+		return ""
+	}
+	return b.Type
+}
+
+func (b *BnplLoanInstallment) GetTotalPaid() *BnplInstallmentTotalPaid {
+	if b == nil {
+		return nil
+	}
+	return b.TotalPaid
+}
+
+func (b *BnplLoanInstallment) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BnplLoanInstallment) UnmarshalJSON(data []byte) error {
+	type unmarshaler BnplLoanInstallment
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BnplLoanInstallment(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BnplLoanInstallment) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BnplLoanResponse struct {
+	// The unique identifier for the loan
+	LoanID string `json:"loanId" url:"loanId"`
+	// The external ID of the business entity
+	BusinessExternalID string `json:"businessExternalId" url:"businessExternalId"`
+	// The final due date as timestamp in milliseconds
+	DueDate int `json:"dueDate" url:"dueDate"`
+	// The original principal balance in cents
+	OriginalPrincipalBalance int `json:"originalPrincipalBalance" url:"originalPrincipalBalance"`
+	// The date the loan was drawn as timestamp in milliseconds
+	DrawDate int `json:"drawDate" url:"drawDate"`
+	// The total amount repaid in cents
+	RepaidAmount int `json:"repaidAmount" url:"repaidAmount"`
+	// The ID of the payment method used
+	PaymentMethodID string `json:"paymentMethodId" url:"paymentMethodId"`
+	// The ID of the repayment method
+	RepaymentMethodID string `json:"repaymentMethodId" url:"repaymentMethodId"`
+	// The current status of the loan
+	Status BnplLoanStatus `json:"status" url:"status"`
+	// The current outstanding balance breakdown
+	OutstandingBalance *BnplOutstandingBalance `json:"outstandingBalance,omitempty" url:"outstandingBalance,omitempty"`
+	// URL to the terms agreement file
+	TermsAgreementFile *string `json:"termsAgreementFile,omitempty" url:"termsAgreementFile,omitempty"`
+	// URL to the invoice PDF
+	InvoiceURL *string `json:"invoiceUrl,omitempty" url:"invoiceUrl,omitempty"`
+	// The original invoice amount in cents
+	InvoiceAmount int `json:"invoiceAmount" url:"invoiceAmount"`
+	// The external ID of the associated invoice
+	InvoiceExternalID string `json:"invoiceExternalId" url:"invoiceExternalId"`
+	// The original invoice due date as timestamp in milliseconds
+	InvoiceDueDate int `json:"invoiceDueDate" url:"invoiceDueDate"`
+	// The down payment amount in cents
+	DownPaymentAmount int `json:"downPaymentAmount" url:"downPaymentAmount"`
+	// List of all installments for this loan
+	Installments []*BnplLoanInstallment `json:"installments,omitempty" url:"installments,omitempty"`
+	// The payment cadence for the loan
+	Cadence BnplCadence `json:"cadence" url:"cadence"`
+	// The base fee rate as a percentage
+	BaseFeeRate float64 `json:"baseFeeRate" url:"baseFeeRate"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BnplLoanResponse) GetLoanID() string {
+	if b == nil {
+		return ""
+	}
+	return b.LoanID
+}
+
+func (b *BnplLoanResponse) GetBusinessExternalID() string {
+	if b == nil {
+		return ""
+	}
+	return b.BusinessExternalID
+}
+
+func (b *BnplLoanResponse) GetDueDate() int {
+	if b == nil {
+		return 0
+	}
+	return b.DueDate
+}
+
+func (b *BnplLoanResponse) GetOriginalPrincipalBalance() int {
+	if b == nil {
+		return 0
+	}
+	return b.OriginalPrincipalBalance
+}
+
+func (b *BnplLoanResponse) GetDrawDate() int {
+	if b == nil {
+		return 0
+	}
+	return b.DrawDate
+}
+
+func (b *BnplLoanResponse) GetRepaidAmount() int {
+	if b == nil {
+		return 0
+	}
+	return b.RepaidAmount
+}
+
+func (b *BnplLoanResponse) GetPaymentMethodID() string {
+	if b == nil {
+		return ""
+	}
+	return b.PaymentMethodID
+}
+
+func (b *BnplLoanResponse) GetRepaymentMethodID() string {
+	if b == nil {
+		return ""
+	}
+	return b.RepaymentMethodID
+}
+
+func (b *BnplLoanResponse) GetStatus() BnplLoanStatus {
+	if b == nil {
+		return ""
+	}
+	return b.Status
+}
+
+func (b *BnplLoanResponse) GetOutstandingBalance() *BnplOutstandingBalance {
+	if b == nil {
+		return nil
+	}
+	return b.OutstandingBalance
+}
+
+func (b *BnplLoanResponse) GetTermsAgreementFile() *string {
+	if b == nil {
+		return nil
+	}
+	return b.TermsAgreementFile
+}
+
+func (b *BnplLoanResponse) GetInvoiceURL() *string {
+	if b == nil {
+		return nil
+	}
+	return b.InvoiceURL
+}
+
+func (b *BnplLoanResponse) GetInvoiceAmount() int {
+	if b == nil {
+		return 0
+	}
+	return b.InvoiceAmount
+}
+
+func (b *BnplLoanResponse) GetInvoiceExternalID() string {
+	if b == nil {
+		return ""
+	}
+	return b.InvoiceExternalID
+}
+
+func (b *BnplLoanResponse) GetInvoiceDueDate() int {
+	if b == nil {
+		return 0
+	}
+	return b.InvoiceDueDate
+}
+
+func (b *BnplLoanResponse) GetDownPaymentAmount() int {
+	if b == nil {
+		return 0
+	}
+	return b.DownPaymentAmount
+}
+
+func (b *BnplLoanResponse) GetInstallments() []*BnplLoanInstallment {
+	if b == nil {
+		return nil
+	}
+	return b.Installments
+}
+
+func (b *BnplLoanResponse) GetCadence() BnplCadence {
+	if b == nil {
+		return ""
+	}
+	return b.Cadence
+}
+
+func (b *BnplLoanResponse) GetBaseFeeRate() float64 {
+	if b == nil {
+		return 0
+	}
+	return b.BaseFeeRate
+}
+
+func (b *BnplLoanResponse) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BnplLoanResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler BnplLoanResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BnplLoanResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BnplLoanResponse) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BnplLoanStatus string
+
+const (
+	BnplLoanStatusPending    BnplLoanStatus = "PENDING"
+	BnplLoanStatusActive     BnplLoanStatus = "ACTIVE"
+	BnplLoanStatusPaidOff    BnplLoanStatus = "PAID_OFF"
+	BnplLoanStatusDelinquent BnplLoanStatus = "DELINQUENT"
+)
+
+func NewBnplLoanStatusFromString(s string) (BnplLoanStatus, error) {
+	switch s {
+	case "PENDING":
+		return BnplLoanStatusPending, nil
+	case "ACTIVE":
+		return BnplLoanStatusActive, nil
+	case "PAID_OFF":
+		return BnplLoanStatusPaidOff, nil
+	case "DELINQUENT":
+		return BnplLoanStatusDelinquent, nil
+	}
+	var t BnplLoanStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (b BnplLoanStatus) Ptr() *BnplLoanStatus {
+	return &b
+}
+
+type BnplOfferRequest struct {
+	// The payment cadence for the BNPL offer
+	Cadence BnplCadence `json:"cadence" url:"cadence"`
+	// The start date for installments in YYYY-MM-DD format
+	InstallmentsStartDate string `json:"installmentsStartDate" url:"installmentsStartDate"`
+	// The number of installments
+	NumberOfInstallments int `json:"numberOfInstallments" url:"numberOfInstallments"`
+	// The day of the week for payments
+	PaymentDayOfWeek BnplDayOfWeek `json:"paymentDayOfWeek" url:"paymentDayOfWeek"`
+	// The due date for the down payment in YYYY-MM-DD format
+	DownPaymentDueDate string `json:"downPaymentDueDate" url:"downPaymentDueDate"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BnplOfferRequest) GetCadence() BnplCadence {
+	if b == nil {
+		return ""
+	}
+	return b.Cadence
+}
+
+func (b *BnplOfferRequest) GetInstallmentsStartDate() string {
+	if b == nil {
+		return ""
+	}
+	return b.InstallmentsStartDate
+}
+
+func (b *BnplOfferRequest) GetNumberOfInstallments() int {
+	if b == nil {
+		return 0
+	}
+	return b.NumberOfInstallments
+}
+
+func (b *BnplOfferRequest) GetPaymentDayOfWeek() BnplDayOfWeek {
+	if b == nil {
+		return ""
+	}
+	return b.PaymentDayOfWeek
+}
+
+func (b *BnplOfferRequest) GetDownPaymentDueDate() string {
+	if b == nil {
+		return ""
+	}
+	return b.DownPaymentDueDate
+}
+
+func (b *BnplOfferRequest) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BnplOfferRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler BnplOfferRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BnplOfferRequest(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BnplOfferRequest) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BnplOfferResponse struct {
+	// The total amount of the invoice in cents.
+	InvoiceAmount int `json:"invoiceAmount" url:"invoiceAmount"`
+	// Total amount to be repaid, including fees. In cents.
+	TotalRepaymentAmount int `json:"totalRepaymentAmount" url:"totalRepaymentAmount"`
+	// The currency code for the amount
+	Currency string `json:"currency" url:"currency"`
+	// The down payment amount in cents
+	DownPaymentAmount int `json:"downPaymentAmount" url:"downPaymentAmount"`
+	// The number of payments/installments
+	NumberOfPayments int `json:"numberOfPayments" url:"numberOfPayments"`
+	// The date of the first payment in YYYY-MM-DD format
+	FirstPaymentDate string `json:"firstPaymentDate" url:"firstPaymentDate"`
+	// The date of the final payment in YYYY-MM-DD format
+	FinalPaymentDate string `json:"finalPaymentDate" url:"finalPaymentDate"`
+	// The fees associated with the offer
+	Fees *BnplFees `json:"fees,omitempty" url:"fees,omitempty"`
+	// A link to the terms and conditions for the offer
+	TermsLink *string `json:"termsLink,omitempty" url:"termsLink,omitempty"`
+	// A list of all installments, including down payment.
+	Installments []*BnplInstallment `json:"installments,omitempty" url:"installments,omitempty"`
+	// The day of the week for payments, e.g. "Wednesday"
+	PaymentDayOfWeek BnplDayOfWeek `json:"paymentDayOfWeek" url:"paymentDayOfWeek"`
+	// The amount for each regular installment. The last installment may have a different amount. In cents.
+	InstallmentAmount int `json:"installmentAmount" url:"installmentAmount"`
+	// e.g. "1.5% per 28 days"
+	FinanceFeeRate string `json:"financeFeeRate" url:"financeFeeRate"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BnplOfferResponse) GetInvoiceAmount() int {
+	if b == nil {
+		return 0
+	}
+	return b.InvoiceAmount
+}
+
+func (b *BnplOfferResponse) GetTotalRepaymentAmount() int {
+	if b == nil {
+		return 0
+	}
+	return b.TotalRepaymentAmount
+}
+
+func (b *BnplOfferResponse) GetCurrency() string {
+	if b == nil {
+		return ""
+	}
+	return b.Currency
+}
+
+func (b *BnplOfferResponse) GetDownPaymentAmount() int {
+	if b == nil {
+		return 0
+	}
+	return b.DownPaymentAmount
+}
+
+func (b *BnplOfferResponse) GetNumberOfPayments() int {
+	if b == nil {
+		return 0
+	}
+	return b.NumberOfPayments
+}
+
+func (b *BnplOfferResponse) GetFirstPaymentDate() string {
+	if b == nil {
+		return ""
+	}
+	return b.FirstPaymentDate
+}
+
+func (b *BnplOfferResponse) GetFinalPaymentDate() string {
+	if b == nil {
+		return ""
+	}
+	return b.FinalPaymentDate
+}
+
+func (b *BnplOfferResponse) GetFees() *BnplFees {
+	if b == nil {
+		return nil
+	}
+	return b.Fees
+}
+
+func (b *BnplOfferResponse) GetTermsLink() *string {
+	if b == nil {
+		return nil
+	}
+	return b.TermsLink
+}
+
+func (b *BnplOfferResponse) GetInstallments() []*BnplInstallment {
+	if b == nil {
+		return nil
+	}
+	return b.Installments
+}
+
+func (b *BnplOfferResponse) GetPaymentDayOfWeek() BnplDayOfWeek {
+	if b == nil {
+		return ""
+	}
+	return b.PaymentDayOfWeek
+}
+
+func (b *BnplOfferResponse) GetInstallmentAmount() int {
+	if b == nil {
+		return 0
+	}
+	return b.InstallmentAmount
+}
+
+func (b *BnplOfferResponse) GetFinanceFeeRate() string {
+	if b == nil {
+		return ""
+	}
+	return b.FinanceFeeRate
+}
+
+func (b *BnplOfferResponse) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BnplOfferResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler BnplOfferResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BnplOfferResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BnplOfferResponse) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BnplOutstandingBalance struct {
+	// Outstanding principal balance in cents
+	PrincipalBalance int `json:"principalBalance" url:"principalBalance"`
+	// Outstanding fee balance in cents
+	FeeBalance int `json:"feeBalance" url:"feeBalance"`
+	// Total outstanding balance in cents
+	TotalBalance int `json:"totalBalance" url:"totalBalance"`
+	// Outstanding late fee balance in cents
+	LateFeeBalance int `json:"lateFeeBalance" url:"lateFeeBalance"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BnplOutstandingBalance) GetPrincipalBalance() int {
+	if b == nil {
+		return 0
+	}
+	return b.PrincipalBalance
+}
+
+func (b *BnplOutstandingBalance) GetFeeBalance() int {
+	if b == nil {
+		return 0
+	}
+	return b.FeeBalance
+}
+
+func (b *BnplOutstandingBalance) GetTotalBalance() int {
+	if b == nil {
+		return 0
+	}
+	return b.TotalBalance
+}
+
+func (b *BnplOutstandingBalance) GetLateFeeBalance() int {
+	if b == nil {
+		return 0
+	}
+	return b.LateFeeBalance
+}
+
+func (b *BnplOutstandingBalance) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BnplOutstandingBalance) UnmarshalJSON(data []byte) error {
+	type unmarshaler BnplOutstandingBalance
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BnplOutstandingBalance(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BnplOutstandingBalance) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BnplPaymentSourceOptions struct {
+	// The start date for installments in YYYY-MM-DD format
+	InstallmentsStartDate string `json:"installmentsStartDate" url:"installmentsStartDate"`
+	// The number of weeks to defer repayment
+	DefermentWeeks int `json:"defermentWeeks" url:"defermentWeeks"`
+	// Whether the user has agreed to the BNPL terms
+	AcceptedTerms bool `json:"acceptedTerms" url:"acceptedTerms"`
+	// The ID of the loan to use for the BNPL payment.
+	LoanID *string `json:"loanId,omitempty" url:"loanId,omitempty"`
+	// The ID of the downpayment to use for the BNPL payment.
+	DownpaymentID *string `json:"downpaymentId,omitempty" url:"downpaymentId,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BnplPaymentSourceOptions) GetInstallmentsStartDate() string {
+	if b == nil {
+		return ""
+	}
+	return b.InstallmentsStartDate
+}
+
+func (b *BnplPaymentSourceOptions) GetDefermentWeeks() int {
+	if b == nil {
+		return 0
+	}
+	return b.DefermentWeeks
+}
+
+func (b *BnplPaymentSourceOptions) GetAcceptedTerms() bool {
+	if b == nil {
+		return false
+	}
+	return b.AcceptedTerms
+}
+
+func (b *BnplPaymentSourceOptions) GetLoanID() *string {
+	if b == nil {
+		return nil
+	}
+	return b.LoanID
+}
+
+func (b *BnplPaymentSourceOptions) GetDownpaymentID() *string {
+	if b == nil {
+		return nil
+	}
+	return b.DownpaymentID
+}
+
+func (b *BnplPaymentSourceOptions) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BnplPaymentSourceOptions) UnmarshalJSON(data []byte) error {
+	type unmarshaler BnplPaymentSourceOptions
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BnplPaymentSourceOptions(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BnplPaymentSourceOptions) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
 type BulkInvoiceApprovalFromObjectResponse struct {
 	// The ID of the invoice that was approved. If the invoice was not approved, this will be undefined
 	ID *InvoiceID `json:"id,omitempty" url:"id,omitempty"`
@@ -1261,6 +2296,53 @@ func (c *CommentResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+type CustomPaymentDestinationOptions struct {
+	// Map of field names to dynamic URL values that will be used for dynamicUrl fields in custom payment method schemas
+	DynamicURLs map[string]string `json:"dynamicUrls,omitempty" url:"dynamicUrls,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CustomPaymentDestinationOptions) GetDynamicURLs() map[string]string {
+	if c == nil {
+		return nil
+	}
+	return c.DynamicURLs
+}
+
+func (c *CustomPaymentDestinationOptions) GetExtraProperties() map[string]interface{} {
+	return c.extraProperties
+}
+
+func (c *CustomPaymentDestinationOptions) UnmarshalJSON(data []byte) error {
+	type unmarshaler CustomPaymentDestinationOptions
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CustomPaymentDestinationOptions(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CustomPaymentDestinationOptions) String() string {
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 type DayOfWeek string
 
 const (
@@ -1513,6 +2595,8 @@ type InvoiceCreationWithEntityGroupRequest struct {
 	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
 	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
 	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	// Options for the payment source. Depending on the payment source, this may include things such as BNPL configuration.
+	PaymentSourceOptions *PaymentSourceOptions `json:"paymentSourceOptions,omitempty" url:"paymentSourceOptions,omitempty"`
 	// ID or foreign ID of the vendor of this invoice.
 	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
 	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
@@ -1546,8 +2630,10 @@ type InvoiceCreationWithEntityGroupRequest struct {
 	// Shipping amount for this invoice.
 	ShippingAmount *float64 `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
 	// ID of the OCR job that processed this invoice.
-	OcrJobID  *OcrJobID                         `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
-	LineItems []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	OcrJobID *OcrJobID `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
+	// Set to true if the payment destination has been confirmed by the vendor or if the payment destination should default to the selected payment destination on the vendor portal.
+	PaymentDestinationConfirmed *bool                             `json:"paymentDestinationConfirmed,omitempty" url:"paymentDestinationConfirmed,omitempty"`
+	LineItems                   []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID of the entity group who created this invoice.
 	CreatorEntityGroupID EntityGroupID `json:"creatorEntityGroupId" url:"creatorEntityGroupId"`
 
@@ -1651,6 +2737,13 @@ func (i *InvoiceCreationWithEntityGroupRequest) GetPaymentSourceID() *PaymentMet
 		return nil
 	}
 	return i.PaymentSourceID
+}
+
+func (i *InvoiceCreationWithEntityGroupRequest) GetPaymentSourceOptions() *PaymentSourceOptions {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentSourceOptions
 }
 
 func (i *InvoiceCreationWithEntityGroupRequest) GetVendorID() *EntityID {
@@ -1772,6 +2865,13 @@ func (i *InvoiceCreationWithEntityGroupRequest) GetOcrJobID() *OcrJobID {
 	return i.OcrJobID
 }
 
+func (i *InvoiceCreationWithEntityGroupRequest) GetPaymentDestinationConfirmed() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentDestinationConfirmed
+}
+
 func (i *InvoiceCreationWithEntityGroupRequest) GetLineItems() []*InvoiceLineItemCreationRequest {
 	if i == nil {
 		return nil
@@ -1881,6 +2981,8 @@ type InvoiceCreationWithEntityRequest struct {
 	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
 	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
 	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	// Options for the payment source. Depending on the payment source, this may include things such as BNPL configuration.
+	PaymentSourceOptions *PaymentSourceOptions `json:"paymentSourceOptions,omitempty" url:"paymentSourceOptions,omitempty"`
 	// ID or foreign ID of the vendor of this invoice.
 	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
 	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
@@ -1914,8 +3016,10 @@ type InvoiceCreationWithEntityRequest struct {
 	// Shipping amount for this invoice.
 	ShippingAmount *float64 `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
 	// ID of the OCR job that processed this invoice.
-	OcrJobID  *OcrJobID                         `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
-	LineItems []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	OcrJobID *OcrJobID `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
+	// Set to true if the payment destination has been confirmed by the vendor or if the payment destination should default to the selected payment destination on the vendor portal.
+	PaymentDestinationConfirmed *bool                             `json:"paymentDestinationConfirmed,omitempty" url:"paymentDestinationConfirmed,omitempty"`
+	LineItems                   []*InvoiceLineItemCreationRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID of the entity who created this invoice.
 	CreatorEntityID EntityID `json:"creatorEntityId" url:"creatorEntityId"`
 
@@ -2019,6 +3123,13 @@ func (i *InvoiceCreationWithEntityRequest) GetPaymentSourceID() *PaymentMethodID
 		return nil
 	}
 	return i.PaymentSourceID
+}
+
+func (i *InvoiceCreationWithEntityRequest) GetPaymentSourceOptions() *PaymentSourceOptions {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentSourceOptions
 }
 
 func (i *InvoiceCreationWithEntityRequest) GetVendorID() *EntityID {
@@ -2138,6 +3249,13 @@ func (i *InvoiceCreationWithEntityRequest) GetOcrJobID() *OcrJobID {
 		return nil
 	}
 	return i.OcrJobID
+}
+
+func (i *InvoiceCreationWithEntityRequest) GetPaymentDestinationConfirmed() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentDestinationConfirmed
 }
 
 func (i *InvoiceCreationWithEntityRequest) GetLineItems() []*InvoiceLineItemCreationRequest {
@@ -3697,6 +4815,8 @@ type InvoiceRequestBase struct {
 	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
 	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
 	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	// Options for the payment source. Depending on the payment source, this may include things such as BNPL configuration.
+	PaymentSourceOptions *PaymentSourceOptions `json:"paymentSourceOptions,omitempty" url:"paymentSourceOptions,omitempty"`
 	// ID or foreign ID of the vendor of this invoice.
 	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
 	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
@@ -3731,6 +4851,8 @@ type InvoiceRequestBase struct {
 	ShippingAmount *float64 `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
 	// ID of the OCR job that processed this invoice.
 	OcrJobID *OcrJobID `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
+	// Set to true if the payment destination has been confirmed by the vendor or if the payment destination should default to the selected payment destination on the vendor portal.
+	PaymentDestinationConfirmed *bool `json:"paymentDestinationConfirmed,omitempty" url:"paymentDestinationConfirmed,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -3832,6 +4954,13 @@ func (i *InvoiceRequestBase) GetPaymentSourceID() *PaymentMethodID {
 		return nil
 	}
 	return i.PaymentSourceID
+}
+
+func (i *InvoiceRequestBase) GetPaymentSourceOptions() *PaymentSourceOptions {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentSourceOptions
 }
 
 func (i *InvoiceRequestBase) GetVendorID() *EntityID {
@@ -3953,6 +5082,13 @@ func (i *InvoiceRequestBase) GetOcrJobID() *OcrJobID {
 	return i.OcrJobID
 }
 
+func (i *InvoiceRequestBase) GetPaymentDestinationConfirmed() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentDestinationConfirmed
+}
+
 func (i *InvoiceRequestBase) GetExtraProperties() map[string]interface{} {
 	return i.extraProperties
 }
@@ -4047,6 +5183,7 @@ type InvoiceResponse struct {
 	Payer                     *CounterpartyResponse           `json:"payer,omitempty" url:"payer,omitempty"`
 	PaymentSource             *PaymentMethodResponse          `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
 	PaymentSourceID           *PaymentMethodID                `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	PaymentSourceOptions      *PaymentSourceOptions           `json:"paymentSourceOptions,omitempty" url:"paymentSourceOptions,omitempty"`
 	VendorID                  *EntityID                       `json:"vendorId,omitempty" url:"vendorId,omitempty"`
 	Vendor                    *CounterpartyResponse           `json:"vendor,omitempty" url:"vendor,omitempty"`
 	PaymentDestination        *PaymentMethodResponse          `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
@@ -4211,6 +5348,13 @@ func (i *InvoiceResponse) GetPaymentSourceID() *PaymentMethodID {
 		return nil
 	}
 	return i.PaymentSourceID
+}
+
+func (i *InvoiceResponse) GetPaymentSourceOptions() *PaymentSourceOptions {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentSourceOptions
 }
 
 func (i *InvoiceResponse) GetVendorID() *EntityID {
@@ -4540,6 +5684,7 @@ type InvoiceResponseBase struct {
 	Payer                     *CounterpartyResponse           `json:"payer,omitempty" url:"payer,omitempty"`
 	PaymentSource             *PaymentMethodResponse          `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
 	PaymentSourceID           *PaymentMethodID                `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	PaymentSourceOptions      *PaymentSourceOptions           `json:"paymentSourceOptions,omitempty" url:"paymentSourceOptions,omitempty"`
 	VendorID                  *EntityID                       `json:"vendorId,omitempty" url:"vendorId,omitempty"`
 	Vendor                    *CounterpartyResponse           `json:"vendor,omitempty" url:"vendor,omitempty"`
 	PaymentDestination        *PaymentMethodResponse          `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
@@ -4691,6 +5836,13 @@ func (i *InvoiceResponseBase) GetPaymentSourceID() *PaymentMethodID {
 		return nil
 	}
 	return i.PaymentSourceID
+}
+
+func (i *InvoiceResponseBase) GetPaymentSourceOptions() *PaymentSourceOptions {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentSourceOptions
 }
 
 func (i *InvoiceResponseBase) GetVendorID() *EntityID {
@@ -5599,6 +6751,7 @@ type InvoiceTemplateResponse struct {
 	Payer                     *CounterpartyResponse           `json:"payer,omitempty" url:"payer,omitempty"`
 	PaymentSource             *PaymentMethodResponse          `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
 	PaymentSourceID           *PaymentMethodID                `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	PaymentSourceOptions      *PaymentSourceOptions           `json:"paymentSourceOptions,omitempty" url:"paymentSourceOptions,omitempty"`
 	VendorID                  *EntityID                       `json:"vendorId,omitempty" url:"vendorId,omitempty"`
 	Vendor                    *CounterpartyResponse           `json:"vendor,omitempty" url:"vendor,omitempty"`
 	PaymentDestination        *PaymentMethodResponse          `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
@@ -5751,6 +6904,13 @@ func (i *InvoiceTemplateResponse) GetPaymentSourceID() *PaymentMethodID {
 		return nil
 	}
 	return i.PaymentSourceID
+}
+
+func (i *InvoiceTemplateResponse) GetPaymentSourceOptions() *PaymentSourceOptions {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentSourceOptions
 }
 
 func (i *InvoiceTemplateResponse) GetVendorID() *EntityID {
@@ -6332,6 +7492,8 @@ type InvoiceUpdateRequest struct {
 	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
 	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
 	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	// Options for the payment source. Depending on the payment source, this may include things such as BNPL configuration.
+	PaymentSourceOptions *PaymentSourceOptions `json:"paymentSourceOptions,omitempty" url:"paymentSourceOptions,omitempty"`
 	// ID or foreign ID of the vendor of this invoice.
 	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
 	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
@@ -6365,8 +7527,10 @@ type InvoiceUpdateRequest struct {
 	// Shipping amount for this invoice.
 	ShippingAmount *float64 `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
 	// ID of the OCR job that processed this invoice.
-	OcrJobID  *OcrJobID                       `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
-	LineItems []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	OcrJobID *OcrJobID `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
+	// Set to true if the payment destination has been confirmed by the vendor or if the payment destination should default to the selected payment destination on the vendor portal.
+	PaymentDestinationConfirmed *bool                           `json:"paymentDestinationConfirmed,omitempty" url:"paymentDestinationConfirmed,omitempty"`
+	LineItems                   []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID or foreign ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 
@@ -6470,6 +7634,13 @@ func (i *InvoiceUpdateRequest) GetPaymentSourceID() *PaymentMethodID {
 		return nil
 	}
 	return i.PaymentSourceID
+}
+
+func (i *InvoiceUpdateRequest) GetPaymentSourceOptions() *PaymentSourceOptions {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentSourceOptions
 }
 
 func (i *InvoiceUpdateRequest) GetVendorID() *EntityID {
@@ -6591,6 +7762,13 @@ func (i *InvoiceUpdateRequest) GetOcrJobID() *OcrJobID {
 	return i.OcrJobID
 }
 
+func (i *InvoiceUpdateRequest) GetPaymentDestinationConfirmed() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentDestinationConfirmed
+}
+
 func (i *InvoiceUpdateRequest) GetLineItems() []*InvoiceLineItemUpdateRequest {
 	if i == nil {
 		return nil
@@ -6700,6 +7878,8 @@ type InvoiceUpdateRequestWithID struct {
 	PayerID *EntityID `json:"payerId,omitempty" url:"payerId,omitempty"`
 	// ID of payment source for this invoice. If not provided, will attempt to use the default payment source for the payer when creating an invoice if a default payment source exists for the payer.
 	PaymentSourceID *PaymentMethodID `json:"paymentSourceId,omitempty" url:"paymentSourceId,omitempty"`
+	// Options for the payment source. Depending on the payment source, this may include things such as BNPL configuration.
+	PaymentSourceOptions *PaymentSourceOptions `json:"paymentSourceOptions,omitempty" url:"paymentSourceOptions,omitempty"`
 	// ID or foreign ID of the vendor of this invoice.
 	VendorID *EntityID `json:"vendorId,omitempty" url:"vendorId,omitempty"`
 	// ID of payment destination for this invoice. If not provided, will attempt to use the default payment destination for the vendor when creating an invoice if a default payment destination exists for the vendor.
@@ -6733,8 +7913,10 @@ type InvoiceUpdateRequestWithID struct {
 	// Shipping amount for this invoice.
 	ShippingAmount *float64 `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
 	// ID of the OCR job that processed this invoice.
-	OcrJobID  *OcrJobID                       `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
-	LineItems []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
+	OcrJobID *OcrJobID `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
+	// Set to true if the payment destination has been confirmed by the vendor or if the payment destination should default to the selected payment destination on the vendor portal.
+	PaymentDestinationConfirmed *bool                           `json:"paymentDestinationConfirmed,omitempty" url:"paymentDestinationConfirmed,omitempty"`
+	LineItems                   []*InvoiceLineItemUpdateRequest `json:"lineItems,omitempty" url:"lineItems,omitempty"`
 	// ID or foreign ID of entity who created this invoice. If creating a payable invoice (AP), this must be the same as the payerId. If creating a receivable invoice (AR), this must be the same as the vendorId.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 	// The ID or foreign ID of the invoice to update
@@ -6840,6 +8022,13 @@ func (i *InvoiceUpdateRequestWithID) GetPaymentSourceID() *PaymentMethodID {
 		return nil
 	}
 	return i.PaymentSourceID
+}
+
+func (i *InvoiceUpdateRequestWithID) GetPaymentSourceOptions() *PaymentSourceOptions {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentSourceOptions
 }
 
 func (i *InvoiceUpdateRequestWithID) GetVendorID() *EntityID {
@@ -6959,6 +8148,13 @@ func (i *InvoiceUpdateRequestWithID) GetOcrJobID() *OcrJobID {
 		return nil
 	}
 	return i.OcrJobID
+}
+
+func (i *InvoiceUpdateRequestWithID) GetPaymentDestinationConfirmed() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentDestinationConfirmed
 }
 
 func (i *InvoiceUpdateRequestWithID) GetLineItems() []*InvoiceLineItemUpdateRequest {
@@ -7112,6 +8308,7 @@ type PaymentDestinationOptions struct {
 	Check       *CheckPaymentDestinationOptions
 	BankAccount *BankAccountPaymentDestinationOptions
 	Utility     *UtilityPaymentDestinationOptions
+	Custom      *CustomPaymentDestinationOptions
 }
 
 func (p *PaymentDestinationOptions) GetType() string {
@@ -7140,6 +8337,13 @@ func (p *PaymentDestinationOptions) GetUtility() *UtilityPaymentDestinationOptio
 		return nil
 	}
 	return p.Utility
+}
+
+func (p *PaymentDestinationOptions) GetCustom() *CustomPaymentDestinationOptions {
+	if p == nil {
+		return nil
+	}
+	return p.Custom
 }
 
 func (p *PaymentDestinationOptions) UnmarshalJSON(data []byte) error {
@@ -7172,6 +8376,12 @@ func (p *PaymentDestinationOptions) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		p.Utility = value
+	case "custom":
+		value := new(CustomPaymentDestinationOptions)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Custom = value
 	}
 	return nil
 }
@@ -7189,6 +8399,9 @@ func (p PaymentDestinationOptions) MarshalJSON() ([]byte, error) {
 	if p.Utility != nil {
 		return internal.MarshalJSONWithExtraProperty(p.Utility, "type", "utility")
 	}
+	if p.Custom != nil {
+		return internal.MarshalJSONWithExtraProperty(p.Custom, "type", "custom")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
@@ -7196,6 +8409,7 @@ type PaymentDestinationOptionsVisitor interface {
 	VisitCheck(*CheckPaymentDestinationOptions) error
 	VisitBankAccount(*BankAccountPaymentDestinationOptions) error
 	VisitUtility(*UtilityPaymentDestinationOptions) error
+	VisitCustom(*CustomPaymentDestinationOptions) error
 }
 
 func (p *PaymentDestinationOptions) Accept(visitor PaymentDestinationOptionsVisitor) error {
@@ -7207,6 +8421,9 @@ func (p *PaymentDestinationOptions) Accept(visitor PaymentDestinationOptionsVisi
 	}
 	if p.Utility != nil {
 		return visitor.VisitUtility(p.Utility)
+	}
+	if p.Custom != nil {
+		return visitor.VisitCustom(p.Custom)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
@@ -7224,6 +8441,9 @@ func (p *PaymentDestinationOptions) validate() error {
 	}
 	if p.Utility != nil {
 		fields = append(fields, "utility")
+	}
+	if p.Custom != nil {
+		fields = append(fields, "custom")
 	}
 	if len(fields) == 0 {
 		if p.Type != "" {
@@ -7627,6 +8847,99 @@ func (p *PaymentScheduleEndCondition) Accept(visitor PaymentScheduleEndCondition
 		return visitor.VisitDateTime(p.DateTime)
 	}
 	return fmt.Errorf("type %T does not include a non-empty union type", p)
+}
+
+type PaymentSourceOptions struct {
+	Type string
+	Bnpl *BnplPaymentSourceOptions
+}
+
+func (p *PaymentSourceOptions) GetType() string {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PaymentSourceOptions) GetBnpl() *BnplPaymentSourceOptions {
+	if p == nil {
+		return nil
+	}
+	return p.Bnpl
+}
+
+func (p *PaymentSourceOptions) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	p.Type = unmarshaler.Type
+	if unmarshaler.Type == "" {
+		return fmt.Errorf("%T did not include discriminant type", p)
+	}
+	switch unmarshaler.Type {
+	case "bnpl":
+		value := new(BnplPaymentSourceOptions)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Bnpl = value
+	}
+	return nil
+}
+
+func (p PaymentSourceOptions) MarshalJSON() ([]byte, error) {
+	if err := p.validate(); err != nil {
+		return nil, err
+	}
+	if p.Bnpl != nil {
+		return internal.MarshalJSONWithExtraProperty(p.Bnpl, "type", "bnpl")
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
+}
+
+type PaymentSourceOptionsVisitor interface {
+	VisitBnpl(*BnplPaymentSourceOptions) error
+}
+
+func (p *PaymentSourceOptions) Accept(visitor PaymentSourceOptionsVisitor) error {
+	if p.Bnpl != nil {
+		return visitor.VisitBnpl(p.Bnpl)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", p)
+}
+
+func (p *PaymentSourceOptions) validate() error {
+	if p == nil {
+		return fmt.Errorf("type %T is nil", p)
+	}
+	var fields []string
+	if p.Bnpl != nil {
+		fields = append(fields, "bnpl")
+	}
+	if len(fields) == 0 {
+		if p.Type != "" {
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", p, p.Type)
+		}
+		return fmt.Errorf("type %T is empty", p)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", p, fields)
+	}
+	if p.Type != "" {
+		field := fields[0]
+		if p.Type != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				p,
+				p.Type,
+				p,
+			)
+		}
+	}
+	return nil
 }
 
 type PaymentType string

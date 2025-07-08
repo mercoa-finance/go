@@ -158,6 +158,82 @@ func (b *BirthDate) String() string {
 	return fmt.Sprintf("%#v", b)
 }
 
+type BulkDownloadFormat string
+
+const (
+	BulkDownloadFormatCsv  BulkDownloadFormat = "CSV"
+	BulkDownloadFormatJSON BulkDownloadFormat = "JSON"
+)
+
+func NewBulkDownloadFormatFromString(s string) (BulkDownloadFormat, error) {
+	switch s {
+	case "CSV":
+		return BulkDownloadFormatCsv, nil
+	case "JSON":
+		return BulkDownloadFormatJSON, nil
+	}
+	var t BulkDownloadFormat
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (b BulkDownloadFormat) Ptr() *BulkDownloadFormat {
+	return &b
+}
+
+type BulkDownloadResponse struct {
+	URL      string `json:"url" url:"url"`
+	MimeType string `json:"mimeType" url:"mimeType"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BulkDownloadResponse) GetURL() string {
+	if b == nil {
+		return ""
+	}
+	return b.URL
+}
+
+func (b *BulkDownloadResponse) GetMimeType() string {
+	if b == nil {
+		return ""
+	}
+	return b.MimeType
+}
+
+func (b *BulkDownloadResponse) GetExtraProperties() map[string]interface{} {
+	return b.extraProperties
+}
+
+func (b *BulkDownloadResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkDownloadResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BulkDownloadResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BulkDownloadResponse) String() string {
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
 type CountryCode string
 
 const (

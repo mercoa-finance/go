@@ -25,3 +25,33 @@ func (b *BulkEntityCreationRequest) UnmarshalJSON(data []byte) error {
 func (b *BulkEntityCreationRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(b.Body)
 }
+
+type DownloadBulkEntitiesRequest struct {
+	// Format of the file to download. Defaults to CSV.
+	Format *mercoafinancego.BulkDownloadFormat `json:"-" url:"format,omitempty"`
+	// If true, will include entity payment methods as part of the response
+	PaymentMethods *bool `json:"-" url:"paymentMethods,omitempty"`
+	// If true, only entities with a direct relationship to the requesting organization will be returned. If false or not provided, all entities will be returned.
+	IsCustomer *bool `json:"-" url:"isCustomer,omitempty"`
+	// ID used to identify this entity in your system
+	ForeignID []*string                       `json:"-" url:"foreignId,omitempty"`
+	Status    []*mercoafinancego.EntityStatus `json:"-" url:"status,omitempty"`
+	// If true, entities that are marked as payees will be returned.
+	// If false or not provided, entities that are marked as payees will not be returned.
+	IsPayee *bool `json:"-" url:"isPayee,omitempty"`
+	// If true or not provided, entities that are marked as payors will be returned.
+	// If false, entities that are marked as payors will not be returned.
+	IsPayor *bool `json:"-" url:"isPayor,omitempty"`
+	// Use search instead. Deprecated. Filter entities by name. Partial matches are supported.
+	Name *string `json:"-" url:"name,omitempty"`
+	// Find entities by name, email, or emailTo. Partial matches are supported.
+	Search *string `json:"-" url:"search,omitempty"`
+	// Filter entities by simple key/value metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
+	Metadata *mercoafinancego.MetadataFilter `json:"-" url:"metadata,omitempty"`
+	// Return simple key/value metadata for the specified keys for the entities. For more complex metadata, use the Metadata API.
+	ReturnMetadata []*string `json:"-" url:"returnMetadata,omitempty"`
+	// Number of entities to return. Limit can range between 1 and 100, and the default is 10.
+	Limit *int `json:"-" url:"limit,omitempty"`
+	// The ID of the entity to start after. If not provided, the first page of entities will be returned.
+	StartingAfter *mercoafinancego.EntityID `json:"-" url:"startingAfter,omitempty"`
+}

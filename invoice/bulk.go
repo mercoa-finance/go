@@ -5,6 +5,7 @@ package invoice
 import (
 	json "encoding/json"
 	mercoafinancego "github.com/mercoa-finance/go"
+	time "time"
 )
 
 type BulkInvoiceApprovalRequest struct {
@@ -43,6 +44,57 @@ func (b *BulkInvoiceCreationRequest) UnmarshalJSON(data []byte) error {
 
 func (b *BulkInvoiceCreationRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(b.Body)
+}
+
+type DownloadBulkInvoicesRequest struct {
+	// Format of the file to download. Defaults to CSV.
+	Format *mercoafinancego.BulkDownloadFormat `json:"-" url:"format,omitempty"`
+	// Filter invoices by the ID or foreign ID of the entity that is the payer or the vendor of the invoice.
+	EntityID []*mercoafinancego.EntityID `json:"-" url:"entityId,omitempty"`
+	// Filter invoices by the ID or foreign ID of the entity group that the entity belongs to.
+	EntityGroupID *mercoafinancego.EntityGroupID `json:"-" url:"entityGroupId,omitempty"`
+	// Start date filter. Defaults to CREATED_AT unless specified the dateType is specified
+	StartDate *time.Time `json:"-" url:"startDate,omitempty"`
+	// End date filter. Defaults to CREATED_AT unless specified the dateType is specified
+	EndDate *time.Time `json:"-" url:"endDate,omitempty"`
+	// Type of date to filter by if startDate and endDate filters are provided. Defaults to CREATED_AT.
+	DateType *mercoafinancego.InvoiceDateFilter `json:"-" url:"dateType,omitempty"`
+	// Field to order invoices by. Defaults to CREATED_AT.
+	OrderBy *mercoafinancego.InvoiceOrderByField `json:"-" url:"orderBy,omitempty"`
+	// Direction to order invoices by. Defaults to asc.
+	OrderDirection *mercoafinancego.OrderDirection `json:"-" url:"orderDirection,omitempty"`
+	// The ID of the invoice to start after. If not provided, the first page of invoices will be returned.
+	StartingAfter *mercoafinancego.InvoiceID `json:"-" url:"startingAfter,omitempty"`
+	// Find invoices by vendor name, invoice number, check number, or amount. Partial matches are supported.
+	Search *string `json:"-" url:"search,omitempty"`
+	// Filter invoices by metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
+	Metadata []*mercoafinancego.MetadataFilter `json:"-" url:"metadata,omitempty"`
+	// Filter invoices by line item metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
+	LineItemMetadata []*mercoafinancego.MetadataFilter `json:"-" url:"lineItemMetadata,omitempty"`
+	// Filter invoices by line item GL account ID. Each filter will be applied as an OR condition. Duplicate keys will be ignored.
+	LineItemGlAccountID []*string `json:"-" url:"lineItemGlAccountId,omitempty"`
+	// Filter invoices by payer ID or payer foreign ID.
+	PayerID []*mercoafinancego.EntityID `json:"-" url:"payerId,omitempty"`
+	// Filter invoices by vendor ID or vendor foreign ID.
+	VendorID []*mercoafinancego.EntityID `json:"-" url:"vendorId,omitempty"`
+	// Filter invoices by the ID or foreign ID of the user that created the invoice.
+	CreatorUserID []*mercoafinancego.EntityUserID `json:"-" url:"creatorUserId,omitempty"`
+	// Filter invoices by assigned approver user ID. Only invoices with all upstream policies approved will be returned.
+	ApproverID []*mercoafinancego.EntityUserID `json:"-" url:"approverId,omitempty"`
+	// Filter invoices by approver action. Needs to be used with approverId. For example, if you want to find all invoices that have been approved by a specific user, you would use approverId and approverAction=APPROVE.
+	ApproverAction []*mercoafinancego.ApproverAction `json:"-" url:"approverAction,omitempty"`
+	// Filter invoices by invoice ID or invoice foreign ID.
+	InvoiceID []*mercoafinancego.InvoiceID `json:"-" url:"invoiceId,omitempty"`
+	// Invoice status to filter on
+	Status []*mercoafinancego.InvoiceStatus `json:"-" url:"status,omitempty"`
+	// Filter invoices by recurring status
+	PaymentType []mercoafinancego.PaymentType `json:"-" url:"paymentType,omitempty"`
+	// Filter invoice by invoice template ID
+	InvoiceTemplateID []*mercoafinancego.InvoiceTemplateID `json:"-" url:"invoiceTemplateId,omitempty"`
+	// Whether to return payer metadata in the response
+	ReturnPayerMetadata *bool `json:"-" url:"returnPayerMetadata,omitempty"`
+	// Whether to return vendor metadata in the response
+	ReturnVendorMetadata *bool `json:"-" url:"returnVendorMetadata,omitempty"`
 }
 
 type BulkInvoiceUpdateRequest struct {

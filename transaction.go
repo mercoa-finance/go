@@ -9,6 +9,45 @@ import (
 	time "time"
 )
 
+type DownloadTransactionsRequest struct {
+	// Format of the file to download. Defaults to CSV.
+	Format *BulkDownloadFormat `json:"-" url:"format,omitempty"`
+	// Filter transactions by the ID or foreign ID of the entity that created the transaction.
+	EntityID []*EntityID `json:"-" url:"entityId,omitempty"`
+	// Filter transactions by the ID or foreign ID of the entity group that the entity belongs to.
+	EntityGroupID *EntityGroupID `json:"-" url:"entityGroupId,omitempty"`
+	// CREATED_AT Start date filter.
+	StartDate *time.Time `json:"-" url:"startDate,omitempty"`
+	// CREATED_AT End date filter.
+	EndDate *time.Time `json:"-" url:"endDate,omitempty"`
+	// Number of transactions to return. Limit can range between 1 and 100, and the default is 10.
+	Limit *int `json:"-" url:"limit,omitempty"`
+	// The ID of the transactions to start after. If not provided, the first page of transactions will be returned.
+	StartingAfter *TransactionID `json:"-" url:"startingAfter,omitempty"`
+	// Find transactions by vendor name, invoice number, check number, or amount. Partial matches are supported.
+	Search *string `json:"-" url:"search,omitempty"`
+	// Filter transactions by invoice metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
+	Metadata []*MetadataFilter `json:"-" url:"metadata,omitempty"`
+	// Filter transactions by invoice line item metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
+	LineItemMetadata []*MetadataFilter `json:"-" url:"lineItemMetadata,omitempty"`
+	// Filter transactions by invoice line item GL account ID. Each filter will be applied as an OR condition. Duplicate keys will be ignored.
+	LineItemGlAccountID []*string `json:"-" url:"lineItemGlAccountId,omitempty"`
+	// Filter transactions by payer ID or payer foreign ID.
+	PayerID []*EntityID `json:"-" url:"payerId,omitempty"`
+	// Filter transactions by vendor ID or vendor foreign ID.
+	VendorID []*EntityID `json:"-" url:"vendorId,omitempty"`
+	// Filter transactions by invoice ID or invoice foreign ID.
+	InvoiceID []*InvoiceID `json:"-" url:"invoiceId,omitempty"`
+	// Filter transactions by transaction ID.
+	TransactionID []*TransactionID `json:"-" url:"transactionId,omitempty"`
+	// Transaction status to filter on
+	Status []*TransactionStatus `json:"-" url:"status,omitempty"`
+	// Filter transactions by transaction type
+	TransactionType []*TransactionType `json:"-" url:"transactionType,omitempty"`
+	// Filter transactions by creator user ID. Does not work, do not use.
+	CreatorUserID []*string `json:"-" url:"creatorUserId,omitempty"`
+}
+
 type FindTransactionsRequest struct {
 	// Filter transactions by the ID or foreign ID of the entity that created the transaction.
 	EntityID []*EntityID `json:"-" url:"entityId,omitempty"`

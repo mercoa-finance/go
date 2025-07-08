@@ -2385,6 +2385,8 @@ const (
 	CustomPaymentMethodSchemaFieldTypePhone               CustomPaymentMethodSchemaFieldType = "phone"
 	CustomPaymentMethodSchemaFieldTypeEmail               CustomPaymentMethodSchemaFieldType = "email"
 	CustomPaymentMethodSchemaFieldTypeURL                 CustomPaymentMethodSchemaFieldType = "url"
+	CustomPaymentMethodSchemaFieldTypeDynamicURL          CustomPaymentMethodSchemaFieldType = "dynamicUrl"
+	CustomPaymentMethodSchemaFieldTypeEmbeddedURL         CustomPaymentMethodSchemaFieldType = "embeddedUrl"
 	CustomPaymentMethodSchemaFieldTypeAddress             CustomPaymentMethodSchemaFieldType = "address"
 	CustomPaymentMethodSchemaFieldTypeUsBankRoutingNumber CustomPaymentMethodSchemaFieldType = "usBankRoutingNumber"
 	CustomPaymentMethodSchemaFieldTypeUsBankAccountNumber CustomPaymentMethodSchemaFieldType = "usBankAccountNumber"
@@ -2406,6 +2408,10 @@ func NewCustomPaymentMethodSchemaFieldTypeFromString(s string) (CustomPaymentMet
 		return CustomPaymentMethodSchemaFieldTypeEmail, nil
 	case "url":
 		return CustomPaymentMethodSchemaFieldTypeURL, nil
+	case "dynamicUrl":
+		return CustomPaymentMethodSchemaFieldTypeDynamicURL, nil
+	case "embeddedUrl":
+		return CustomPaymentMethodSchemaFieldTypeEmbeddedURL, nil
 	case "address":
 		return CustomPaymentMethodSchemaFieldTypeAddress, nil
 	case "usBankRoutingNumber":
