@@ -10,6 +10,7 @@ import (
 	mercoafinancego "github.com/mercoa-finance/go"
 	core "github.com/mercoa-finance/go/core"
 	counterparty "github.com/mercoa-finance/go/entity/counterparty"
+	bulk "github.com/mercoa-finance/go/entity/counterparty/bulk"
 	vendorcredit "github.com/mercoa-finance/go/entity/counterparty/vendorcredit"
 	internal "github.com/mercoa-finance/go/internal"
 	option "github.com/mercoa-finance/go/option"
@@ -22,6 +23,7 @@ type Client struct {
 	caller  *internal.Caller
 	header  http.Header
 
+	Bulk         *bulk.Client
 	VendorCredit *vendorcredit.Client
 }
 
@@ -36,6 +38,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 			},
 		),
 		header:       options.ToHeader(),
+		Bulk:         bulk.NewClient(opts...),
 		VendorCredit: vendorcredit.NewClient(opts...),
 	}
 }

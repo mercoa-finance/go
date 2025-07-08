@@ -141,6 +141,8 @@ func (f *FindVendorCreditResponse) String() string {
 type VendorCreditID = string
 
 type VendorCreditRequest struct {
+	// Memo number for the vendor credit
+	MemoNumber *string `json:"memoNumber,omitempty" url:"memoNumber,omitempty"`
 	// Total amount of the vendor credit in major units
 	TotalAmount float64 `json:"totalAmount" url:"totalAmount"`
 	// Currency code for the amount. Defaults to USD.
@@ -150,6 +152,13 @@ type VendorCreditRequest struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (v *VendorCreditRequest) GetMemoNumber() *string {
+	if v == nil {
+		return nil
+	}
+	return v.MemoNumber
 }
 
 func (v *VendorCreditRequest) GetTotalAmount() float64 {
@@ -207,6 +216,8 @@ func (v *VendorCreditRequest) String() string {
 
 type VendorCreditResponse struct {
 	ID VendorCreditID `json:"id" url:"id"`
+	// Memo number for the vendor credit
+	MemoNumber *string `json:"memoNumber,omitempty" url:"memoNumber,omitempty"`
 	// Total issued amount of the vendor credit in major units
 	TotalAmount *float64 `json:"totalAmount,omitempty" url:"totalAmount,omitempty"`
 	// Remaining usable amount in the vendor credit in major units
@@ -235,6 +246,13 @@ func (v *VendorCreditResponse) GetID() VendorCreditID {
 		return ""
 	}
 	return v.ID
+}
+
+func (v *VendorCreditResponse) GetMemoNumber() *string {
+	if v == nil {
+		return nil
+	}
+	return v.MemoNumber
 }
 
 func (v *VendorCreditResponse) GetTotalAmount() *float64 {
