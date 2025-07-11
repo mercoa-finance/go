@@ -992,6 +992,134 @@ func (o *OcrJobCompletedWebhook) String() string {
 	return fmt.Sprintf("%#v", o)
 }
 
+type PaymentGatewayProcessJobCompletedWebhook struct {
+	// The type of the event.
+	EventType string `json:"eventType" url:"eventType"`
+	// The ID of the payment gateway process job that completed.
+	JobID string                         `json:"jobId" url:"jobId"`
+	Data  *ProcessPaymentGatewayResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentGatewayProcessJobCompletedWebhook) GetEventType() string {
+	if p == nil {
+		return ""
+	}
+	return p.EventType
+}
+
+func (p *PaymentGatewayProcessJobCompletedWebhook) GetJobID() string {
+	if p == nil {
+		return ""
+	}
+	return p.JobID
+}
+
+func (p *PaymentGatewayProcessJobCompletedWebhook) GetData() *ProcessPaymentGatewayResponse {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PaymentGatewayProcessJobCompletedWebhook) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PaymentGatewayProcessJobCompletedWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentGatewayProcessJobCompletedWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentGatewayProcessJobCompletedWebhook(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentGatewayProcessJobCompletedWebhook) String() string {
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PaymentGatewayValidationJobCompletedWebhook struct {
+	// The type of the event.
+	EventType string `json:"eventType" url:"eventType"`
+	// The ID of the payment gateway validation job that completed.
+	JobID string                          `json:"jobId" url:"jobId"`
+	Data  *ValidatePaymentGatewayResponse `json:"data,omitempty" url:"data,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentGatewayValidationJobCompletedWebhook) GetEventType() string {
+	if p == nil {
+		return ""
+	}
+	return p.EventType
+}
+
+func (p *PaymentGatewayValidationJobCompletedWebhook) GetJobID() string {
+	if p == nil {
+		return ""
+	}
+	return p.JobID
+}
+
+func (p *PaymentGatewayValidationJobCompletedWebhook) GetData() *ValidatePaymentGatewayResponse {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PaymentGatewayValidationJobCompletedWebhook) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PaymentGatewayValidationJobCompletedWebhook) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentGatewayValidationJobCompletedWebhook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentGatewayValidationJobCompletedWebhook(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentGatewayValidationJobCompletedWebhook) String() string {
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
 type PaymentMethodWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`

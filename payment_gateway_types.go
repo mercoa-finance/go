@@ -150,9 +150,122 @@ func (p *ProcessPaymentGatewayCardDetails) validate() error {
 	return nil
 }
 
+type ProcessPaymentGatewayCardDetailsBase struct {
+	// The first name of the card user
+	FirstName string `json:"firstName" url:"firstName"`
+	// The last name of the card user
+	LastName string `json:"lastName" url:"lastName"`
+	// The postal code of the address of the card
+	PostalCode string `json:"postalCode" url:"postalCode"`
+	// The country of the address of the card
+	Country CountryCode `json:"country" url:"country"`
+	// The phone number of the card user
+	PhoneNumber *string `json:"phoneNumber,omitempty" url:"phoneNumber,omitempty"`
+	// The email of the card user
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The full address of the card user
+	FullAddress *string `json:"fullAddress,omitempty" url:"fullAddress,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *ProcessPaymentGatewayCardDetailsBase) GetFirstName() string {
+	if p == nil {
+		return ""
+	}
+	return p.FirstName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsBase) GetLastName() string {
+	if p == nil {
+		return ""
+	}
+	return p.LastName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsBase) GetPostalCode() string {
+	if p == nil {
+		return ""
+	}
+	return p.PostalCode
+}
+
+func (p *ProcessPaymentGatewayCardDetailsBase) GetCountry() CountryCode {
+	if p == nil {
+		return ""
+	}
+	return p.Country
+}
+
+func (p *ProcessPaymentGatewayCardDetailsBase) GetPhoneNumber() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PhoneNumber
+}
+
+func (p *ProcessPaymentGatewayCardDetailsBase) GetEmail() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Email
+}
+
+func (p *ProcessPaymentGatewayCardDetailsBase) GetFullAddress() *string {
+	if p == nil {
+		return nil
+	}
+	return p.FullAddress
+}
+
+func (p *ProcessPaymentGatewayCardDetailsBase) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *ProcessPaymentGatewayCardDetailsBase) UnmarshalJSON(data []byte) error {
+	type unmarshaler ProcessPaymentGatewayCardDetailsBase
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = ProcessPaymentGatewayCardDetailsBase(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *ProcessPaymentGatewayCardDetailsBase) String() string {
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
 type ProcessPaymentGatewayCardDetailsDirect struct {
-	// The name on the card to use for the payment
-	NameOnCard string `json:"nameOnCard" url:"nameOnCard"`
+	// The first name of the card user
+	FirstName string `json:"firstName" url:"firstName"`
+	// The last name of the card user
+	LastName string `json:"lastName" url:"lastName"`
+	// The postal code of the address of the card
+	PostalCode string `json:"postalCode" url:"postalCode"`
+	// The country of the address of the card
+	Country CountryCode `json:"country" url:"country"`
+	// The phone number of the card user
+	PhoneNumber *string `json:"phoneNumber,omitempty" url:"phoneNumber,omitempty"`
+	// The email of the card user
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The full address of the card user
+	FullAddress *string `json:"fullAddress,omitempty" url:"fullAddress,omitempty"`
 	// The number of the card to use for the payment
 	CardNumber string `json:"cardNumber" url:"cardNumber"`
 	// The month of the expiration date of the card to use for the payment. This must be a number between 1 and 12.
@@ -161,20 +274,58 @@ type ProcessPaymentGatewayCardDetailsDirect struct {
 	ExpirationYear int `json:"expirationYear" url:"expirationYear"`
 	// The CVV of the card to use for the payment
 	Cvv string `json:"cvv" url:"cvv"`
-	// The postal code of the address of the card to use for the payment
-	PostalCode string `json:"postalCode" url:"postalCode"`
-	// The country of the address of the card to use for the payment
-	Country CountryCode `json:"country" url:"country"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
 }
 
-func (p *ProcessPaymentGatewayCardDetailsDirect) GetNameOnCard() string {
+func (p *ProcessPaymentGatewayCardDetailsDirect) GetFirstName() string {
 	if p == nil {
 		return ""
 	}
-	return p.NameOnCard
+	return p.FirstName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsDirect) GetLastName() string {
+	if p == nil {
+		return ""
+	}
+	return p.LastName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsDirect) GetPostalCode() string {
+	if p == nil {
+		return ""
+	}
+	return p.PostalCode
+}
+
+func (p *ProcessPaymentGatewayCardDetailsDirect) GetCountry() CountryCode {
+	if p == nil {
+		return ""
+	}
+	return p.Country
+}
+
+func (p *ProcessPaymentGatewayCardDetailsDirect) GetPhoneNumber() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PhoneNumber
+}
+
+func (p *ProcessPaymentGatewayCardDetailsDirect) GetEmail() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Email
+}
+
+func (p *ProcessPaymentGatewayCardDetailsDirect) GetFullAddress() *string {
+	if p == nil {
+		return nil
+	}
+	return p.FullAddress
 }
 
 func (p *ProcessPaymentGatewayCardDetailsDirect) GetCardNumber() string {
@@ -203,20 +354,6 @@ func (p *ProcessPaymentGatewayCardDetailsDirect) GetCvv() string {
 		return ""
 	}
 	return p.Cvv
-}
-
-func (p *ProcessPaymentGatewayCardDetailsDirect) GetPostalCode() string {
-	if p == nil {
-		return ""
-	}
-	return p.PostalCode
-}
-
-func (p *ProcessPaymentGatewayCardDetailsDirect) GetCountry() CountryCode {
-	if p == nil {
-		return ""
-	}
-	return p.Country
 }
 
 func (p *ProcessPaymentGatewayCardDetailsDirect) GetExtraProperties() map[string]interface{} {
@@ -252,11 +389,74 @@ func (p *ProcessPaymentGatewayCardDetailsDirect) String() string {
 }
 
 type ProcessPaymentGatewayCardDetailsIframe struct {
+	// The first name of the card user
+	FirstName string `json:"firstName" url:"firstName"`
+	// The last name of the card user
+	LastName string `json:"lastName" url:"lastName"`
+	// The postal code of the address of the card
+	PostalCode string `json:"postalCode" url:"postalCode"`
+	// The country of the address of the card
+	Country CountryCode `json:"country" url:"country"`
+	// The phone number of the card user
+	PhoneNumber *string `json:"phoneNumber,omitempty" url:"phoneNumber,omitempty"`
+	// The email of the card user
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The full address of the card user
+	FullAddress *string `json:"fullAddress,omitempty" url:"fullAddress,omitempty"`
 	// The URL of the iframe that render the virtual card details
 	IframeURL string `json:"iframeUrl" url:"iframeUrl"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *ProcessPaymentGatewayCardDetailsIframe) GetFirstName() string {
+	if p == nil {
+		return ""
+	}
+	return p.FirstName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsIframe) GetLastName() string {
+	if p == nil {
+		return ""
+	}
+	return p.LastName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsIframe) GetPostalCode() string {
+	if p == nil {
+		return ""
+	}
+	return p.PostalCode
+}
+
+func (p *ProcessPaymentGatewayCardDetailsIframe) GetCountry() CountryCode {
+	if p == nil {
+		return ""
+	}
+	return p.Country
+}
+
+func (p *ProcessPaymentGatewayCardDetailsIframe) GetPhoneNumber() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PhoneNumber
+}
+
+func (p *ProcessPaymentGatewayCardDetailsIframe) GetEmail() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Email
+}
+
+func (p *ProcessPaymentGatewayCardDetailsIframe) GetFullAddress() *string {
+	if p == nil {
+		return nil
+	}
+	return p.FullAddress
 }
 
 func (p *ProcessPaymentGatewayCardDetailsIframe) GetIframeURL() string {
@@ -287,71 +487,6 @@ func (p *ProcessPaymentGatewayCardDetailsIframe) UnmarshalJSON(data []byte) erro
 }
 
 func (p *ProcessPaymentGatewayCardDetailsIframe) String() string {
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-type ProcessPaymentGatewayCompletedResponse struct {
-	// The job ID of the payment gateway processing job
-	JobID string `json:"jobId" url:"jobId"`
-	// The URL of the receipt that was downloaded from the payment gateway
-	ReceiptURL *string `json:"receiptUrl,omitempty" url:"receiptUrl,omitempty"`
-	// The URL of the playback session for the agent that processed the payment
-	SessionURL *string `json:"sessionUrl,omitempty" url:"sessionUrl,omitempty"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *ProcessPaymentGatewayCompletedResponse) GetJobID() string {
-	if p == nil {
-		return ""
-	}
-	return p.JobID
-}
-
-func (p *ProcessPaymentGatewayCompletedResponse) GetReceiptURL() *string {
-	if p == nil {
-		return nil
-	}
-	return p.ReceiptURL
-}
-
-func (p *ProcessPaymentGatewayCompletedResponse) GetSessionURL() *string {
-	if p == nil {
-		return nil
-	}
-	return p.SessionURL
-}
-
-func (p *ProcessPaymentGatewayCompletedResponse) GetExtraProperties() map[string]interface{} {
-	return p.extraProperties
-}
-
-func (p *ProcessPaymentGatewayCompletedResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler ProcessPaymentGatewayCompletedResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = ProcessPaymentGatewayCompletedResponse(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *ProcessPaymentGatewayCompletedResponse) String() string {
 	if len(p.rawJSON) > 0 {
 		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
 			return value
@@ -593,7 +728,7 @@ func (p *ProcessPaymentGatewayRequest) validate() error {
 }
 
 type ProcessPaymentGatewayRequestDocument struct {
-	// The invoice document to extract the payment gateway from in base64 format
+	// The invoice document PDF to extract the payment gateway from. Must be in base64 format or a publicly accessible URL.
 	Document string `json:"document" url:"document"`
 	// The details of the card to use for the payment
 	CardDetails *ProcessPaymentGatewayCardDetails `json:"cardDetails,omitempty" url:"cardDetails,omitempty"`
@@ -707,7 +842,7 @@ func (p *ProcessPaymentGatewayRequestHTML) String() string {
 type ProcessPaymentGatewayResponse struct {
 	JobStatus string
 	Pending   *ProcessPaymentGatewayPendingResponse
-	Completed *ProcessPaymentGatewayCompletedResponse
+	Success   *ProcessPaymentGatewaySuccessResponse
 	Failed    *ProcessPaymentGatewayFailedResponse
 }
 
@@ -725,11 +860,11 @@ func (p *ProcessPaymentGatewayResponse) GetPending() *ProcessPaymentGatewayPendi
 	return p.Pending
 }
 
-func (p *ProcessPaymentGatewayResponse) GetCompleted() *ProcessPaymentGatewayCompletedResponse {
+func (p *ProcessPaymentGatewayResponse) GetSuccess() *ProcessPaymentGatewaySuccessResponse {
 	if p == nil {
 		return nil
 	}
-	return p.Completed
+	return p.Success
 }
 
 func (p *ProcessPaymentGatewayResponse) GetFailed() *ProcessPaymentGatewayFailedResponse {
@@ -757,12 +892,12 @@ func (p *ProcessPaymentGatewayResponse) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		p.Pending = value
-	case "completed":
-		value := new(ProcessPaymentGatewayCompletedResponse)
+	case "success":
+		value := new(ProcessPaymentGatewaySuccessResponse)
 		if err := json.Unmarshal(data, &value); err != nil {
 			return err
 		}
-		p.Completed = value
+		p.Success = value
 	case "failed":
 		value := new(ProcessPaymentGatewayFailedResponse)
 		if err := json.Unmarshal(data, &value); err != nil {
@@ -780,8 +915,8 @@ func (p ProcessPaymentGatewayResponse) MarshalJSON() ([]byte, error) {
 	if p.Pending != nil {
 		return internal.MarshalJSONWithExtraProperty(p.Pending, "jobStatus", "pending")
 	}
-	if p.Completed != nil {
-		return internal.MarshalJSONWithExtraProperty(p.Completed, "jobStatus", "completed")
+	if p.Success != nil {
+		return internal.MarshalJSONWithExtraProperty(p.Success, "jobStatus", "success")
 	}
 	if p.Failed != nil {
 		return internal.MarshalJSONWithExtraProperty(p.Failed, "jobStatus", "failed")
@@ -791,7 +926,7 @@ func (p ProcessPaymentGatewayResponse) MarshalJSON() ([]byte, error) {
 
 type ProcessPaymentGatewayResponseVisitor interface {
 	VisitPending(*ProcessPaymentGatewayPendingResponse) error
-	VisitCompleted(*ProcessPaymentGatewayCompletedResponse) error
+	VisitSuccess(*ProcessPaymentGatewaySuccessResponse) error
 	VisitFailed(*ProcessPaymentGatewayFailedResponse) error
 }
 
@@ -799,8 +934,8 @@ func (p *ProcessPaymentGatewayResponse) Accept(visitor ProcessPaymentGatewayResp
 	if p.Pending != nil {
 		return visitor.VisitPending(p.Pending)
 	}
-	if p.Completed != nil {
-		return visitor.VisitCompleted(p.Completed)
+	if p.Success != nil {
+		return visitor.VisitSuccess(p.Success)
 	}
 	if p.Failed != nil {
 		return visitor.VisitFailed(p.Failed)
@@ -816,8 +951,8 @@ func (p *ProcessPaymentGatewayResponse) validate() error {
 	if p.Pending != nil {
 		fields = append(fields, "pending")
 	}
-	if p.Completed != nil {
-		fields = append(fields, "completed")
+	if p.Success != nil {
+		fields = append(fields, "success")
 	}
 	if p.Failed != nil {
 		fields = append(fields, "failed")
@@ -843,6 +978,71 @@ func (p *ProcessPaymentGatewayResponse) validate() error {
 		}
 	}
 	return nil
+}
+
+type ProcessPaymentGatewaySuccessResponse struct {
+	// The job ID of the payment gateway processing job
+	JobID string `json:"jobId" url:"jobId"`
+	// The URL of the receipt that was downloaded from the payment gateway
+	ReceiptURL *string `json:"receiptUrl,omitempty" url:"receiptUrl,omitempty"`
+	// The URL of the playback session for the agent that processed the payment
+	SessionURL *string `json:"sessionUrl,omitempty" url:"sessionUrl,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) GetJobID() string {
+	if p == nil {
+		return ""
+	}
+	return p.JobID
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) GetReceiptURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ReceiptURL
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) GetSessionURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.SessionURL
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ProcessPaymentGatewaySuccessResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = ProcessPaymentGatewaySuccessResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) String() string {
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }
 
 type ValidatePaymentGatewayCardAcceptance string
@@ -1198,80 +1398,6 @@ func (v *ValidatePaymentGatewayCardResponse) String() string {
 	return fmt.Sprintf("%#v", v)
 }
 
-type ValidatePaymentGatewayCompletedResponse struct {
-	// The job ID of the payment gateway validation job
-	JobID string `json:"jobId" url:"jobId"`
-	// The payment gateway URL that was found in the document
-	PaymentGatewayURL *string `json:"paymentGatewayUrl,omitempty" url:"paymentGatewayUrl,omitempty"`
-	// The URL of the playback session for the agent that validated the payment gateway
-	SessionURL *string `json:"sessionUrl,omitempty" url:"sessionUrl,omitempty"`
-	// Data on the card payments that were extracted from the gateway
-	Card *ValidatePaymentGatewayCardResponse `json:"card,omitempty" url:"card,omitempty"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (v *ValidatePaymentGatewayCompletedResponse) GetJobID() string {
-	if v == nil {
-		return ""
-	}
-	return v.JobID
-}
-
-func (v *ValidatePaymentGatewayCompletedResponse) GetPaymentGatewayURL() *string {
-	if v == nil {
-		return nil
-	}
-	return v.PaymentGatewayURL
-}
-
-func (v *ValidatePaymentGatewayCompletedResponse) GetSessionURL() *string {
-	if v == nil {
-		return nil
-	}
-	return v.SessionURL
-}
-
-func (v *ValidatePaymentGatewayCompletedResponse) GetCard() *ValidatePaymentGatewayCardResponse {
-	if v == nil {
-		return nil
-	}
-	return v.Card
-}
-
-func (v *ValidatePaymentGatewayCompletedResponse) GetExtraProperties() map[string]interface{} {
-	return v.extraProperties
-}
-
-func (v *ValidatePaymentGatewayCompletedResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler ValidatePaymentGatewayCompletedResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*v = ValidatePaymentGatewayCompletedResponse(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *v)
-	if err != nil {
-		return err
-	}
-	v.extraProperties = extraProperties
-	v.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (v *ValidatePaymentGatewayCompletedResponse) String() string {
-	if len(v.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(v.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(v); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", v)
-}
-
 type ValidatePaymentGatewayFailedResponse struct {
 	// The job ID of the payment gateway validation job
 	JobID string `json:"jobId" url:"jobId"`
@@ -1502,7 +1628,7 @@ func (v *ValidatePaymentGatewayRequest) validate() error {
 }
 
 type ValidatePaymentGatewayRequestDocument struct {
-	// The invoice document to extract the payment gateway from in base64 format
+	// The invoice document PDF to extract the payment gateway from. Must be in base64 format or a publicly accessible URL.
 	Document string `json:"document" url:"document"`
 
 	extraProperties map[string]interface{}
@@ -1598,7 +1724,7 @@ func (v *ValidatePaymentGatewayRequestHTML) String() string {
 type ValidatePaymentGatewayResponse struct {
 	JobStatus string
 	Pending   *ValidatePaymentGatewayPendingResponse
-	Completed *ValidatePaymentGatewayCompletedResponse
+	Success   *ValidatePaymentGatewaySuccessResponse
 	Failed    *ValidatePaymentGatewayFailedResponse
 }
 
@@ -1616,11 +1742,11 @@ func (v *ValidatePaymentGatewayResponse) GetPending() *ValidatePaymentGatewayPen
 	return v.Pending
 }
 
-func (v *ValidatePaymentGatewayResponse) GetCompleted() *ValidatePaymentGatewayCompletedResponse {
+func (v *ValidatePaymentGatewayResponse) GetSuccess() *ValidatePaymentGatewaySuccessResponse {
 	if v == nil {
 		return nil
 	}
-	return v.Completed
+	return v.Success
 }
 
 func (v *ValidatePaymentGatewayResponse) GetFailed() *ValidatePaymentGatewayFailedResponse {
@@ -1648,12 +1774,12 @@ func (v *ValidatePaymentGatewayResponse) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		v.Pending = value
-	case "completed":
-		value := new(ValidatePaymentGatewayCompletedResponse)
+	case "success":
+		value := new(ValidatePaymentGatewaySuccessResponse)
 		if err := json.Unmarshal(data, &value); err != nil {
 			return err
 		}
-		v.Completed = value
+		v.Success = value
 	case "failed":
 		value := new(ValidatePaymentGatewayFailedResponse)
 		if err := json.Unmarshal(data, &value); err != nil {
@@ -1671,8 +1797,8 @@ func (v ValidatePaymentGatewayResponse) MarshalJSON() ([]byte, error) {
 	if v.Pending != nil {
 		return internal.MarshalJSONWithExtraProperty(v.Pending, "jobStatus", "pending")
 	}
-	if v.Completed != nil {
-		return internal.MarshalJSONWithExtraProperty(v.Completed, "jobStatus", "completed")
+	if v.Success != nil {
+		return internal.MarshalJSONWithExtraProperty(v.Success, "jobStatus", "success")
 	}
 	if v.Failed != nil {
 		return internal.MarshalJSONWithExtraProperty(v.Failed, "jobStatus", "failed")
@@ -1682,7 +1808,7 @@ func (v ValidatePaymentGatewayResponse) MarshalJSON() ([]byte, error) {
 
 type ValidatePaymentGatewayResponseVisitor interface {
 	VisitPending(*ValidatePaymentGatewayPendingResponse) error
-	VisitCompleted(*ValidatePaymentGatewayCompletedResponse) error
+	VisitSuccess(*ValidatePaymentGatewaySuccessResponse) error
 	VisitFailed(*ValidatePaymentGatewayFailedResponse) error
 }
 
@@ -1690,8 +1816,8 @@ func (v *ValidatePaymentGatewayResponse) Accept(visitor ValidatePaymentGatewayRe
 	if v.Pending != nil {
 		return visitor.VisitPending(v.Pending)
 	}
-	if v.Completed != nil {
-		return visitor.VisitCompleted(v.Completed)
+	if v.Success != nil {
+		return visitor.VisitSuccess(v.Success)
 	}
 	if v.Failed != nil {
 		return visitor.VisitFailed(v.Failed)
@@ -1707,8 +1833,8 @@ func (v *ValidatePaymentGatewayResponse) validate() error {
 	if v.Pending != nil {
 		fields = append(fields, "pending")
 	}
-	if v.Completed != nil {
-		fields = append(fields, "completed")
+	if v.Success != nil {
+		fields = append(fields, "success")
 	}
 	if v.Failed != nil {
 		fields = append(fields, "failed")
@@ -1734,4 +1860,78 @@ func (v *ValidatePaymentGatewayResponse) validate() error {
 		}
 	}
 	return nil
+}
+
+type ValidatePaymentGatewaySuccessResponse struct {
+	// The job ID of the payment gateway validation job
+	JobID string `json:"jobId" url:"jobId"`
+	// The payment gateway URL that was found in the document
+	PaymentGatewayURL *string `json:"paymentGatewayUrl,omitempty" url:"paymentGatewayUrl,omitempty"`
+	// The URL of the playback session for the agent that validated the payment gateway
+	SessionURL *string `json:"sessionUrl,omitempty" url:"sessionUrl,omitempty"`
+	// Data on the card payments that were extracted from the gateway
+	Card *ValidatePaymentGatewayCardResponse `json:"card,omitempty" url:"card,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) GetJobID() string {
+	if v == nil {
+		return ""
+	}
+	return v.JobID
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) GetPaymentGatewayURL() *string {
+	if v == nil {
+		return nil
+	}
+	return v.PaymentGatewayURL
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) GetSessionURL() *string {
+	if v == nil {
+		return nil
+	}
+	return v.SessionURL
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) GetCard() *ValidatePaymentGatewayCardResponse {
+	if v == nil {
+		return nil
+	}
+	return v.Card
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) GetExtraProperties() map[string]interface{} {
+	return v.extraProperties
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ValidatePaymentGatewaySuccessResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*v = ValidatePaymentGatewaySuccessResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *v)
+	if err != nil {
+		return err
+	}
+	v.extraProperties = extraProperties
+	v.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) String() string {
+	if len(v.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(v.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(v); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", v)
 }
