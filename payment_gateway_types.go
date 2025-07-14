@@ -8,6 +8,80 @@ import (
 	internal "github.com/mercoa-finance/go/internal"
 )
 
+type EphemeralKeyEndpoint struct {
+	// The URL endpoint to call for generating ephemeral keys
+	URL string `json:"url" url:"url"`
+	// The HTTP method to use for the request
+	Method string `json:"method" url:"method"`
+	// The headers to include in the request. Supports variables {{cardId}}, {{nonce}}, and {{accountId}} that will be replaced with actual values.
+	Headers map[string]string `json:"headers,omitempty" url:"headers,omitempty"`
+	// The body to include in the POST request. Supports variables {{cardId}}, {{nonce}}, and {{accountId}} that will be replaced with actual values.
+	PostBody *string `json:"postBody,omitempty" url:"postBody,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EphemeralKeyEndpoint) GetURL() string {
+	if e == nil {
+		return ""
+	}
+	return e.URL
+}
+
+func (e *EphemeralKeyEndpoint) GetMethod() string {
+	if e == nil {
+		return ""
+	}
+	return e.Method
+}
+
+func (e *EphemeralKeyEndpoint) GetHeaders() map[string]string {
+	if e == nil {
+		return nil
+	}
+	return e.Headers
+}
+
+func (e *EphemeralKeyEndpoint) GetPostBody() *string {
+	if e == nil {
+		return nil
+	}
+	return e.PostBody
+}
+
+func (e *EphemeralKeyEndpoint) GetExtraProperties() map[string]interface{} {
+	return e.extraProperties
+}
+
+func (e *EphemeralKeyEndpoint) UnmarshalJSON(data []byte) error {
+	type unmarshaler EphemeralKeyEndpoint
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EphemeralKeyEndpoint(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EphemeralKeyEndpoint) String() string {
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
 type PaymentGatewayError string
 
 const (
@@ -34,9 +108,10 @@ func (p PaymentGatewayError) Ptr() *PaymentGatewayError {
 }
 
 type ProcessPaymentGatewayCardDetails struct {
-	Type   string
-	Direct *ProcessPaymentGatewayCardDetailsDirect
-	Iframe *ProcessPaymentGatewayCardDetailsIframe
+	Type          string
+	Direct        *ProcessPaymentGatewayCardDetailsDirect
+	Iframe        *ProcessPaymentGatewayCardDetailsIframe
+	StripeIssuing *ProcessPaymentGatewayCardDetailsStripeIssuing
 }
 
 func (p *ProcessPaymentGatewayCardDetails) GetType() string {
@@ -58,6 +133,13 @@ func (p *ProcessPaymentGatewayCardDetails) GetIframe() *ProcessPaymentGatewayCar
 		return nil
 	}
 	return p.Iframe
+}
+
+func (p *ProcessPaymentGatewayCardDetails) GetStripeIssuing() *ProcessPaymentGatewayCardDetailsStripeIssuing {
+	if p == nil {
+		return nil
+	}
+	return p.StripeIssuing
 }
 
 func (p *ProcessPaymentGatewayCardDetails) UnmarshalJSON(data []byte) error {
@@ -84,6 +166,12 @@ func (p *ProcessPaymentGatewayCardDetails) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		p.Iframe = value
+	case "stripeIssuing":
+		value := new(ProcessPaymentGatewayCardDetailsStripeIssuing)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.StripeIssuing = value
 	}
 	return nil
 }
@@ -98,12 +186,16 @@ func (p ProcessPaymentGatewayCardDetails) MarshalJSON() ([]byte, error) {
 	if p.Iframe != nil {
 		return internal.MarshalJSONWithExtraProperty(p.Iframe, "type", "iframe")
 	}
+	if p.StripeIssuing != nil {
+		return internal.MarshalJSONWithExtraProperty(p.StripeIssuing, "type", "stripeIssuing")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
 type ProcessPaymentGatewayCardDetailsVisitor interface {
 	VisitDirect(*ProcessPaymentGatewayCardDetailsDirect) error
 	VisitIframe(*ProcessPaymentGatewayCardDetailsIframe) error
+	VisitStripeIssuing(*ProcessPaymentGatewayCardDetailsStripeIssuing) error
 }
 
 func (p *ProcessPaymentGatewayCardDetails) Accept(visitor ProcessPaymentGatewayCardDetailsVisitor) error {
@@ -112,6 +204,9 @@ func (p *ProcessPaymentGatewayCardDetails) Accept(visitor ProcessPaymentGatewayC
 	}
 	if p.Iframe != nil {
 		return visitor.VisitIframe(p.Iframe)
+	}
+	if p.StripeIssuing != nil {
+		return visitor.VisitStripeIssuing(p.StripeIssuing)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
@@ -126,6 +221,9 @@ func (p *ProcessPaymentGatewayCardDetails) validate() error {
 	}
 	if p.Iframe != nil {
 		fields = append(fields, "iframe")
+	}
+	if p.StripeIssuing != nil {
+		fields = append(fields, "stripeIssuing")
 	}
 	if len(fields) == 0 {
 		if p.Type != "" {
@@ -487,6 +585,143 @@ func (p *ProcessPaymentGatewayCardDetailsIframe) UnmarshalJSON(data []byte) erro
 }
 
 func (p *ProcessPaymentGatewayCardDetailsIframe) String() string {
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type ProcessPaymentGatewayCardDetailsStripeIssuing struct {
+	// The first name of the card user
+	FirstName string `json:"firstName" url:"firstName"`
+	// The last name of the card user
+	LastName string `json:"lastName" url:"lastName"`
+	// The postal code of the address of the card
+	PostalCode string `json:"postalCode" url:"postalCode"`
+	// The country of the address of the card
+	Country CountryCode `json:"country" url:"country"`
+	// The phone number of the card user
+	PhoneNumber *string `json:"phoneNumber,omitempty" url:"phoneNumber,omitempty"`
+	// The email of the card user
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The full address of the card user
+	FullAddress *string `json:"fullAddress,omitempty" url:"fullAddress,omitempty"`
+	// The Stripe Issuing card ID
+	StripeCardID string `json:"stripeCardId" url:"stripeCardId"`
+	// The Stripe publishable key for the Issuing Elements
+	StripePublishableKey string `json:"stripePublishableKey" url:"stripePublishableKey"`
+	// The Stripe account ID (optional, used for connected accounts)
+	StripeAccountID *string `json:"stripeAccountId,omitempty" url:"stripeAccountId,omitempty"`
+	// The endpoint configuration for generating ephemeral keys. Expects a JSON response with a `ephemeralKeySecret` field.
+	EphemeralKeyEndpoint *EphemeralKeyEndpoint `json:"ephemeralKeyEndpoint,omitempty" url:"ephemeralKeyEndpoint,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetFirstName() string {
+	if p == nil {
+		return ""
+	}
+	return p.FirstName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetLastName() string {
+	if p == nil {
+		return ""
+	}
+	return p.LastName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetPostalCode() string {
+	if p == nil {
+		return ""
+	}
+	return p.PostalCode
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetCountry() CountryCode {
+	if p == nil {
+		return ""
+	}
+	return p.Country
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetPhoneNumber() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PhoneNumber
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetEmail() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Email
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetFullAddress() *string {
+	if p == nil {
+		return nil
+	}
+	return p.FullAddress
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetStripeCardID() string {
+	if p == nil {
+		return ""
+	}
+	return p.StripeCardID
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetStripePublishableKey() string {
+	if p == nil {
+		return ""
+	}
+	return p.StripePublishableKey
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetStripeAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StripeAccountID
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetEphemeralKeyEndpoint() *EphemeralKeyEndpoint {
+	if p == nil {
+		return nil
+	}
+	return p.EphemeralKeyEndpoint
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) UnmarshalJSON(data []byte) error {
+	type unmarshaler ProcessPaymentGatewayCardDetailsStripeIssuing
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = ProcessPaymentGatewayCardDetailsStripeIssuing(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) String() string {
 	if len(p.rawJSON) > 0 {
 		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
 			return value
