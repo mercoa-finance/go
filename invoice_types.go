@@ -5220,7 +5220,9 @@ type InvoiceResponse struct {
 	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	// ID of the OCR job that processed this invoice.
 	OcrJobID *OcrJobID `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
-	ID       InvoiceID `json:"id" url:"id"`
+	// ID of the invoice template that created this recurring invoice. Only present if the invoice was created from a recurring template.
+	RecurringTemplateID *InvoiceTemplateID `json:"recurringTemplateId,omitempty" url:"recurringTemplateId,omitempty"`
+	ID                  InvoiceID          `json:"id" url:"id"`
 	// Date when the invoice payment was processed.
 	ProcessedAt *time.Time `json:"processedAt,omitempty" url:"processedAt,omitempty"`
 	// Date of funds settlement.
@@ -5525,6 +5527,13 @@ func (i *InvoiceResponse) GetOcrJobID() *OcrJobID {
 	return i.OcrJobID
 }
 
+func (i *InvoiceResponse) GetRecurringTemplateID() *InvoiceTemplateID {
+	if i == nil {
+		return nil
+	}
+	return i.RecurringTemplateID
+}
+
 func (i *InvoiceResponse) GetID() InvoiceID {
 	if i == nil {
 		return ""
@@ -5721,6 +5730,8 @@ type InvoiceResponseBase struct {
 	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	// ID of the OCR job that processed this invoice.
 	OcrJobID *OcrJobID `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
+	// ID of the invoice template that created this recurring invoice. Only present if the invoice was created from a recurring template.
+	RecurringTemplateID *InvoiceTemplateID `json:"recurringTemplateId,omitempty" url:"recurringTemplateId,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -6011,6 +6022,13 @@ func (i *InvoiceResponseBase) GetOcrJobID() *OcrJobID {
 		return nil
 	}
 	return i.OcrJobID
+}
+
+func (i *InvoiceResponseBase) GetRecurringTemplateID() *InvoiceTemplateID {
+	if i == nil {
+		return nil
+	}
+	return i.RecurringTemplateID
 }
 
 func (i *InvoiceResponseBase) GetExtraProperties() map[string]interface{} {
@@ -6787,8 +6805,10 @@ type InvoiceTemplateResponse struct {
 	// If this is a recurring invoice, this will be the payment schedule for the invoice. If not provided, this will be a one-time invoice.
 	PaymentSchedule *PaymentSchedule `json:"paymentSchedule,omitempty" url:"paymentSchedule,omitempty"`
 	// ID of the OCR job that processed this invoice.
-	OcrJobID *OcrJobID         `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
-	ID       InvoiceTemplateID `json:"id" url:"id"`
+	OcrJobID *OcrJobID `json:"ocrJobId,omitempty" url:"ocrJobId,omitempty"`
+	// ID of the invoice template that created this recurring invoice. Only present if the invoice was created from a recurring template.
+	RecurringTemplateID *InvoiceTemplateID `json:"recurringTemplateId,omitempty" url:"recurringTemplateId,omitempty"`
+	ID                  InvoiceTemplateID  `json:"id" url:"id"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -7079,6 +7099,13 @@ func (i *InvoiceTemplateResponse) GetOcrJobID() *OcrJobID {
 		return nil
 	}
 	return i.OcrJobID
+}
+
+func (i *InvoiceTemplateResponse) GetRecurringTemplateID() *InvoiceTemplateID {
+	if i == nil {
+		return nil
+	}
+	return i.RecurringTemplateID
 }
 
 func (i *InvoiceTemplateResponse) GetID() InvoiceTemplateID {
