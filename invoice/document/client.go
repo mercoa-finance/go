@@ -589,6 +589,115 @@ func (c *Client) GenerateCheckPdf(
 	return response, nil
 }
 
+// Generate a PDF of the payment confirmation for the invoice. This PDF is generated from the data in the invoice, not from the uploaded documents.
+func (c *Client) GeneratePaymentConfirmationPdf(
+	ctx context.Context,
+	// Invoice ID or Invoice ForeignID
+	invoiceID mercoafinancego.InvoiceID,
+	opts ...option.RequestOption,
+) (*mercoafinancego.DocumentResponse, error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/invoice/%v/payment-confirmation/generate",
+		invoiceID,
+	)
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
+	errorDecoder := func(statusCode int, body io.Reader) error {
+		raw, err := io.ReadAll(body)
+		if err != nil {
+			return err
+		}
+		apiError := core.NewAPIError(statusCode, errors.New(string(raw)))
+		decoder := json.NewDecoder(bytes.NewReader(raw))
+		var discriminant struct {
+			ErrorName string          `json:"errorName"`
+			Content   json.RawMessage `json:"content"`
+		}
+		if err := decoder.Decode(&discriminant); err != nil {
+			return apiError
+		}
+		switch discriminant.ErrorName {
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Unauthorized":
+			value := new(mercoafinancego.Unauthorized)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Forbidden":
+			value := new(mercoafinancego.Forbidden)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "NotFound":
+			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Unimplemented":
+			value := new(mercoafinancego.Unimplemented)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		}
+		return apiError
+	}
+
+	var response *mercoafinancego.DocumentResponse
+	if err := c.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    errorDecoder,
+		},
+	); err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
 // Get the email subject and body that was used to create this invoice.
 func (c *Client) GetSourceEmail(
 	ctx context.Context,

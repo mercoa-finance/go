@@ -1071,19 +1071,22 @@ func (d *DocumentResponse) String() string {
 type DocumentType string
 
 const (
-	DocumentTypeInvoice       DocumentType = "INVOICE"
-	DocumentTypeTenNinetyNine DocumentType = "TEN_NINETY_NINE"
-	DocumentTypeW9            DocumentType = "W9"
-	DocumentTypeCheck         DocumentType = "CHECK"
-	DocumentTypeBankStatement DocumentType = "BANK_STATEMENT"
-	DocumentTypeContract      DocumentType = "CONTRACT"
-	DocumentTypeOther         DocumentType = "OTHER"
+	DocumentTypeInvoice             DocumentType = "INVOICE"
+	DocumentTypePaymentConfirmation DocumentType = "PAYMENT_CONFIRMATION"
+	DocumentTypeTenNinetyNine       DocumentType = "TEN_NINETY_NINE"
+	DocumentTypeW9                  DocumentType = "W9"
+	DocumentTypeCheck               DocumentType = "CHECK"
+	DocumentTypeBankStatement       DocumentType = "BANK_STATEMENT"
+	DocumentTypeContract            DocumentType = "CONTRACT"
+	DocumentTypeOther               DocumentType = "OTHER"
 )
 
 func NewDocumentTypeFromString(s string) (DocumentType, error) {
 	switch s {
 	case "INVOICE":
 		return DocumentTypeInvoice, nil
+	case "PAYMENT_CONFIRMATION":
+		return DocumentTypePaymentConfirmation, nil
 	case "TEN_NINETY_NINE":
 		return DocumentTypeTenNinetyNine, nil
 	case "W9":
