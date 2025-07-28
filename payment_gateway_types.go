@@ -6,6 +6,7 @@ import (
 	json "encoding/json"
 	fmt "fmt"
 	internal "github.com/mercoa-finance/go/internal"
+	time "time"
 )
 
 type EphemeralKeyEndpoint struct {
@@ -104,6 +105,56 @@ func NewPaymentGatewayErrorFromString(s string) (PaymentGatewayError, error) {
 }
 
 func (p PaymentGatewayError) Ptr() *PaymentGatewayError {
+	return &p
+}
+
+type PaymentGatewayJobOrderByField string
+
+const (
+	PaymentGatewayJobOrderByFieldCreatedAt PaymentGatewayJobOrderByField = "CREATED_AT"
+	PaymentGatewayJobOrderByFieldUpdatedAt PaymentGatewayJobOrderByField = "UPDATED_AT"
+	PaymentGatewayJobOrderByFieldStatus    PaymentGatewayJobOrderByField = "STATUS"
+)
+
+func NewPaymentGatewayJobOrderByFieldFromString(s string) (PaymentGatewayJobOrderByField, error) {
+	switch s {
+	case "CREATED_AT":
+		return PaymentGatewayJobOrderByFieldCreatedAt, nil
+	case "UPDATED_AT":
+		return PaymentGatewayJobOrderByFieldUpdatedAt, nil
+	case "STATUS":
+		return PaymentGatewayJobOrderByFieldStatus, nil
+	}
+	var t PaymentGatewayJobOrderByField
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentGatewayJobOrderByField) Ptr() *PaymentGatewayJobOrderByField {
+	return &p
+}
+
+type PaymentGatewayJobStatus string
+
+const (
+	PaymentGatewayJobStatusPending   PaymentGatewayJobStatus = "PENDING"
+	PaymentGatewayJobStatusCompleted PaymentGatewayJobStatus = "COMPLETED"
+	PaymentGatewayJobStatusFailed    PaymentGatewayJobStatus = "FAILED"
+)
+
+func NewPaymentGatewayJobStatusFromString(s string) (PaymentGatewayJobStatus, error) {
+	switch s {
+	case "PENDING":
+		return PaymentGatewayJobStatusPending, nil
+	case "COMPLETED":
+		return PaymentGatewayJobStatusCompleted, nil
+	case "FAILED":
+		return PaymentGatewayJobStatusFailed, nil
+	}
+	var t PaymentGatewayJobStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentGatewayJobStatus) Ptr() *PaymentGatewayJobStatus {
 	return &p
 }
 
@@ -740,6 +791,10 @@ type ProcessPaymentGatewayFailedResponse struct {
 	ErrorType PaymentGatewayError `json:"errorType" url:"errorType"`
 	// The error message that occurred during the payment gateway processing job
 	ErrorMessage *string `json:"errorMessage,omitempty" url:"errorMessage,omitempty"`
+	// The timestamp when the job was created
+	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
+	// The timestamp when the job was last updated
+	UpdatedAt time.Time `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -766,17 +821,39 @@ func (p *ProcessPaymentGatewayFailedResponse) GetErrorMessage() *string {
 	return p.ErrorMessage
 }
 
+func (p *ProcessPaymentGatewayFailedResponse) GetCreatedAt() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.CreatedAt
+}
+
+func (p *ProcessPaymentGatewayFailedResponse) GetUpdatedAt() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.UpdatedAt
+}
+
 func (p *ProcessPaymentGatewayFailedResponse) GetExtraProperties() map[string]interface{} {
 	return p.extraProperties
 }
 
 func (p *ProcessPaymentGatewayFailedResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler ProcessPaymentGatewayFailedResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
+	type embed ProcessPaymentGatewayFailedResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*p = ProcessPaymentGatewayFailedResponse(value)
+	*p = ProcessPaymentGatewayFailedResponse(unmarshaler.embed)
+	p.CreatedAt = unmarshaler.CreatedAt.Time()
+	p.UpdatedAt = unmarshaler.UpdatedAt.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -784,6 +861,20 @@ func (p *ProcessPaymentGatewayFailedResponse) UnmarshalJSON(data []byte) error {
 	p.extraProperties = extraProperties
 	p.rawJSON = json.RawMessage(data)
 	return nil
+}
+
+func (p *ProcessPaymentGatewayFailedResponse) MarshalJSON() ([]byte, error) {
+	type embed ProcessPaymentGatewayFailedResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*p),
+		CreatedAt: internal.NewDateTime(p.CreatedAt),
+		UpdatedAt: internal.NewDateTime(p.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
 }
 
 func (p *ProcessPaymentGatewayFailedResponse) String() string {
@@ -801,6 +892,10 @@ func (p *ProcessPaymentGatewayFailedResponse) String() string {
 type ProcessPaymentGatewayPendingResponse struct {
 	// The job ID of the payment gateway processing job
 	JobID string `json:"jobId" url:"jobId"`
+	// The timestamp when the job was created
+	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
+	// The timestamp when the job was last updated
+	UpdatedAt time.Time `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -813,17 +908,39 @@ func (p *ProcessPaymentGatewayPendingResponse) GetJobID() string {
 	return p.JobID
 }
 
+func (p *ProcessPaymentGatewayPendingResponse) GetCreatedAt() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.CreatedAt
+}
+
+func (p *ProcessPaymentGatewayPendingResponse) GetUpdatedAt() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.UpdatedAt
+}
+
 func (p *ProcessPaymentGatewayPendingResponse) GetExtraProperties() map[string]interface{} {
 	return p.extraProperties
 }
 
 func (p *ProcessPaymentGatewayPendingResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler ProcessPaymentGatewayPendingResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
+	type embed ProcessPaymentGatewayPendingResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*p = ProcessPaymentGatewayPendingResponse(value)
+	*p = ProcessPaymentGatewayPendingResponse(unmarshaler.embed)
+	p.CreatedAt = unmarshaler.CreatedAt.Time()
+	p.UpdatedAt = unmarshaler.UpdatedAt.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -831,6 +948,20 @@ func (p *ProcessPaymentGatewayPendingResponse) UnmarshalJSON(data []byte) error 
 	p.extraProperties = extraProperties
 	p.rawJSON = json.RawMessage(data)
 	return nil
+}
+
+func (p *ProcessPaymentGatewayPendingResponse) MarshalJSON() ([]byte, error) {
+	type embed ProcessPaymentGatewayPendingResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*p),
+		CreatedAt: internal.NewDateTime(p.CreatedAt),
+		UpdatedAt: internal.NewDateTime(p.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
 }
 
 func (p *ProcessPaymentGatewayPendingResponse) String() string {
@@ -1222,6 +1353,10 @@ type ProcessPaymentGatewaySuccessResponse struct {
 	ReceiptURL *string `json:"receiptUrl,omitempty" url:"receiptUrl,omitempty"`
 	// The URL of the playback session for the agent that processed the payment
 	SessionURL *string `json:"sessionUrl,omitempty" url:"sessionUrl,omitempty"`
+	// The timestamp when the job was created
+	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
+	// The timestamp when the job was last updated
+	UpdatedAt time.Time `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1248,17 +1383,39 @@ func (p *ProcessPaymentGatewaySuccessResponse) GetSessionURL() *string {
 	return p.SessionURL
 }
 
+func (p *ProcessPaymentGatewaySuccessResponse) GetCreatedAt() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.CreatedAt
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) GetUpdatedAt() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.UpdatedAt
+}
+
 func (p *ProcessPaymentGatewaySuccessResponse) GetExtraProperties() map[string]interface{} {
 	return p.extraProperties
 }
 
 func (p *ProcessPaymentGatewaySuccessResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler ProcessPaymentGatewaySuccessResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
+	type embed ProcessPaymentGatewaySuccessResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*p = ProcessPaymentGatewaySuccessResponse(value)
+	*p = ProcessPaymentGatewaySuccessResponse(unmarshaler.embed)
+	p.CreatedAt = unmarshaler.CreatedAt.Time()
+	p.UpdatedAt = unmarshaler.UpdatedAt.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -1266,6 +1423,20 @@ func (p *ProcessPaymentGatewaySuccessResponse) UnmarshalJSON(data []byte) error 
 	p.extraProperties = extraProperties
 	p.rawJSON = json.RawMessage(data)
 	return nil
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) MarshalJSON() ([]byte, error) {
+	type embed ProcessPaymentGatewaySuccessResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*p),
+		CreatedAt: internal.NewDateTime(p.CreatedAt),
+		UpdatedAt: internal.NewDateTime(p.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
 }
 
 func (p *ProcessPaymentGatewaySuccessResponse) String() string {
@@ -1278,6 +1449,118 @@ func (p *ProcessPaymentGatewaySuccessResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+type SearchPaymentGatewayProcessJobsResponse struct {
+	// List of payment gateway process jobs matching the search criteria
+	Jobs []*ProcessPaymentGatewayResponse `json:"jobs,omitempty" url:"jobs,omitempty"`
+	// Whether there are more jobs available beyond the current page
+	HasMore bool `json:"hasMore" url:"hasMore"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SearchPaymentGatewayProcessJobsResponse) GetJobs() []*ProcessPaymentGatewayResponse {
+	if s == nil {
+		return nil
+	}
+	return s.Jobs
+}
+
+func (s *SearchPaymentGatewayProcessJobsResponse) GetHasMore() bool {
+	if s == nil {
+		return false
+	}
+	return s.HasMore
+}
+
+func (s *SearchPaymentGatewayProcessJobsResponse) GetExtraProperties() map[string]interface{} {
+	return s.extraProperties
+}
+
+func (s *SearchPaymentGatewayProcessJobsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SearchPaymentGatewayProcessJobsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SearchPaymentGatewayProcessJobsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SearchPaymentGatewayProcessJobsResponse) String() string {
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SearchPaymentGatewayValidationJobsResponse struct {
+	// List of payment gateway validation jobs matching the search criteria
+	Jobs []*ValidatePaymentGatewayResponse `json:"jobs,omitempty" url:"jobs,omitempty"`
+	// Whether there are more jobs available beyond the current page
+	HasMore bool `json:"hasMore" url:"hasMore"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SearchPaymentGatewayValidationJobsResponse) GetJobs() []*ValidatePaymentGatewayResponse {
+	if s == nil {
+		return nil
+	}
+	return s.Jobs
+}
+
+func (s *SearchPaymentGatewayValidationJobsResponse) GetHasMore() bool {
+	if s == nil {
+		return false
+	}
+	return s.HasMore
+}
+
+func (s *SearchPaymentGatewayValidationJobsResponse) GetExtraProperties() map[string]interface{} {
+	return s.extraProperties
+}
+
+func (s *SearchPaymentGatewayValidationJobsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SearchPaymentGatewayValidationJobsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SearchPaymentGatewayValidationJobsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SearchPaymentGatewayValidationJobsResponse) String() string {
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
 }
 
 type ValidatePaymentGatewayCardAcceptance string
@@ -1640,6 +1923,10 @@ type ValidatePaymentGatewayFailedResponse struct {
 	ErrorType PaymentGatewayError `json:"errorType" url:"errorType"`
 	// The error message that occurred during the payment gateway validation job
 	ErrorMessage *string `json:"errorMessage,omitempty" url:"errorMessage,omitempty"`
+	// The timestamp when the job was created
+	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
+	// The timestamp when the job was last updated
+	UpdatedAt time.Time `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1666,17 +1953,39 @@ func (v *ValidatePaymentGatewayFailedResponse) GetErrorMessage() *string {
 	return v.ErrorMessage
 }
 
+func (v *ValidatePaymentGatewayFailedResponse) GetCreatedAt() time.Time {
+	if v == nil {
+		return time.Time{}
+	}
+	return v.CreatedAt
+}
+
+func (v *ValidatePaymentGatewayFailedResponse) GetUpdatedAt() time.Time {
+	if v == nil {
+		return time.Time{}
+	}
+	return v.UpdatedAt
+}
+
 func (v *ValidatePaymentGatewayFailedResponse) GetExtraProperties() map[string]interface{} {
 	return v.extraProperties
 }
 
 func (v *ValidatePaymentGatewayFailedResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler ValidatePaymentGatewayFailedResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
+	type embed ValidatePaymentGatewayFailedResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*v),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*v = ValidatePaymentGatewayFailedResponse(value)
+	*v = ValidatePaymentGatewayFailedResponse(unmarshaler.embed)
+	v.CreatedAt = unmarshaler.CreatedAt.Time()
+	v.UpdatedAt = unmarshaler.UpdatedAt.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *v)
 	if err != nil {
 		return err
@@ -1684,6 +1993,20 @@ func (v *ValidatePaymentGatewayFailedResponse) UnmarshalJSON(data []byte) error 
 	v.extraProperties = extraProperties
 	v.rawJSON = json.RawMessage(data)
 	return nil
+}
+
+func (v *ValidatePaymentGatewayFailedResponse) MarshalJSON() ([]byte, error) {
+	type embed ValidatePaymentGatewayFailedResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*v),
+		CreatedAt: internal.NewDateTime(v.CreatedAt),
+		UpdatedAt: internal.NewDateTime(v.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
 }
 
 func (v *ValidatePaymentGatewayFailedResponse) String() string {
@@ -1701,6 +2024,10 @@ func (v *ValidatePaymentGatewayFailedResponse) String() string {
 type ValidatePaymentGatewayPendingResponse struct {
 	// The job ID of the payment gateway validation job
 	JobID string `json:"jobId" url:"jobId"`
+	// The timestamp when the job was created
+	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
+	// The timestamp when the job was last updated
+	UpdatedAt time.Time `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1713,17 +2040,39 @@ func (v *ValidatePaymentGatewayPendingResponse) GetJobID() string {
 	return v.JobID
 }
 
+func (v *ValidatePaymentGatewayPendingResponse) GetCreatedAt() time.Time {
+	if v == nil {
+		return time.Time{}
+	}
+	return v.CreatedAt
+}
+
+func (v *ValidatePaymentGatewayPendingResponse) GetUpdatedAt() time.Time {
+	if v == nil {
+		return time.Time{}
+	}
+	return v.UpdatedAt
+}
+
 func (v *ValidatePaymentGatewayPendingResponse) GetExtraProperties() map[string]interface{} {
 	return v.extraProperties
 }
 
 func (v *ValidatePaymentGatewayPendingResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler ValidatePaymentGatewayPendingResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
+	type embed ValidatePaymentGatewayPendingResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*v),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*v = ValidatePaymentGatewayPendingResponse(value)
+	*v = ValidatePaymentGatewayPendingResponse(unmarshaler.embed)
+	v.CreatedAt = unmarshaler.CreatedAt.Time()
+	v.UpdatedAt = unmarshaler.UpdatedAt.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *v)
 	if err != nil {
 		return err
@@ -1731,6 +2080,20 @@ func (v *ValidatePaymentGatewayPendingResponse) UnmarshalJSON(data []byte) error
 	v.extraProperties = extraProperties
 	v.rawJSON = json.RawMessage(data)
 	return nil
+}
+
+func (v *ValidatePaymentGatewayPendingResponse) MarshalJSON() ([]byte, error) {
+	type embed ValidatePaymentGatewayPendingResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*v),
+		CreatedAt: internal.NewDateTime(v.CreatedAt),
+		UpdatedAt: internal.NewDateTime(v.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
 }
 
 func (v *ValidatePaymentGatewayPendingResponse) String() string {
@@ -2106,6 +2469,10 @@ type ValidatePaymentGatewaySuccessResponse struct {
 	SessionURL *string `json:"sessionUrl,omitempty" url:"sessionUrl,omitempty"`
 	// Data on the card payments that were extracted from the gateway
 	Card *ValidatePaymentGatewayCardResponse `json:"card,omitempty" url:"card,omitempty"`
+	// The timestamp when the job was created
+	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
+	// The timestamp when the job was last updated
+	UpdatedAt time.Time `json:"updatedAt" url:"updatedAt"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2139,17 +2506,39 @@ func (v *ValidatePaymentGatewaySuccessResponse) GetCard() *ValidatePaymentGatewa
 	return v.Card
 }
 
+func (v *ValidatePaymentGatewaySuccessResponse) GetCreatedAt() time.Time {
+	if v == nil {
+		return time.Time{}
+	}
+	return v.CreatedAt
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) GetUpdatedAt() time.Time {
+	if v == nil {
+		return time.Time{}
+	}
+	return v.UpdatedAt
+}
+
 func (v *ValidatePaymentGatewaySuccessResponse) GetExtraProperties() map[string]interface{} {
 	return v.extraProperties
 }
 
 func (v *ValidatePaymentGatewaySuccessResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler ValidatePaymentGatewaySuccessResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
+	type embed ValidatePaymentGatewaySuccessResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*v),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*v = ValidatePaymentGatewaySuccessResponse(value)
+	*v = ValidatePaymentGatewaySuccessResponse(unmarshaler.embed)
+	v.CreatedAt = unmarshaler.CreatedAt.Time()
+	v.UpdatedAt = unmarshaler.UpdatedAt.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *v)
 	if err != nil {
 		return err
@@ -2157,6 +2546,20 @@ func (v *ValidatePaymentGatewaySuccessResponse) UnmarshalJSON(data []byte) error
 	v.extraProperties = extraProperties
 	v.rawJSON = json.RawMessage(data)
 	return nil
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) MarshalJSON() ([]byte, error) {
+	type embed ValidatePaymentGatewaySuccessResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+		UpdatedAt *internal.DateTime `json:"updatedAt"`
+	}{
+		embed:     embed(*v),
+		CreatedAt: internal.NewDateTime(v.CreatedAt),
+		UpdatedAt: internal.NewDateTime(v.UpdatedAt),
+	}
+	return json.Marshal(marshaler)
 }
 
 func (v *ValidatePaymentGatewaySuccessResponse) String() string {

@@ -11,7 +11,6 @@ import (
 	core "github.com/mercoa-finance/go/core"
 	internal "github.com/mercoa-finance/go/internal"
 	option "github.com/mercoa-finance/go/option"
-	paymentgateway "github.com/mercoa-finance/go/paymentgateway"
 	io "io"
 	http "net/http"
 )
@@ -36,26 +35,24 @@ func NewClient(opts ...option.RequestOption) *Client {
 	}
 }
 
-// Search payment gateway validation jobs for the organization
-func (c *Client) FindValidationJobs(
+// Create association between all entities in the group and a given list of Payees. If a Payee has previously been archived, unarchive the Payee.
+func (c *Client) AddPayees(
 	ctx context.Context,
-	request *paymentgateway.SearchPaymentGatewayValidationJobsRequest,
+	// Entity Group ID or Entity Group ForeignID
+	entityGroupID mercoafinancego.EntityGroupID,
+	request *mercoafinancego.EntityAddPayeesRequest,
 	opts ...option.RequestOption,
-) (*mercoafinancego.SearchPaymentGatewayValidationJobsResponse, error) {
+) error {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
 		c.baseURL,
 		"https://api.mercoa.com",
 	)
-	endpointURL := baseURL + "/payment-gateway/validation-jobs"
-	queryParams, err := internal.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	if len(queryParams) > 0 {
-		endpointURL += "?" + queryParams.Encode()
-	}
+	endpointURL := internal.EncodeURL(
+		baseURL+"/entityGroup/%v/addPayees",
+		entityGroupID,
+	)
 	headers := internal.MergeHeaders(
 		c.header.Clone(),
 		options.ToHeader(),
@@ -128,224 +125,6 @@ func (c *Client) FindValidationJobs(
 		return apiError
 	}
 
-	var response *mercoafinancego.SearchPaymentGatewayValidationJobsResponse
-	if err := c.caller.Call(
-		ctx,
-		&internal.CallParams{
-			URL:             endpointURL,
-			Method:          http.MethodGet,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        &response,
-			ErrorDecoder:    errorDecoder,
-		},
-	); err != nil {
-		return nil, err
-	}
-	return response, nil
-}
-
-// Search payment gateway process jobs for the organization
-func (c *Client) FindProcessJobs(
-	ctx context.Context,
-	request *paymentgateway.SearchPaymentGatewayProcessJobsRequest,
-	opts ...option.RequestOption,
-) (*mercoafinancego.SearchPaymentGatewayProcessJobsResponse, error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		c.baseURL,
-		"https://api.mercoa.com",
-	)
-	endpointURL := baseURL + "/payment-gateway/process-jobs"
-	queryParams, err := internal.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	if len(queryParams) > 0 {
-		endpointURL += "?" + queryParams.Encode()
-	}
-	headers := internal.MergeHeaders(
-		c.header.Clone(),
-		options.ToHeader(),
-	)
-	errorDecoder := func(statusCode int, body io.Reader) error {
-		raw, err := io.ReadAll(body)
-		if err != nil {
-			return err
-		}
-		apiError := core.NewAPIError(statusCode, errors.New(string(raw)))
-		decoder := json.NewDecoder(bytes.NewReader(raw))
-		var discriminant struct {
-			ErrorName string          `json:"errorName"`
-			Content   json.RawMessage `json:"content"`
-		}
-		if err := decoder.Decode(&discriminant); err != nil {
-			return apiError
-		}
-		switch discriminant.ErrorName {
-		case "BadRequest":
-			value := new(mercoafinancego.BadRequest)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Unauthorized":
-			value := new(mercoafinancego.Unauthorized)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Forbidden":
-			value := new(mercoafinancego.Forbidden)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "NotFound":
-			value := new(mercoafinancego.NotFound)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Conflict":
-			value := new(mercoafinancego.Conflict)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "InternalServerError":
-			value := new(mercoafinancego.InternalServerError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Unimplemented":
-			value := new(mercoafinancego.Unimplemented)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		}
-		return apiError
-	}
-
-	var response *mercoafinancego.SearchPaymentGatewayProcessJobsResponse
-	if err := c.caller.Call(
-		ctx,
-		&internal.CallParams{
-			URL:             endpointURL,
-			Method:          http.MethodGet,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        &response,
-			ErrorDecoder:    errorDecoder,
-		},
-	); err != nil {
-		return nil, err
-	}
-	return response, nil
-}
-
-// Create a job to validate a payment gateway
-func (c *Client) CreateValidationJob(
-	ctx context.Context,
-	request *mercoafinancego.ValidatePaymentGatewayRequest,
-	opts ...option.RequestOption,
-) (*mercoafinancego.ValidatePaymentGatewayResponse, error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		c.baseURL,
-		"https://api.mercoa.com",
-	)
-	endpointURL := baseURL + "/payment-gateway/validate"
-	headers := internal.MergeHeaders(
-		c.header.Clone(),
-		options.ToHeader(),
-	)
-	errorDecoder := func(statusCode int, body io.Reader) error {
-		raw, err := io.ReadAll(body)
-		if err != nil {
-			return err
-		}
-		apiError := core.NewAPIError(statusCode, errors.New(string(raw)))
-		decoder := json.NewDecoder(bytes.NewReader(raw))
-		var discriminant struct {
-			ErrorName string          `json:"errorName"`
-			Content   json.RawMessage `json:"content"`
-		}
-		if err := decoder.Decode(&discriminant); err != nil {
-			return apiError
-		}
-		switch discriminant.ErrorName {
-		case "BadRequest":
-			value := new(mercoafinancego.BadRequest)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Unauthorized":
-			value := new(mercoafinancego.Unauthorized)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Forbidden":
-			value := new(mercoafinancego.Forbidden)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "NotFound":
-			value := new(mercoafinancego.NotFound)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Conflict":
-			value := new(mercoafinancego.Conflict)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "InternalServerError":
-			value := new(mercoafinancego.InternalServerError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Unimplemented":
-			value := new(mercoafinancego.Unimplemented)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		}
-		return apiError
-	}
-
-	var response *mercoafinancego.ValidatePaymentGatewayResponse
 	if err := c.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -357,22 +136,22 @@ func (c *Client) CreateValidationJob(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Request:         request,
-			Response:        &response,
 			ErrorDecoder:    errorDecoder,
 		},
 	); err != nil {
-		return nil, err
+		return err
 	}
-	return response, nil
+	return nil
 }
 
-// Get the status of a payment gateway validation job
-func (c *Client) GetValidationJob(
+// Marks Payees as unsearchable by all entities in the group via Counterparty search. Invoices associated with these Payees will still be searchable via Invoice search.
+func (c *Client) HidePayees(
 	ctx context.Context,
-	// The ID of the payment gateway validation job
-	jobID string,
+	// Entity Group ID or Entity Group ForeignID
+	entityGroupID mercoafinancego.EntityGroupID,
+	request *mercoafinancego.EntityHidePayeesRequest,
 	opts ...option.RequestOption,
-) (*mercoafinancego.ValidatePaymentGatewayResponse, error) {
+) error {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -380,8 +159,8 @@ func (c *Client) GetValidationJob(
 		"https://api.mercoa.com",
 	)
 	endpointURL := internal.EncodeURL(
-		baseURL+"/payment-gateway/validate/%v",
-		jobID,
+		baseURL+"/entityGroup/%v/hidePayees",
+		entityGroupID,
 	)
 	headers := internal.MergeHeaders(
 		c.header.Clone(),
@@ -455,112 +234,6 @@ func (c *Client) GetValidationJob(
 		return apiError
 	}
 
-	var response *mercoafinancego.ValidatePaymentGatewayResponse
-	if err := c.caller.Call(
-		ctx,
-		&internal.CallParams{
-			URL:             endpointURL,
-			Method:          http.MethodGet,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        &response,
-			ErrorDecoder:    errorDecoder,
-		},
-	); err != nil {
-		return nil, err
-	}
-	return response, nil
-}
-
-// Create a job to process a payment through a payment gateway
-func (c *Client) CreateProcessJob(
-	ctx context.Context,
-	request *mercoafinancego.ProcessPaymentGatewayRequest,
-	opts ...option.RequestOption,
-) (*mercoafinancego.ProcessPaymentGatewayResponse, error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		c.baseURL,
-		"https://api.mercoa.com",
-	)
-	endpointURL := baseURL + "/payment-gateway/process"
-	headers := internal.MergeHeaders(
-		c.header.Clone(),
-		options.ToHeader(),
-	)
-	errorDecoder := func(statusCode int, body io.Reader) error {
-		raw, err := io.ReadAll(body)
-		if err != nil {
-			return err
-		}
-		apiError := core.NewAPIError(statusCode, errors.New(string(raw)))
-		decoder := json.NewDecoder(bytes.NewReader(raw))
-		var discriminant struct {
-			ErrorName string          `json:"errorName"`
-			Content   json.RawMessage `json:"content"`
-		}
-		if err := decoder.Decode(&discriminant); err != nil {
-			return apiError
-		}
-		switch discriminant.ErrorName {
-		case "BadRequest":
-			value := new(mercoafinancego.BadRequest)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Unauthorized":
-			value := new(mercoafinancego.Unauthorized)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Forbidden":
-			value := new(mercoafinancego.Forbidden)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "NotFound":
-			value := new(mercoafinancego.NotFound)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Conflict":
-			value := new(mercoafinancego.Conflict)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "InternalServerError":
-			value := new(mercoafinancego.InternalServerError)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		case "Unimplemented":
-			value := new(mercoafinancego.Unimplemented)
-			value.APIError = apiError
-			if err := json.Unmarshal(discriminant.Content, value); err != nil {
-				return apiError
-			}
-			return value
-		}
-		return apiError
-	}
-
-	var response *mercoafinancego.ProcessPaymentGatewayResponse
 	if err := c.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -572,22 +245,22 @@ func (c *Client) CreateProcessJob(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Request:         request,
-			Response:        &response,
 			ErrorDecoder:    errorDecoder,
 		},
 	); err != nil {
-		return nil, err
+		return err
 	}
-	return response, nil
+	return nil
 }
 
-// Get the status of a payment gateway processing job
-func (c *Client) GetProcessJob(
+// Create association between all entities in the group and a given list of Payors. If a Payor has previously been archived, unarchive the Payor.
+func (c *Client) AddPayors(
 	ctx context.Context,
-	// The ID of the payment gateway processing job
-	jobID string,
+	// Entity Group ID or Entity Group ForeignID
+	entityGroupID mercoafinancego.EntityGroupID,
+	request *mercoafinancego.EntityAddPayorsRequest,
 	opts ...option.RequestOption,
-) (*mercoafinancego.ProcessPaymentGatewayResponse, error) {
+) error {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -595,8 +268,8 @@ func (c *Client) GetProcessJob(
 		"https://api.mercoa.com",
 	)
 	endpointURL := internal.EncodeURL(
-		baseURL+"/payment-gateway/process/%v",
-		jobID,
+		baseURL+"/entityGroup/%v/addPayors",
+		entityGroupID,
 	)
 	headers := internal.MergeHeaders(
 		c.header.Clone(),
@@ -670,22 +343,130 @@ func (c *Client) GetProcessJob(
 		return apiError
 	}
 
-	var response *mercoafinancego.ProcessPaymentGatewayResponse
 	if err := c.caller.Call(
 		ctx,
 		&internal.CallParams{
 			URL:             endpointURL,
-			Method:          http.MethodGet,
+			Method:          http.MethodPost,
 			Headers:         headers,
 			MaxAttempts:     options.MaxAttempts,
 			BodyProperties:  options.BodyProperties,
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
-			Response:        &response,
+			Request:         request,
 			ErrorDecoder:    errorDecoder,
 		},
 	); err != nil {
-		return nil, err
+		return err
 	}
-	return response, nil
+	return nil
+}
+
+// Marks Payors as unsearchable by all entities in the group via Counterparty search. Invoices associated with these Payors will still be searchable via Invoice search.
+func (c *Client) HidePayors(
+	ctx context.Context,
+	// Entity Group ID or Entity Group ForeignID
+	entityGroupID mercoafinancego.EntityGroupID,
+	request *mercoafinancego.EntityHidePayorsRequest,
+	opts ...option.RequestOption,
+) error {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.mercoa.com",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/entityGroup/%v/hidePayors",
+		entityGroupID,
+	)
+	headers := internal.MergeHeaders(
+		c.header.Clone(),
+		options.ToHeader(),
+	)
+	errorDecoder := func(statusCode int, body io.Reader) error {
+		raw, err := io.ReadAll(body)
+		if err != nil {
+			return err
+		}
+		apiError := core.NewAPIError(statusCode, errors.New(string(raw)))
+		decoder := json.NewDecoder(bytes.NewReader(raw))
+		var discriminant struct {
+			ErrorName string          `json:"errorName"`
+			Content   json.RawMessage `json:"content"`
+		}
+		if err := decoder.Decode(&discriminant); err != nil {
+			return apiError
+		}
+		switch discriminant.ErrorName {
+		case "BadRequest":
+			value := new(mercoafinancego.BadRequest)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Unauthorized":
+			value := new(mercoafinancego.Unauthorized)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Forbidden":
+			value := new(mercoafinancego.Forbidden)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "NotFound":
+			value := new(mercoafinancego.NotFound)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Conflict":
+			value := new(mercoafinancego.Conflict)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "InternalServerError":
+			value := new(mercoafinancego.InternalServerError)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		case "Unimplemented":
+			value := new(mercoafinancego.Unimplemented)
+			value.APIError = apiError
+			if err := json.Unmarshal(discriminant.Content, value); err != nil {
+				return apiError
+			}
+			return value
+		}
+		return apiError
+	}
+
+	if err := c.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			ErrorDecoder:    errorDecoder,
+		},
+	); err != nil {
+		return err
+	}
+	return nil
 }

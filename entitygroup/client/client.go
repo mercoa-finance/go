@@ -10,6 +10,7 @@ import (
 	mercoafinancego "github.com/mercoa-finance/go"
 	core "github.com/mercoa-finance/go/core"
 	entitygroup "github.com/mercoa-finance/go/entitygroup"
+	counterpartyclient "github.com/mercoa-finance/go/entitygroup/counterparty/client"
 	invoice "github.com/mercoa-finance/go/entitygroup/invoice"
 	userclient "github.com/mercoa-finance/go/entitygroup/user/client"
 	internal "github.com/mercoa-finance/go/internal"
@@ -23,8 +24,9 @@ type Client struct {
 	caller  *internal.Caller
 	header  http.Header
 
-	User    *userclient.Client
-	Invoice *invoice.Client
+	Counterparty *counterpartyclient.Client
+	User         *userclient.Client
+	Invoice      *invoice.Client
 }
 
 func NewClient(opts ...option.RequestOption) *Client {
@@ -37,9 +39,10 @@ func NewClient(opts ...option.RequestOption) *Client {
 				MaxAttempts: options.MaxAttempts,
 			},
 		),
-		header:  options.ToHeader(),
-		User:    userclient.NewClient(opts...),
-		Invoice: invoice.NewClient(opts...),
+		header:       options.ToHeader(),
+		Counterparty: counterpartyclient.NewClient(opts...),
+		User:         userclient.NewClient(opts...),
+		Invoice:      invoice.NewClient(opts...),
 	}
 }
 
