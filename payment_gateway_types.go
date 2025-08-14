@@ -89,6 +89,8 @@ const (
 	PaymentGatewayErrorNoValidPaymentGatewayFound PaymentGatewayError = "NO_VALID_PAYMENT_GATEWAY_FOUND"
 	PaymentGatewayErrorPaymentGatewayUnsupported  PaymentGatewayError = "PAYMENT_GATEWAY_UNSUPPORTED"
 	PaymentGatewayErrorCardDetailsInvalid         PaymentGatewayError = "CARD_DETAILS_INVALID"
+	PaymentGatewayErrorCardDeclined               PaymentGatewayError = "CARD_DECLINED"
+	PaymentGatewayErrorInvoiceAmountMismatch      PaymentGatewayError = "INVOICE_AMOUNT_MISMATCH"
 )
 
 func NewPaymentGatewayErrorFromString(s string) (PaymentGatewayError, error) {
@@ -99,6 +101,10 @@ func NewPaymentGatewayErrorFromString(s string) (PaymentGatewayError, error) {
 		return PaymentGatewayErrorPaymentGatewayUnsupported, nil
 	case "CARD_DETAILS_INVALID":
 		return PaymentGatewayErrorCardDetailsInvalid, nil
+	case "CARD_DECLINED":
+		return PaymentGatewayErrorCardDeclined, nil
+	case "INVOICE_AMOUNT_MISMATCH":
+		return PaymentGatewayErrorInvoiceAmountMismatch, nil
 	}
 	var t PaymentGatewayError
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -163,6 +169,7 @@ type ProcessPaymentGatewayCardDetails struct {
 	Direct        *ProcessPaymentGatewayCardDetailsDirect
 	Iframe        *ProcessPaymentGatewayCardDetailsIframe
 	StripeIssuing *ProcessPaymentGatewayCardDetailsStripeIssuing
+	Lithic        *ProcessPaymentGatewayCardDetailsLithic
 }
 
 func (p *ProcessPaymentGatewayCardDetails) GetType() string {
@@ -191,6 +198,13 @@ func (p *ProcessPaymentGatewayCardDetails) GetStripeIssuing() *ProcessPaymentGat
 		return nil
 	}
 	return p.StripeIssuing
+}
+
+func (p *ProcessPaymentGatewayCardDetails) GetLithic() *ProcessPaymentGatewayCardDetailsLithic {
+	if p == nil {
+		return nil
+	}
+	return p.Lithic
 }
 
 func (p *ProcessPaymentGatewayCardDetails) UnmarshalJSON(data []byte) error {
@@ -223,6 +237,12 @@ func (p *ProcessPaymentGatewayCardDetails) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		p.StripeIssuing = value
+	case "lithic":
+		value := new(ProcessPaymentGatewayCardDetailsLithic)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Lithic = value
 	}
 	return nil
 }
@@ -240,6 +260,9 @@ func (p ProcessPaymentGatewayCardDetails) MarshalJSON() ([]byte, error) {
 	if p.StripeIssuing != nil {
 		return internal.MarshalJSONWithExtraProperty(p.StripeIssuing, "type", "stripeIssuing")
 	}
+	if p.Lithic != nil {
+		return internal.MarshalJSONWithExtraProperty(p.Lithic, "type", "lithic")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
@@ -247,6 +270,7 @@ type ProcessPaymentGatewayCardDetailsVisitor interface {
 	VisitDirect(*ProcessPaymentGatewayCardDetailsDirect) error
 	VisitIframe(*ProcessPaymentGatewayCardDetailsIframe) error
 	VisitStripeIssuing(*ProcessPaymentGatewayCardDetailsStripeIssuing) error
+	VisitLithic(*ProcessPaymentGatewayCardDetailsLithic) error
 }
 
 func (p *ProcessPaymentGatewayCardDetails) Accept(visitor ProcessPaymentGatewayCardDetailsVisitor) error {
@@ -258,6 +282,9 @@ func (p *ProcessPaymentGatewayCardDetails) Accept(visitor ProcessPaymentGatewayC
 	}
 	if p.StripeIssuing != nil {
 		return visitor.VisitStripeIssuing(p.StripeIssuing)
+	}
+	if p.Lithic != nil {
+		return visitor.VisitLithic(p.Lithic)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
@@ -275,6 +302,9 @@ func (p *ProcessPaymentGatewayCardDetails) validate() error {
 	}
 	if p.StripeIssuing != nil {
 		fields = append(fields, "stripeIssuing")
+	}
+	if p.Lithic != nil {
+		fields = append(fields, "lithic")
 	}
 	if len(fields) == 0 {
 		if p.Type != "" {
@@ -308,6 +338,8 @@ type ProcessPaymentGatewayCardDetailsBase struct {
 	PostalCode string `json:"postalCode" url:"postalCode"`
 	// The country of the address of the card
 	Country CountryCode `json:"country" url:"country"`
+	// The type of card (credit or debit). Defaults to debit.
+	CardType *ProcessPaymentGatewayCardType `json:"cardType,omitempty" url:"cardType,omitempty"`
 	// The phone number of the card user
 	PhoneNumber *string `json:"phoneNumber,omitempty" url:"phoneNumber,omitempty"`
 	// The email of the card user
@@ -345,6 +377,13 @@ func (p *ProcessPaymentGatewayCardDetailsBase) GetCountry() CountryCode {
 		return ""
 	}
 	return p.Country
+}
+
+func (p *ProcessPaymentGatewayCardDetailsBase) GetCardType() *ProcessPaymentGatewayCardType {
+	if p == nil {
+		return nil
+	}
+	return p.CardType
 }
 
 func (p *ProcessPaymentGatewayCardDetailsBase) GetPhoneNumber() *string {
@@ -409,6 +448,8 @@ type ProcessPaymentGatewayCardDetailsDirect struct {
 	PostalCode string `json:"postalCode" url:"postalCode"`
 	// The country of the address of the card
 	Country CountryCode `json:"country" url:"country"`
+	// The type of card (credit or debit). Defaults to debit.
+	CardType *ProcessPaymentGatewayCardType `json:"cardType,omitempty" url:"cardType,omitempty"`
 	// The phone number of the card user
 	PhoneNumber *string `json:"phoneNumber,omitempty" url:"phoneNumber,omitempty"`
 	// The email of the card user
@@ -454,6 +495,13 @@ func (p *ProcessPaymentGatewayCardDetailsDirect) GetCountry() CountryCode {
 		return ""
 	}
 	return p.Country
+}
+
+func (p *ProcessPaymentGatewayCardDetailsDirect) GetCardType() *ProcessPaymentGatewayCardType {
+	if p == nil {
+		return nil
+	}
+	return p.CardType
 }
 
 func (p *ProcessPaymentGatewayCardDetailsDirect) GetPhoneNumber() *string {
@@ -546,6 +594,8 @@ type ProcessPaymentGatewayCardDetailsIframe struct {
 	PostalCode string `json:"postalCode" url:"postalCode"`
 	// The country of the address of the card
 	Country CountryCode `json:"country" url:"country"`
+	// The type of card (credit or debit). Defaults to debit.
+	CardType *ProcessPaymentGatewayCardType `json:"cardType,omitempty" url:"cardType,omitempty"`
 	// The phone number of the card user
 	PhoneNumber *string `json:"phoneNumber,omitempty" url:"phoneNumber,omitempty"`
 	// The email of the card user
@@ -585,6 +635,13 @@ func (p *ProcessPaymentGatewayCardDetailsIframe) GetCountry() CountryCode {
 		return ""
 	}
 	return p.Country
+}
+
+func (p *ProcessPaymentGatewayCardDetailsIframe) GetCardType() *ProcessPaymentGatewayCardType {
+	if p == nil {
+		return nil
+	}
+	return p.CardType
 }
 
 func (p *ProcessPaymentGatewayCardDetailsIframe) GetPhoneNumber() *string {
@@ -647,6 +704,134 @@ func (p *ProcessPaymentGatewayCardDetailsIframe) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
+type ProcessPaymentGatewayCardDetailsLithic struct {
+	// The first name of the card user
+	FirstName string `json:"firstName" url:"firstName"`
+	// The last name of the card user
+	LastName string `json:"lastName" url:"lastName"`
+	// The postal code of the address of the card
+	PostalCode string `json:"postalCode" url:"postalCode"`
+	// The country of the address of the card
+	Country CountryCode `json:"country" url:"country"`
+	// The type of card (credit or debit). Defaults to debit.
+	CardType *ProcessPaymentGatewayCardType `json:"cardType,omitempty" url:"cardType,omitempty"`
+	// The phone number of the card user
+	PhoneNumber *string `json:"phoneNumber,omitempty" url:"phoneNumber,omitempty"`
+	// The email of the card user
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The full address of the card user
+	FullAddress *string `json:"fullAddress,omitempty" url:"fullAddress,omitempty"`
+	// The base64-encoded embed request for the Lithic virtual card
+	EmbedRequest string `json:"embedRequest" url:"embedRequest"`
+	// The HMAC signature for the embed request
+	Hmac string `json:"hmac" url:"hmac"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetFirstName() string {
+	if p == nil {
+		return ""
+	}
+	return p.FirstName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetLastName() string {
+	if p == nil {
+		return ""
+	}
+	return p.LastName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetPostalCode() string {
+	if p == nil {
+		return ""
+	}
+	return p.PostalCode
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetCountry() CountryCode {
+	if p == nil {
+		return ""
+	}
+	return p.Country
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetCardType() *ProcessPaymentGatewayCardType {
+	if p == nil {
+		return nil
+	}
+	return p.CardType
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetPhoneNumber() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PhoneNumber
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetEmail() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Email
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetFullAddress() *string {
+	if p == nil {
+		return nil
+	}
+	return p.FullAddress
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetEmbedRequest() string {
+	if p == nil {
+		return ""
+	}
+	return p.EmbedRequest
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetHmac() string {
+	if p == nil {
+		return ""
+	}
+	return p.Hmac
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) UnmarshalJSON(data []byte) error {
+	type unmarshaler ProcessPaymentGatewayCardDetailsLithic
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = ProcessPaymentGatewayCardDetailsLithic(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *ProcessPaymentGatewayCardDetailsLithic) String() string {
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
 type ProcessPaymentGatewayCardDetailsStripeIssuing struct {
 	// The first name of the card user
 	FirstName string `json:"firstName" url:"firstName"`
@@ -656,6 +841,8 @@ type ProcessPaymentGatewayCardDetailsStripeIssuing struct {
 	PostalCode string `json:"postalCode" url:"postalCode"`
 	// The country of the address of the card
 	Country CountryCode `json:"country" url:"country"`
+	// The type of card (credit or debit). Defaults to debit.
+	CardType *ProcessPaymentGatewayCardType `json:"cardType,omitempty" url:"cardType,omitempty"`
 	// The phone number of the card user
 	PhoneNumber *string `json:"phoneNumber,omitempty" url:"phoneNumber,omitempty"`
 	// The email of the card user
@@ -701,6 +888,13 @@ func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetCountry() CountryCode
 		return ""
 	}
 	return p.Country
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetCardType() *ProcessPaymentGatewayCardType {
+	if p == nil {
+		return nil
+	}
+	return p.CardType
 }
 
 func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetPhoneNumber() *string {
@@ -782,6 +976,28 @@ func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+type ProcessPaymentGatewayCardType string
+
+const (
+	ProcessPaymentGatewayCardTypeCredit ProcessPaymentGatewayCardType = "credit"
+	ProcessPaymentGatewayCardTypeDebit  ProcessPaymentGatewayCardType = "debit"
+)
+
+func NewProcessPaymentGatewayCardTypeFromString(s string) (ProcessPaymentGatewayCardType, error) {
+	switch s {
+	case "credit":
+		return ProcessPaymentGatewayCardTypeCredit, nil
+	case "debit":
+		return ProcessPaymentGatewayCardTypeDebit, nil
+	}
+	var t ProcessPaymentGatewayCardType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p ProcessPaymentGatewayCardType) Ptr() *ProcessPaymentGatewayCardType {
+	return &p
 }
 
 type ProcessPaymentGatewayFailedResponse struct {
@@ -1351,8 +1567,12 @@ type ProcessPaymentGatewaySuccessResponse struct {
 	JobID string `json:"jobId" url:"jobId"`
 	// The URL of the receipt that was downloaded from the payment gateway
 	ReceiptURL *string `json:"receiptUrl,omitempty" url:"receiptUrl,omitempty"`
-	// The URL of the playback session for the agent that processed the payment
-	SessionURL *string `json:"sessionUrl,omitempty" url:"sessionUrl,omitempty"`
+	// The invoice amount detected from the payment gateway
+	InvoiceAmount *float64 `json:"invoiceAmount,omitempty" url:"invoiceAmount,omitempty"`
+	// The amount displayed on the payment gateway (may include fees)
+	GatewayAmount *float64 `json:"gatewayAmount,omitempty" url:"gatewayAmount,omitempty"`
+	// The vendor name detected from the payment gateway
+	VendorName *string `json:"vendorName,omitempty" url:"vendorName,omitempty"`
 	// The timestamp when the job was created
 	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
 	// The timestamp when the job was last updated
@@ -1376,11 +1596,25 @@ func (p *ProcessPaymentGatewaySuccessResponse) GetReceiptURL() *string {
 	return p.ReceiptURL
 }
 
-func (p *ProcessPaymentGatewaySuccessResponse) GetSessionURL() *string {
+func (p *ProcessPaymentGatewaySuccessResponse) GetInvoiceAmount() *float64 {
 	if p == nil {
 		return nil
 	}
-	return p.SessionURL
+	return p.InvoiceAmount
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) GetGatewayAmount() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.GatewayAmount
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) GetVendorName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.VendorName
 }
 
 func (p *ProcessPaymentGatewaySuccessResponse) GetCreatedAt() time.Time {
@@ -2465,10 +2699,14 @@ type ValidatePaymentGatewaySuccessResponse struct {
 	JobID string `json:"jobId" url:"jobId"`
 	// The payment gateway URL that was found in the document
 	PaymentGatewayURL *string `json:"paymentGatewayUrl,omitempty" url:"paymentGatewayUrl,omitempty"`
-	// The URL of the playback session for the agent that validated the payment gateway
-	SessionURL *string `json:"sessionUrl,omitempty" url:"sessionUrl,omitempty"`
 	// Data on the card payments that were extracted from the gateway
 	Card *ValidatePaymentGatewayCardResponse `json:"card,omitempty" url:"card,omitempty"`
+	// The invoice amount detected from the payment gateway
+	InvoiceAmount *float64 `json:"invoiceAmount,omitempty" url:"invoiceAmount,omitempty"`
+	// The amount displayed on the payment gateway (may include fees)
+	GatewayAmount *float64 `json:"gatewayAmount,omitempty" url:"gatewayAmount,omitempty"`
+	// The vendor name detected from the payment gateway
+	VendorName *string `json:"vendorName,omitempty" url:"vendorName,omitempty"`
 	// The timestamp when the job was created
 	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
 	// The timestamp when the job was last updated
@@ -2492,18 +2730,32 @@ func (v *ValidatePaymentGatewaySuccessResponse) GetPaymentGatewayURL() *string {
 	return v.PaymentGatewayURL
 }
 
-func (v *ValidatePaymentGatewaySuccessResponse) GetSessionURL() *string {
-	if v == nil {
-		return nil
-	}
-	return v.SessionURL
-}
-
 func (v *ValidatePaymentGatewaySuccessResponse) GetCard() *ValidatePaymentGatewayCardResponse {
 	if v == nil {
 		return nil
 	}
 	return v.Card
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) GetInvoiceAmount() *float64 {
+	if v == nil {
+		return nil
+	}
+	return v.InvoiceAmount
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) GetGatewayAmount() *float64 {
+	if v == nil {
+		return nil
+	}
+	return v.GatewayAmount
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) GetVendorName() *string {
+	if v == nil {
+		return nil
+	}
+	return v.VendorName
 }
 
 func (v *ValidatePaymentGatewaySuccessResponse) GetCreatedAt() time.Time {

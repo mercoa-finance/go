@@ -31,11 +31,11 @@ type Client struct {
 	InvoiceTemplate           *invoicetemplateclient.Client
 	Invoice                   *invoiceclient.Client
 	Organization              *organizationclient.Client
-	PaymentGateway            *paymentgatewayclient.Client
 	BankLookup                *banklookup.Client
 	Calculate                 *calculate.Client
 	CustomPaymentMethodSchema *custompaymentmethodschema.Client
 	Ocr                       *ocr.Client
+	PaymentGateway            *paymentgatewayclient.Client
 	PaymentMethods            *paymentmethods.Client
 	Transaction               *transaction.Client
 }
@@ -56,11 +56,11 @@ func NewClient(opts ...option.RequestOption) *Client {
 		InvoiceTemplate:           invoicetemplateclient.NewClient(opts...),
 		Invoice:                   invoiceclient.NewClient(opts...),
 		Organization:              organizationclient.NewClient(opts...),
-		PaymentGateway:            paymentgatewayclient.NewClient(opts...),
 		BankLookup:                banklookup.NewClient(opts...),
 		Calculate:                 calculate.NewClient(opts...),
 		CustomPaymentMethodSchema: custompaymentmethodschema.NewClient(opts...),
 		Ocr:                       ocr.NewClient(opts...),
+		PaymentGateway:            paymentgatewayclient.NewClient(opts...),
 		PaymentMethods:            paymentmethods.NewClient(opts...),
 		Transaction:               transaction.NewClient(opts...),
 	}

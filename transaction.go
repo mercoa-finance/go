@@ -208,8 +208,8 @@ type TransactionID = string
 type TransactionResponse struct {
 	Type                      string
 	BankAccountToBankAccount  *TransactionResponseBankToBankWithInvoices
-	BankAccountToMailedCheck  *TransactionResponseBankToCheckWithInvoices
-	BankAccountToPrintedCheck *TransactionResponseBankToCheckWithInvoices
+	BankAccountToMailedCheck  *TransactionResponseBankToMailedCheckWithInvoices
+	BankAccountToPrintedCheck *TransactionResponseBankToPrintedCheckWithInvoices
 	BankAccountToWallet       *TransactionResponseBankToWalletWithInvoices
 	CardToBankAccount         *TransactionResponseCardToBankAccountWithInvoices
 	CardToWallet              *TransactionResponseCardToWalletWithInvoices
@@ -233,14 +233,14 @@ func (t *TransactionResponse) GetBankAccountToBankAccount() *TransactionResponse
 	return t.BankAccountToBankAccount
 }
 
-func (t *TransactionResponse) GetBankAccountToMailedCheck() *TransactionResponseBankToCheckWithInvoices {
+func (t *TransactionResponse) GetBankAccountToMailedCheck() *TransactionResponseBankToMailedCheckWithInvoices {
 	if t == nil {
 		return nil
 	}
 	return t.BankAccountToMailedCheck
 }
 
-func (t *TransactionResponse) GetBankAccountToPrintedCheck() *TransactionResponseBankToCheckWithInvoices {
+func (t *TransactionResponse) GetBankAccountToPrintedCheck() *TransactionResponseBankToPrintedCheckWithInvoices {
 	if t == nil {
 		return nil
 	}
@@ -315,13 +315,13 @@ func (t *TransactionResponse) UnmarshalJSON(data []byte) error {
 		}
 		t.BankAccountToBankAccount = value
 	case "bankAccountToMailedCheck":
-		value := new(TransactionResponseBankToCheckWithInvoices)
+		value := new(TransactionResponseBankToMailedCheckWithInvoices)
 		if err := json.Unmarshal(data, &value); err != nil {
 			return err
 		}
 		t.BankAccountToMailedCheck = value
 	case "bankAccountToPrintedCheck":
-		value := new(TransactionResponseBankToCheckWithInvoices)
+		value := new(TransactionResponseBankToPrintedCheckWithInvoices)
 		if err := json.Unmarshal(data, &value); err != nil {
 			return err
 		}
@@ -411,8 +411,8 @@ func (t TransactionResponse) MarshalJSON() ([]byte, error) {
 
 type TransactionResponseVisitor interface {
 	VisitBankAccountToBankAccount(*TransactionResponseBankToBankWithInvoices) error
-	VisitBankAccountToMailedCheck(*TransactionResponseBankToCheckWithInvoices) error
-	VisitBankAccountToPrintedCheck(*TransactionResponseBankToCheckWithInvoices) error
+	VisitBankAccountToMailedCheck(*TransactionResponseBankToMailedCheckWithInvoices) error
+	VisitBankAccountToPrintedCheck(*TransactionResponseBankToPrintedCheckWithInvoices) error
 	VisitBankAccountToWallet(*TransactionResponseBankToWalletWithInvoices) error
 	VisitCardToBankAccount(*TransactionResponseCardToBankAccountWithInvoices) error
 	VisitCardToWallet(*TransactionResponseCardToWalletWithInvoices) error
@@ -917,7 +917,226 @@ func (t *TransactionResponseBankToBankWithInvoices) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
-type TransactionResponseBankToCheckWithInvoices struct {
+type TransactionResponseBankToMailedCheckWithInvoices struct {
+	ID                        TransactionID              `json:"id" url:"id"`
+	Status                    TransactionStatus          `json:"status" url:"status"`
+	Amount                    float64                    `json:"amount" url:"amount"`
+	Currency                  string                     `json:"currency" url:"currency"`
+	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
+	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
+	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
+	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
+	CreatedAt                 time.Time                  `json:"createdAt" url:"createdAt"`
+	UpdatedAt                 time.Time                  `json:"updatedAt" url:"updatedAt"`
+	// The number of the check
+	CheckNumber int `json:"checkNumber" url:"checkNumber"`
+	// The date the check was mailed. If the check was not mailed, this field will be null.
+	MailedOnDate *time.Time `json:"mailedOnDate,omitempty" url:"mailedOnDate,omitempty"`
+	// Invoices associated with this transaction
+	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetID() TransactionID {
+	if t == nil {
+		return ""
+	}
+	return t.ID
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetStatus() TransactionStatus {
+	if t == nil {
+		return ""
+	}
+	return t.Status
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetAmount() float64 {
+	if t == nil {
+		return 0
+	}
+	return t.Amount
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetCurrency() string {
+	if t == nil {
+		return ""
+	}
+	return t.Currency
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetPayerID() EntityID {
+	if t == nil {
+		return ""
+	}
+	return t.PayerID
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetPayer() *CounterpartyResponse {
+	if t == nil {
+		return nil
+	}
+	return t.Payer
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetPaymentSource() *PaymentMethodResponse {
+	if t == nil {
+		return nil
+	}
+	return t.PaymentSource
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetPaymentSourceID() PaymentMethodID {
+	if t == nil {
+		return ""
+	}
+	return t.PaymentSourceID
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetVendorID() EntityID {
+	if t == nil {
+		return ""
+	}
+	return t.VendorID
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetVendor() *CounterpartyResponse {
+	if t == nil {
+		return nil
+	}
+	return t.Vendor
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetPaymentDestination() *PaymentMethodResponse {
+	if t == nil {
+		return nil
+	}
+	return t.PaymentDestination
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetPaymentDestinationID() PaymentMethodID {
+	if t == nil {
+		return ""
+	}
+	return t.PaymentDestinationID
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetPaymentDestinationOptions() *PaymentDestinationOptions {
+	if t == nil {
+		return nil
+	}
+	return t.PaymentDestinationOptions
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetFees() *InvoiceFeesResponse {
+	if t == nil {
+		return nil
+	}
+	return t.Fees
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetCreatedAt() time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return t.CreatedAt
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetUpdatedAt() time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return t.UpdatedAt
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetCheckNumber() int {
+	if t == nil {
+		return 0
+	}
+	return t.CheckNumber
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetMailedOnDate() *time.Time {
+	if t == nil {
+		return nil
+	}
+	return t.MailedOnDate
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetInvoices() []*InvoiceResponse {
+	if t == nil {
+		return nil
+	}
+	return t.Invoices
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseBankToMailedCheckWithInvoices
+	var unmarshaler = struct {
+		embed
+		CreatedAt    *internal.DateTime `json:"createdAt"`
+		UpdatedAt    *internal.DateTime `json:"updatedAt"`
+		MailedOnDate *internal.DateTime `json:"mailedOnDate,omitempty"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseBankToMailedCheckWithInvoices(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	t.MailedOnDate = unmarshaler.MailedOnDate.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseBankToMailedCheckWithInvoices
+	var marshaler = struct {
+		embed
+		CreatedAt    *internal.DateTime `json:"createdAt"`
+		UpdatedAt    *internal.DateTime `json:"updatedAt"`
+		MailedOnDate *internal.DateTime `json:"mailedOnDate,omitempty"`
+	}{
+		embed:        embed(*t),
+		CreatedAt:    internal.NewDateTime(t.CreatedAt),
+		UpdatedAt:    internal.NewDateTime(t.UpdatedAt),
+		MailedOnDate: internal.NewOptionalDateTime(t.MailedOnDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseBankToMailedCheckWithInvoices) String() string {
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TransactionResponseBankToPrintedCheckWithInvoices struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
 	Amount                    float64                    `json:"amount" url:"amount"`
@@ -943,138 +1162,138 @@ type TransactionResponseBankToCheckWithInvoices struct {
 	rawJSON         json.RawMessage
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetID() TransactionID {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetID() TransactionID {
 	if t == nil {
 		return ""
 	}
 	return t.ID
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetStatus() TransactionStatus {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetStatus() TransactionStatus {
 	if t == nil {
 		return ""
 	}
 	return t.Status
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetAmount() float64 {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetAmount() float64 {
 	if t == nil {
 		return 0
 	}
 	return t.Amount
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetCurrency() string {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetCurrency() string {
 	if t == nil {
 		return ""
 	}
 	return t.Currency
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetPayerID() EntityID {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetPayerID() EntityID {
 	if t == nil {
 		return ""
 	}
 	return t.PayerID
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetPayer() *CounterpartyResponse {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetPayer() *CounterpartyResponse {
 	if t == nil {
 		return nil
 	}
 	return t.Payer
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetPaymentSource() *PaymentMethodResponse {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetPaymentSource() *PaymentMethodResponse {
 	if t == nil {
 		return nil
 	}
 	return t.PaymentSource
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetPaymentSourceID() PaymentMethodID {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetPaymentSourceID() PaymentMethodID {
 	if t == nil {
 		return ""
 	}
 	return t.PaymentSourceID
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetVendorID() EntityID {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetVendorID() EntityID {
 	if t == nil {
 		return ""
 	}
 	return t.VendorID
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetVendor() *CounterpartyResponse {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetVendor() *CounterpartyResponse {
 	if t == nil {
 		return nil
 	}
 	return t.Vendor
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetPaymentDestination() *PaymentMethodResponse {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetPaymentDestination() *PaymentMethodResponse {
 	if t == nil {
 		return nil
 	}
 	return t.PaymentDestination
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetPaymentDestinationID() PaymentMethodID {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetPaymentDestinationID() PaymentMethodID {
 	if t == nil {
 		return ""
 	}
 	return t.PaymentDestinationID
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetPaymentDestinationOptions() *PaymentDestinationOptions {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetPaymentDestinationOptions() *PaymentDestinationOptions {
 	if t == nil {
 		return nil
 	}
 	return t.PaymentDestinationOptions
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetFees() *InvoiceFeesResponse {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetFees() *InvoiceFeesResponse {
 	if t == nil {
 		return nil
 	}
 	return t.Fees
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetCreatedAt() time.Time {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetCreatedAt() time.Time {
 	if t == nil {
 		return time.Time{}
 	}
 	return t.CreatedAt
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetUpdatedAt() time.Time {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetUpdatedAt() time.Time {
 	if t == nil {
 		return time.Time{}
 	}
 	return t.UpdatedAt
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetCheckNumber() int {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetCheckNumber() int {
 	if t == nil {
 		return 0
 	}
 	return t.CheckNumber
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetInvoices() []*InvoiceResponse {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetInvoices() []*InvoiceResponse {
 	if t == nil {
 		return nil
 	}
 	return t.Invoices
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) GetExtraProperties() map[string]interface{} {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) GetExtraProperties() map[string]interface{} {
 	return t.extraProperties
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) UnmarshalJSON(data []byte) error {
-	type embed TransactionResponseBankToCheckWithInvoices
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseBankToPrintedCheckWithInvoices
 	var unmarshaler = struct {
 		embed
 		CreatedAt *internal.DateTime `json:"createdAt"`
@@ -1085,7 +1304,7 @@ func (t *TransactionResponseBankToCheckWithInvoices) UnmarshalJSON(data []byte) 
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*t = TransactionResponseBankToCheckWithInvoices(unmarshaler.embed)
+	*t = TransactionResponseBankToPrintedCheckWithInvoices(unmarshaler.embed)
 	t.CreatedAt = unmarshaler.CreatedAt.Time()
 	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *t)
@@ -1097,8 +1316,8 @@ func (t *TransactionResponseBankToCheckWithInvoices) UnmarshalJSON(data []byte) 
 	return nil
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) MarshalJSON() ([]byte, error) {
-	type embed TransactionResponseBankToCheckWithInvoices
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseBankToPrintedCheckWithInvoices
 	var marshaler = struct {
 		embed
 		CreatedAt *internal.DateTime `json:"createdAt"`
@@ -1111,7 +1330,7 @@ func (t *TransactionResponseBankToCheckWithInvoices) MarshalJSON() ([]byte, erro
 	return json.Marshal(marshaler)
 }
 
-func (t *TransactionResponseBankToCheckWithInvoices) String() string {
+func (t *TransactionResponseBankToPrintedCheckWithInvoices) String() string {
 	if len(t.rawJSON) > 0 {
 		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
 			return value
@@ -2117,6 +2336,216 @@ func (t *TransactionResponseCheckBase) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
+type TransactionResponseCheckBaseMailed struct {
+	ID                        TransactionID              `json:"id" url:"id"`
+	Status                    TransactionStatus          `json:"status" url:"status"`
+	Amount                    float64                    `json:"amount" url:"amount"`
+	Currency                  string                     `json:"currency" url:"currency"`
+	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
+	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
+	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
+	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
+	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
+	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
+	CreatedAt                 time.Time                  `json:"createdAt" url:"createdAt"`
+	UpdatedAt                 time.Time                  `json:"updatedAt" url:"updatedAt"`
+	// The number of the check
+	CheckNumber int `json:"checkNumber" url:"checkNumber"`
+	// The date the check was mailed. If the check was not mailed, this field will be null.
+	MailedOnDate *time.Time `json:"mailedOnDate,omitempty" url:"mailedOnDate,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetID() TransactionID {
+	if t == nil {
+		return ""
+	}
+	return t.ID
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetStatus() TransactionStatus {
+	if t == nil {
+		return ""
+	}
+	return t.Status
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetAmount() float64 {
+	if t == nil {
+		return 0
+	}
+	return t.Amount
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetCurrency() string {
+	if t == nil {
+		return ""
+	}
+	return t.Currency
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetPayerID() EntityID {
+	if t == nil {
+		return ""
+	}
+	return t.PayerID
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetPayer() *CounterpartyResponse {
+	if t == nil {
+		return nil
+	}
+	return t.Payer
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetPaymentSource() *PaymentMethodResponse {
+	if t == nil {
+		return nil
+	}
+	return t.PaymentSource
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetPaymentSourceID() PaymentMethodID {
+	if t == nil {
+		return ""
+	}
+	return t.PaymentSourceID
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetVendorID() EntityID {
+	if t == nil {
+		return ""
+	}
+	return t.VendorID
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetVendor() *CounterpartyResponse {
+	if t == nil {
+		return nil
+	}
+	return t.Vendor
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetPaymentDestination() *PaymentMethodResponse {
+	if t == nil {
+		return nil
+	}
+	return t.PaymentDestination
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetPaymentDestinationID() PaymentMethodID {
+	if t == nil {
+		return ""
+	}
+	return t.PaymentDestinationID
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetPaymentDestinationOptions() *PaymentDestinationOptions {
+	if t == nil {
+		return nil
+	}
+	return t.PaymentDestinationOptions
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetFees() *InvoiceFeesResponse {
+	if t == nil {
+		return nil
+	}
+	return t.Fees
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetCreatedAt() time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return t.CreatedAt
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetUpdatedAt() time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return t.UpdatedAt
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetCheckNumber() int {
+	if t == nil {
+		return 0
+	}
+	return t.CheckNumber
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetMailedOnDate() *time.Time {
+	if t == nil {
+		return nil
+	}
+	return t.MailedOnDate
+}
+
+func (t *TransactionResponseCheckBaseMailed) GetExtraProperties() map[string]interface{} {
+	return t.extraProperties
+}
+
+func (t *TransactionResponseCheckBaseMailed) UnmarshalJSON(data []byte) error {
+	type embed TransactionResponseCheckBaseMailed
+	var unmarshaler = struct {
+		embed
+		CreatedAt    *internal.DateTime `json:"createdAt"`
+		UpdatedAt    *internal.DateTime `json:"updatedAt"`
+		MailedOnDate *internal.DateTime `json:"mailedOnDate,omitempty"`
+	}{
+		embed: embed(*t),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*t = TransactionResponseCheckBaseMailed(unmarshaler.embed)
+	t.CreatedAt = unmarshaler.CreatedAt.Time()
+	t.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	t.MailedOnDate = unmarshaler.MailedOnDate.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionResponseCheckBaseMailed) MarshalJSON() ([]byte, error) {
+	type embed TransactionResponseCheckBaseMailed
+	var marshaler = struct {
+		embed
+		CreatedAt    *internal.DateTime `json:"createdAt"`
+		UpdatedAt    *internal.DateTime `json:"updatedAt"`
+		MailedOnDate *internal.DateTime `json:"mailedOnDate,omitempty"`
+	}{
+		embed:        embed(*t),
+		CreatedAt:    internal.NewDateTime(t.CreatedAt),
+		UpdatedAt:    internal.NewDateTime(t.UpdatedAt),
+		MailedOnDate: internal.NewOptionalDateTime(t.MailedOnDate),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (t *TransactionResponseCheckBaseMailed) String() string {
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
 type TransactionResponseCustomWithInvoices struct {
 	ID                        TransactionID              `json:"id" url:"id"`
 	Status                    TransactionStatus          `json:"status" url:"status"`
@@ -2720,7 +3149,7 @@ func (t *TransactionResponseWalletToWalletWithInvoices) String() string {
 type TransactionResponseWithoutInvoices struct {
 	Type                      string
 	BankAccountToBankAccount  *TransactionResponseAchBase
-	BankAccountToMailedCheck  *TransactionResponseCheckBase
+	BankAccountToMailedCheck  *TransactionResponseCheckBaseMailed
 	BankAccountToPrintedCheck *TransactionResponseCheckBase
 	BankAccountToWallet       *TransactionResponseAchBase
 	CardToBankAccount         *TransactionResponseAchBase
@@ -2745,7 +3174,7 @@ func (t *TransactionResponseWithoutInvoices) GetBankAccountToBankAccount() *Tran
 	return t.BankAccountToBankAccount
 }
 
-func (t *TransactionResponseWithoutInvoices) GetBankAccountToMailedCheck() *TransactionResponseCheckBase {
+func (t *TransactionResponseWithoutInvoices) GetBankAccountToMailedCheck() *TransactionResponseCheckBaseMailed {
 	if t == nil {
 		return nil
 	}
@@ -2827,7 +3256,7 @@ func (t *TransactionResponseWithoutInvoices) UnmarshalJSON(data []byte) error {
 		}
 		t.BankAccountToBankAccount = value
 	case "bankAccountToMailedCheck":
-		value := new(TransactionResponseCheckBase)
+		value := new(TransactionResponseCheckBaseMailed)
 		if err := json.Unmarshal(data, &value); err != nil {
 			return err
 		}
@@ -2923,7 +3352,7 @@ func (t TransactionResponseWithoutInvoices) MarshalJSON() ([]byte, error) {
 
 type TransactionResponseWithoutInvoicesVisitor interface {
 	VisitBankAccountToBankAccount(*TransactionResponseAchBase) error
-	VisitBankAccountToMailedCheck(*TransactionResponseCheckBase) error
+	VisitBankAccountToMailedCheck(*TransactionResponseCheckBaseMailed) error
 	VisitBankAccountToPrintedCheck(*TransactionResponseCheckBase) error
 	VisitBankAccountToWallet(*TransactionResponseAchBase) error
 	VisitCardToBankAccount(*TransactionResponseAchBase) error

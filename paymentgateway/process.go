@@ -23,20 +23,3 @@ type SearchPaymentGatewayProcessJobsRequest struct {
 	// The ID of the job to start after. If not provided, the first page of jobs will be returned.
 	StartingAfter *string `json:"-" url:"startingAfter,omitempty"`
 }
-
-type SearchPaymentGatewayValidationJobsRequest struct {
-	// Filter jobs by status
-	Status *mercoafinancego.PaymentGatewayJobStatus `json:"-" url:"status,omitempty"`
-	// Start date filter for job creation time
-	StartDate *time.Time `json:"-" url:"startDate,omitempty"`
-	// End date filter for job creation time
-	EndDate *time.Time `json:"-" url:"endDate,omitempty"`
-	// Field to order jobs by. Defaults to CREATED_AT.
-	OrderBy *mercoafinancego.PaymentGatewayJobOrderByField `json:"-" url:"orderBy,omitempty"`
-	// Direction to order jobs by. Defaults to desc.
-	OrderDirection *mercoafinancego.OrderDirection `json:"-" url:"orderDirection,omitempty"`
-	// Number of jobs to return. Limit can range between 1 and 100, and the default is 10.
-	Limit *int `json:"-" url:"limit,omitempty"`
-	// The ID of the job to start after. If not provided, the first page of jobs will be returned.
-	StartingAfter *string `json:"-" url:"startingAfter,omitempty"`
-}
