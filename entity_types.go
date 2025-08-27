@@ -2470,6 +2470,7 @@ type EntityCustomizationRequest struct {
 	Ocr                *OcrCustomizationRequest             `json:"ocr,omitempty" url:"ocr,omitempty"`
 	Notifications      *NotificationCustomizationRequest    `json:"notifications,omitempty" url:"notifications,omitempty"`
 	Workflow           *WorkflowCustomizationRequest        `json:"workflow,omitempty" url:"workflow,omitempty"`
+	Invoice            *InvoiceCustomizationRequest         `json:"invoice,omitempty" url:"invoice,omitempty"`
 	Fees               *FeeCustomizationRequest             `json:"fees,omitempty" url:"fees,omitempty"`
 	RolePermissions    *RolePermissionRequest               `json:"rolePermissions,omitempty" url:"rolePermissions,omitempty"`
 
@@ -2526,6 +2527,13 @@ func (e *EntityCustomizationRequest) GetWorkflow() *WorkflowCustomizationRequest
 	return e.Workflow
 }
 
+func (e *EntityCustomizationRequest) GetInvoice() *InvoiceCustomizationRequest {
+	if e == nil {
+		return nil
+	}
+	return e.Invoice
+}
+
 func (e *EntityCustomizationRequest) GetFees() *FeeCustomizationRequest {
 	if e == nil {
 		return nil
@@ -2580,6 +2588,7 @@ type EntityCustomizationResponse struct {
 	Ocr                *OcrCustomizationResponse            `json:"ocr,omitempty" url:"ocr,omitempty"`
 	Notifications      *NotificationCustomizationRequest    `json:"notifications,omitempty" url:"notifications,omitempty"`
 	Workflow           *WorkflowCustomizationRequest        `json:"workflow,omitempty" url:"workflow,omitempty"`
+	Invoice            *InvoiceCustomizationResponse        `json:"invoice,omitempty" url:"invoice,omitempty"`
 	Fees               *FeeCustomizationRequest             `json:"fees,omitempty" url:"fees,omitempty"`
 	RolePermissions    RolePermissionRequest                `json:"rolePermissions,omitempty" url:"rolePermissions,omitempty"`
 
@@ -2634,6 +2643,13 @@ func (e *EntityCustomizationResponse) GetWorkflow() *WorkflowCustomizationReques
 		return nil
 	}
 	return e.Workflow
+}
+
+func (e *EntityCustomizationResponse) GetInvoice() *InvoiceCustomizationResponse {
+	if e == nil {
+		return nil
+	}
+	return e.Invoice
 }
 
 func (e *EntityCustomizationResponse) GetFees() *FeeCustomizationRequest {

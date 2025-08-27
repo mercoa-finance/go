@@ -547,6 +547,154 @@ func (g *GenericPaymentMethodCustomizationRequest) String() string {
 	return fmt.Sprintf("%#v", g)
 }
 
+type InvoiceCustomizationRequest struct {
+	// If true, the address information will be hidden from generated invoice PDFs. Defaults to false.
+	HideAddress *bool `json:"hideAddress,omitempty" url:"hideAddress,omitempty"`
+	// If true, the QR code will be hidden from generated invoice PDFs. Defaults to false.
+	HideQrCode *bool `json:"hideQrCode,omitempty" url:"hideQrCode,omitempty"`
+	// If true, the bank account details will be hidden from generated invoice PDFs. Defaults to false.
+	HideBankDetails *bool `json:"hideBankDetails,omitempty" url:"hideBankDetails,omitempty"`
+	// If true, the payment link will be hidden from generated invoice PDFs. Defaults to false.
+	HidePaymentLink *bool `json:"hidePaymentLink,omitempty" url:"hidePaymentLink,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceCustomizationRequest) GetHideAddress() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.HideAddress
+}
+
+func (i *InvoiceCustomizationRequest) GetHideQrCode() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.HideQrCode
+}
+
+func (i *InvoiceCustomizationRequest) GetHideBankDetails() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.HideBankDetails
+}
+
+func (i *InvoiceCustomizationRequest) GetHidePaymentLink() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.HidePaymentLink
+}
+
+func (i *InvoiceCustomizationRequest) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceCustomizationRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceCustomizationRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceCustomizationRequest(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceCustomizationRequest) String() string {
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceCustomizationResponse struct {
+	// If true, the address information will be hidden from generated invoice PDFs. Defaults to false.
+	HideAddress bool `json:"hideAddress" url:"hideAddress"`
+	// If true, the QR code will be hidden from generated invoice PDFs. Defaults to false.
+	HideQrCode bool `json:"hideQrCode" url:"hideQrCode"`
+	// If true, the bank account details will be hidden from generated invoice PDFs. Defaults to false.
+	HideBankDetails bool `json:"hideBankDetails" url:"hideBankDetails"`
+	// If true, the payment link will be hidden from generated invoice PDFs. Defaults to false.
+	HidePaymentLink bool `json:"hidePaymentLink" url:"hidePaymentLink"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceCustomizationResponse) GetHideAddress() bool {
+	if i == nil {
+		return false
+	}
+	return i.HideAddress
+}
+
+func (i *InvoiceCustomizationResponse) GetHideQrCode() bool {
+	if i == nil {
+		return false
+	}
+	return i.HideQrCode
+}
+
+func (i *InvoiceCustomizationResponse) GetHideBankDetails() bool {
+	if i == nil {
+		return false
+	}
+	return i.HideBankDetails
+}
+
+func (i *InvoiceCustomizationResponse) GetHidePaymentLink() bool {
+	if i == nil {
+		return false
+	}
+	return i.HidePaymentLink
+}
+
+func (i *InvoiceCustomizationResponse) GetExtraProperties() map[string]interface{} {
+	return i.extraProperties
+}
+
+func (i *InvoiceCustomizationResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceCustomizationResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceCustomizationResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceCustomizationResponse) String() string {
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
 type MetadataCustomizationRequest struct {
 	// The key of the metadata field. This must be defined at the organization level, otherwise an error will be returned.
 	Key string `json:"key" url:"key"`

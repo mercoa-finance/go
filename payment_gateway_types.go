@@ -83,6 +83,107 @@ func (e *EphemeralKeyEndpoint) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
+type PaymentGatewayAttempt struct {
+	// The unique identifier for the payment gateway attempt
+	ID string `json:"id" url:"id"`
+	// The status of the attempt
+	Status PaymentGatewayJobStatus `json:"status" url:"status"`
+	// The amount processed in this attempt
+	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+	// The URL of the receipt for this attempt
+	ReceiptURL *string `json:"receiptUrl,omitempty" url:"receiptUrl,omitempty"`
+	// The timestamp when the attempt was created
+	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentGatewayAttempt) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PaymentGatewayAttempt) GetStatus() PaymentGatewayJobStatus {
+	if p == nil {
+		return ""
+	}
+	return p.Status
+}
+
+func (p *PaymentGatewayAttempt) GetAmount() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.Amount
+}
+
+func (p *PaymentGatewayAttempt) GetReceiptURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ReceiptURL
+}
+
+func (p *PaymentGatewayAttempt) GetCreatedAt() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.CreatedAt
+}
+
+func (p *PaymentGatewayAttempt) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *PaymentGatewayAttempt) UnmarshalJSON(data []byte) error {
+	type embed PaymentGatewayAttempt
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PaymentGatewayAttempt(unmarshaler.embed)
+	p.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentGatewayAttempt) MarshalJSON() ([]byte, error) {
+	type embed PaymentGatewayAttempt
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+	}{
+		embed:     embed(*p),
+		CreatedAt: internal.NewDateTime(p.CreatedAt),
+	}
+	return json.Marshal(marshaler)
+}
+
+func (p *PaymentGatewayAttempt) String() string {
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
 type PaymentGatewayError string
 
 const (
@@ -162,6 +263,80 @@ func NewPaymentGatewayJobStatusFromString(s string) (PaymentGatewayJobStatus, er
 
 func (p PaymentGatewayJobStatus) Ptr() *PaymentGatewayJobStatus {
 	return &p
+}
+
+type ProcessPaymentGatewayAchDetails struct {
+	// The routing number of the ACH account
+	RoutingNumber string `json:"routingNumber" url:"routingNumber"`
+	// The account number of the ACH account
+	AccountNumber string `json:"accountNumber" url:"accountNumber"`
+	// The name on the ACH account
+	AccountName *string `json:"accountName,omitempty" url:"accountName,omitempty"`
+	// The type of bank account (checking or savings)
+	AccountType *BankType `json:"accountType,omitempty" url:"accountType,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *ProcessPaymentGatewayAchDetails) GetRoutingNumber() string {
+	if p == nil {
+		return ""
+	}
+	return p.RoutingNumber
+}
+
+func (p *ProcessPaymentGatewayAchDetails) GetAccountNumber() string {
+	if p == nil {
+		return ""
+	}
+	return p.AccountNumber
+}
+
+func (p *ProcessPaymentGatewayAchDetails) GetAccountName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountName
+}
+
+func (p *ProcessPaymentGatewayAchDetails) GetAccountType() *BankType {
+	if p == nil {
+		return nil
+	}
+	return p.AccountType
+}
+
+func (p *ProcessPaymentGatewayAchDetails) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *ProcessPaymentGatewayAchDetails) UnmarshalJSON(data []byte) error {
+	type unmarshaler ProcessPaymentGatewayAchDetails
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = ProcessPaymentGatewayAchDetails(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *ProcessPaymentGatewayAchDetails) String() string {
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }
 
 type ProcessPaymentGatewayCardDetails struct {
@@ -346,6 +521,8 @@ type ProcessPaymentGatewayCardDetailsBase struct {
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// The full address of the card user
 	FullAddress *string `json:"fullAddress,omitempty" url:"fullAddress,omitempty"`
+	// The details of the fallback ACH account to use for the payment. This will be used if a fee is charged for card processing.
+	AchDetails *ProcessPaymentGatewayAchDetails `json:"achDetails,omitempty" url:"achDetails,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -407,6 +584,13 @@ func (p *ProcessPaymentGatewayCardDetailsBase) GetFullAddress() *string {
 	return p.FullAddress
 }
 
+func (p *ProcessPaymentGatewayCardDetailsBase) GetAchDetails() *ProcessPaymentGatewayAchDetails {
+	if p == nil {
+		return nil
+	}
+	return p.AchDetails
+}
+
 func (p *ProcessPaymentGatewayCardDetailsBase) GetExtraProperties() map[string]interface{} {
 	return p.extraProperties
 }
@@ -456,6 +640,8 @@ type ProcessPaymentGatewayCardDetailsDirect struct {
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// The full address of the card user
 	FullAddress *string `json:"fullAddress,omitempty" url:"fullAddress,omitempty"`
+	// The details of the fallback ACH account to use for the payment. This will be used if a fee is charged for card processing.
+	AchDetails *ProcessPaymentGatewayAchDetails `json:"achDetails,omitempty" url:"achDetails,omitempty"`
 	// The number of the card to use for the payment
 	CardNumber string `json:"cardNumber" url:"cardNumber"`
 	// The month of the expiration date of the card to use for the payment. This must be a number between 1 and 12.
@@ -523,6 +709,13 @@ func (p *ProcessPaymentGatewayCardDetailsDirect) GetFullAddress() *string {
 		return nil
 	}
 	return p.FullAddress
+}
+
+func (p *ProcessPaymentGatewayCardDetailsDirect) GetAchDetails() *ProcessPaymentGatewayAchDetails {
+	if p == nil {
+		return nil
+	}
+	return p.AchDetails
 }
 
 func (p *ProcessPaymentGatewayCardDetailsDirect) GetCardNumber() string {
@@ -602,6 +795,8 @@ type ProcessPaymentGatewayCardDetailsIframe struct {
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// The full address of the card user
 	FullAddress *string `json:"fullAddress,omitempty" url:"fullAddress,omitempty"`
+	// The details of the fallback ACH account to use for the payment. This will be used if a fee is charged for card processing.
+	AchDetails *ProcessPaymentGatewayAchDetails `json:"achDetails,omitempty" url:"achDetails,omitempty"`
 	// The URL of the iframe that render the virtual card details
 	IframeURL string `json:"iframeUrl" url:"iframeUrl"`
 
@@ -665,6 +860,13 @@ func (p *ProcessPaymentGatewayCardDetailsIframe) GetFullAddress() *string {
 	return p.FullAddress
 }
 
+func (p *ProcessPaymentGatewayCardDetailsIframe) GetAchDetails() *ProcessPaymentGatewayAchDetails {
+	if p == nil {
+		return nil
+	}
+	return p.AchDetails
+}
+
 func (p *ProcessPaymentGatewayCardDetailsIframe) GetIframeURL() string {
 	if p == nil {
 		return ""
@@ -721,6 +923,8 @@ type ProcessPaymentGatewayCardDetailsLithic struct {
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// The full address of the card user
 	FullAddress *string `json:"fullAddress,omitempty" url:"fullAddress,omitempty"`
+	// The details of the fallback ACH account to use for the payment. This will be used if a fee is charged for card processing.
+	AchDetails *ProcessPaymentGatewayAchDetails `json:"achDetails,omitempty" url:"achDetails,omitempty"`
 	// The base64-encoded embed request for the Lithic virtual card
 	EmbedRequest string `json:"embedRequest" url:"embedRequest"`
 	// The HMAC signature for the embed request
@@ -786,6 +990,13 @@ func (p *ProcessPaymentGatewayCardDetailsLithic) GetFullAddress() *string {
 	return p.FullAddress
 }
 
+func (p *ProcessPaymentGatewayCardDetailsLithic) GetAchDetails() *ProcessPaymentGatewayAchDetails {
+	if p == nil {
+		return nil
+	}
+	return p.AchDetails
+}
+
 func (p *ProcessPaymentGatewayCardDetailsLithic) GetEmbedRequest() string {
 	if p == nil {
 		return ""
@@ -849,6 +1060,8 @@ type ProcessPaymentGatewayCardDetailsStripeIssuing struct {
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// The full address of the card user
 	FullAddress *string `json:"fullAddress,omitempty" url:"fullAddress,omitempty"`
+	// The details of the fallback ACH account to use for the payment. This will be used if a fee is charged for card processing.
+	AchDetails *ProcessPaymentGatewayAchDetails `json:"achDetails,omitempty" url:"achDetails,omitempty"`
 	// The Stripe Issuing card ID
 	StripeCardID string `json:"stripeCardId" url:"stripeCardId"`
 	// The Stripe publishable key for the Issuing Elements
@@ -916,6 +1129,13 @@ func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetFullAddress() *string
 		return nil
 	}
 	return p.FullAddress
+}
+
+func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetAchDetails() *ProcessPaymentGatewayAchDetails {
+	if p == nil {
+		return nil
+	}
+	return p.AchDetails
 }
 
 func (p *ProcessPaymentGatewayCardDetailsStripeIssuing) GetStripeCardID() string {
@@ -1573,6 +1793,8 @@ type ProcessPaymentGatewaySuccessResponse struct {
 	GatewayAmount *float64 `json:"gatewayAmount,omitempty" url:"gatewayAmount,omitempty"`
 	// The vendor name detected from the payment gateway
 	VendorName *string `json:"vendorName,omitempty" url:"vendorName,omitempty"`
+	// List of payment gateway attempts for this job
+	Attempts []*PaymentGatewayAttempt `json:"attempts,omitempty" url:"attempts,omitempty"`
 	// The timestamp when the job was created
 	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
 	// The timestamp when the job was last updated
@@ -1615,6 +1837,13 @@ func (p *ProcessPaymentGatewaySuccessResponse) GetVendorName() *string {
 		return nil
 	}
 	return p.VendorName
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) GetAttempts() []*PaymentGatewayAttempt {
+	if p == nil {
+		return nil
+	}
+	return p.Attempts
 }
 
 func (p *ProcessPaymentGatewaySuccessResponse) GetCreatedAt() time.Time {

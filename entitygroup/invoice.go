@@ -89,6 +89,8 @@ type EntityGetInvoicesRequest struct {
 	ApproverID []*mercoafinancego.EntityUserID `json:"-" url:"approverId,omitempty"`
 	// Filter invoices by approver action. Needs to be used with approverId. For example, if you want to find all invoices that have been approved by a specific user, you would use approverId and approverAction=APPROVE.
 	ApproverAction []*mercoafinancego.ApproverAction `json:"-" url:"approverAction,omitempty"`
+	// Filter invoices by the number of approvers. Use exact number (e.g., 3) or range (e.g., ">3", "<5", ">=2", "<=4").
+	ApproverCount *string `json:"-" url:"approverCount,omitempty"`
 	// Filter invoices by invoice ID or invoice foreign ID.
 	InvoiceID []*mercoafinancego.InvoiceID `json:"-" url:"invoiceId,omitempty"`
 	// Invoice status to filter on.
@@ -122,6 +124,8 @@ type GroupInvoiceMetricsRequest struct {
 	VendorID []*mercoafinancego.EntityID `json:"-" url:"vendorId,omitempty"`
 	// Filter invoices by assigned approver user ID.
 	ApproverID []*mercoafinancego.EntityUserID `json:"-" url:"approverId,omitempty"`
+	// Filter invoices by the number of approvers. Use exact number (e.g., 3) or range (e.g., ">3", "<5", ">=2", "<=4").
+	ApproverCount *string `json:"-" url:"approverCount,omitempty"`
 	// Filter invoices by invoice ID or invoice foreign ID.
 	InvoiceID []*mercoafinancego.InvoiceID `json:"-" url:"invoiceId,omitempty"`
 	// Invoice status to filter on
