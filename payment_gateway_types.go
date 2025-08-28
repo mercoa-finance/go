@@ -15,7 +15,7 @@ type EphemeralKeyEndpoint struct {
 	// The HTTP method to use for the request
 	Method string `json:"method" url:"method"`
 	// The headers to include in the request. Supports variables {{cardId}}, {{nonce}}, and {{accountId}} that will be replaced with actual values.
-	Headers map[string]string `json:"headers,omitempty" url:"headers,omitempty"`
+	Headers map[string]string `json:"headers" url:"headers"`
 	// The body to include in the POST request. Supports variables {{cardId}}, {{nonce}}, and {{accountId}} that will be replaced with actual values.
 	PostBody *string `json:"postBody,omitempty" url:"postBody,omitempty"`
 
@@ -1069,7 +1069,7 @@ type ProcessPaymentGatewayCardDetailsStripeIssuing struct {
 	// The Stripe account ID (optional, used for connected accounts)
 	StripeAccountID *string `json:"stripeAccountId,omitempty" url:"stripeAccountId,omitempty"`
 	// The endpoint configuration for generating ephemeral keys. Expects a JSON response with a `ephemeralKeySecret` field.
-	EphemeralKeyEndpoint *EphemeralKeyEndpoint `json:"ephemeralKeyEndpoint,omitempty" url:"ephemeralKeyEndpoint,omitempty"`
+	EphemeralKeyEndpoint *EphemeralKeyEndpoint `json:"ephemeralKeyEndpoint" url:"ephemeralKeyEndpoint"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1533,7 +1533,7 @@ type ProcessPaymentGatewayRequestDocument struct {
 	// The invoice document PDF to extract the payment gateway from. Must be in base64 format or a publicly accessible URL.
 	Document string `json:"document" url:"document"`
 	// The details of the card to use for the payment
-	CardDetails *ProcessPaymentGatewayCardDetails `json:"cardDetails,omitempty" url:"cardDetails,omitempty"`
+	CardDetails *ProcessPaymentGatewayCardDetails `json:"cardDetails" url:"cardDetails"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1589,7 +1589,7 @@ type ProcessPaymentGatewayRequestHTML struct {
 	// The HTML from an email to extract the payment gateway from
 	HTML string `json:"html" url:"html"`
 	// The details of the card to use for the payment
-	CardDetails *ProcessPaymentGatewayCardDetails `json:"cardDetails,omitempty" url:"cardDetails,omitempty"`
+	CardDetails *ProcessPaymentGatewayCardDetails `json:"cardDetails" url:"cardDetails"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1794,7 +1794,7 @@ type ProcessPaymentGatewaySuccessResponse struct {
 	// The vendor name detected from the payment gateway
 	VendorName *string `json:"vendorName,omitempty" url:"vendorName,omitempty"`
 	// List of payment gateway attempts for this job
-	Attempts []*PaymentGatewayAttempt `json:"attempts,omitempty" url:"attempts,omitempty"`
+	Attempts []*PaymentGatewayAttempt `json:"attempts" url:"attempts"`
 	// The timestamp when the job was created
 	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
 	// The timestamp when the job was last updated
@@ -1916,7 +1916,7 @@ func (p *ProcessPaymentGatewaySuccessResponse) String() string {
 
 type SearchPaymentGatewayProcessJobsResponse struct {
 	// List of payment gateway process jobs matching the search criteria
-	Jobs []*ProcessPaymentGatewayResponse `json:"jobs,omitempty" url:"jobs,omitempty"`
+	Jobs []*ProcessPaymentGatewayResponse `json:"jobs" url:"jobs"`
 	// Whether there are more jobs available beyond the current page
 	HasMore bool `json:"hasMore" url:"hasMore"`
 
@@ -1972,7 +1972,7 @@ func (s *SearchPaymentGatewayProcessJobsResponse) String() string {
 
 type SearchPaymentGatewayValidationJobsResponse struct {
 	// List of payment gateway validation jobs matching the search criteria
-	Jobs []*ValidatePaymentGatewayResponse `json:"jobs,omitempty" url:"jobs,omitempty"`
+	Jobs []*ValidatePaymentGatewayResponse `json:"jobs" url:"jobs"`
 	// Whether there are more jobs available beyond the current page
 	HasMore bool `json:"hasMore" url:"hasMore"`
 
@@ -2327,7 +2327,7 @@ type ValidatePaymentGatewayCardResponse struct {
 	// Whether the payment gateway accepts card payments
 	Eligibility ValidatePaymentGatewayCardAcceptance `json:"eligibility" url:"eligibility"`
 	// The fee that was extracted from the gateway
-	Fee *ValidatePaymentGatewayCardFee `json:"fee,omitempty" url:"fee,omitempty"`
+	Fee *ValidatePaymentGatewayCardFee `json:"fee" url:"fee"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage

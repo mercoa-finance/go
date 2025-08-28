@@ -93,7 +93,7 @@ func (b *BankAddress) String() string {
 
 type BankLookupResponse struct {
 	BankName    string       `json:"bankName" url:"bankName"`
-	BankAddress *BankAddress `json:"bankAddress,omitempty" url:"bankAddress,omitempty"`
+	BankAddress *BankAddress `json:"bankAddress" url:"bankAddress"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage

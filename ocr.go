@@ -301,8 +301,8 @@ func (o *OcrRequest) String() string {
 
 type OcrResponse struct {
 	JobID       OcrJobID              `json:"jobId" url:"jobId"`
-	Invoice     *InvoiceResponse      `json:"invoice,omitempty" url:"invoice,omitempty"`
-	Vendor      *CounterpartyResponse `json:"vendor,omitempty" url:"vendor,omitempty"`
+	Invoice     *InvoiceResponse      `json:"invoice" url:"invoice"`
+	Vendor      *CounterpartyResponse `json:"vendor" url:"vendor"`
 	Check       *CheckResponse        `json:"check,omitempty" url:"check,omitempty"`
 	BankAccount *BankAccountResponse  `json:"bankAccount,omitempty" url:"bankAccount,omitempty"`
 	Payer       *EntityResponse       `json:"payer,omitempty" url:"payer,omitempty"`

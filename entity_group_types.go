@@ -11,7 +11,7 @@ import (
 
 type EntityGroupAddEntitiesRequest struct {
 	// List of entity IDs or foreign IDs to add to the group
-	EntityIDs []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
+	EntityIDs []EntityID `json:"entityIds" url:"entityIds"`
 	// Entity ID / foreign ID of an entity currently in the group to copy users and roles from OR a boolean defining if users should be copied to the new entities.
 	//
 	// If not provided or false, users and roles will not be copied.
@@ -163,7 +163,7 @@ func (e *EntityGroupCreateRequest) String() string {
 type EntityGroupFindResponse struct {
 	Count   int                    `json:"count" url:"count"`
 	HasMore bool                   `json:"hasMore" url:"hasMore"`
-	Data    []*EntityGroupResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*EntityGroupResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -226,7 +226,7 @@ type EntityGroupID = string
 
 type EntityGroupRemoveEntitiesRequest struct {
 	// List of entity IDs or foreign IDs to remove from the group
-	EntityIDs []EntityID `json:"entityIds,omitempty" url:"entityIds,omitempty"`
+	EntityIDs []EntityID `json:"entityIds" url:"entityIds"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -276,8 +276,8 @@ type EntityGroupResponse struct {
 	ForeignID   *string           `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	Name        *string           `json:"name,omitempty" url:"name,omitempty"`
 	EmailToName *string           `json:"emailToName,omitempty" url:"emailToName,omitempty"`
-	Entities    []*EntityResponse `json:"entities,omitempty" url:"entities,omitempty"`
-	Metadata    map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Entities    []*EntityResponse `json:"entities" url:"entities"`
+	Metadata    map[string]string `json:"metadata" url:"metadata"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -430,7 +430,7 @@ func (e *EntityGroupUpdateRequest) String() string {
 
 type EntityGroupUserEntityRequest struct {
 	// List of roles. A role can be any string. For example: "payer", "approver", "viewer"
-	Roles []string `json:"roles,omitempty" url:"roles,omitempty"`
+	Roles []string `json:"roles" url:"roles"`
 	// The IDs of the entities that these roles applies to.
 	EntityID EntityID `json:"entityId" url:"entityId"`
 
@@ -486,7 +486,7 @@ func (e *EntityGroupUserEntityRequest) String() string {
 
 type EntityGroupUserEntityResponse struct {
 	// List of roles. A role can be any string. For example: "payer", "approver", "viewer"
-	Roles []string `json:"roles,omitempty" url:"roles,omitempty"`
+	Roles []string `json:"roles" url:"roles"`
 	// The IDs of the entities that these roles applies to.
 	EntityID EntityID     `json:"entityId" url:"entityId"`
 	ID       EntityUserID `json:"id" url:"id"`
@@ -636,7 +636,7 @@ type EntityGroupUserResponse struct {
 	Email     *string `json:"email,omitempty" url:"email,omitempty"`
 	Name      *string `json:"name,omitempty" url:"name,omitempty"`
 	// List of roles per entity.
-	Entities  []*EntityGroupUserEntityResponse `json:"entities,omitempty" url:"entities,omitempty"`
+	Entities  []*EntityGroupUserEntityResponse `json:"entities" url:"entities"`
 	CreatedAt time.Time                        `json:"createdAt" url:"createdAt"`
 	UpdatedAt time.Time                        `json:"updatedAt" url:"updatedAt"`
 
@@ -882,7 +882,7 @@ type FindEntityGroupUserResponse struct {
 	Count int `json:"count" url:"count"`
 	// True if there are more users available for the given filters.
 	HasMore bool                       `json:"hasMore" url:"hasMore"`
-	Data    []*EntityGroupUserResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*EntityGroupUserResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage

@@ -82,7 +82,7 @@ type BankPaymentRailResponse struct {
 	// unused
 	Name                     string               `json:"name" url:"name"`
 	Active                   bool                 `json:"active" url:"active"`
-	AvailableDeliveryMethods []BankDeliveryMethod `json:"availableDeliveryMethods,omitempty" url:"availableDeliveryMethods,omitempty"`
+	AvailableDeliveryMethods []BankDeliveryMethod `json:"availableDeliveryMethods" url:"availableDeliveryMethods"`
 	DefaultDeliveryMethod    BankDeliveryMethod   `json:"defaultDeliveryMethod" url:"defaultDeliveryMethod"`
 
 	extraProperties map[string]interface{}
@@ -348,26 +348,26 @@ func (b *BusinessOnboardingOptionsRequest) String() string {
 }
 
 type BusinessOnboardingOptionsResponse struct {
-	TermsOfService                  *OnboardingOptionResponse `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
-	Email                           *OnboardingOptionResponse `json:"email,omitempty" url:"email,omitempty"`
-	Name                            *OnboardingOptionResponse `json:"name,omitempty" url:"name,omitempty"`
-	Address                         *OnboardingOptionResponse `json:"address,omitempty" url:"address,omitempty"`
-	Phone                           *OnboardingOptionResponse `json:"phone,omitempty" url:"phone,omitempty"`
-	TenNinetyNine                   *OnboardingOptionResponse `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
-	W9                              *OnboardingOptionResponse `json:"w9,omitempty" url:"w9,omitempty"`
-	BankStatement                   *OnboardingOptionResponse `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
-	Type                            *OnboardingOptionResponse `json:"type,omitempty" url:"type,omitempty"`
-	DoingBusinessAs                 *OnboardingOptionResponse `json:"doingBusinessAs,omitempty" url:"doingBusinessAs,omitempty"`
-	Ein                             *OnboardingOptionResponse `json:"ein,omitempty" url:"ein,omitempty"`
-	Mcc                             *OnboardingOptionResponse `json:"mcc,omitempty" url:"mcc,omitempty"`
-	FormationDate                   *OnboardingOptionResponse `json:"formationDate,omitempty" url:"formationDate,omitempty"`
-	Website                         *OnboardingOptionResponse `json:"website,omitempty" url:"website,omitempty"`
-	Description                     *OnboardingOptionResponse `json:"description,omitempty" url:"description,omitempty"`
-	Representatives                 *OnboardingOptionResponse `json:"representatives,omitempty" url:"representatives,omitempty"`
-	Logo                            *OnboardingOptionResponse `json:"logo,omitempty" url:"logo,omitempty"`
-	AverageTransactionSize          *OnboardingOptionResponse `json:"averageTransactionSize,omitempty" url:"averageTransactionSize,omitempty"`
-	AverageMonthlyTransactionVolume *OnboardingOptionResponse `json:"averageMonthlyTransactionVolume,omitempty" url:"averageMonthlyTransactionVolume,omitempty"`
-	MaxTransactionSize              *OnboardingOptionResponse `json:"maxTransactionSize,omitempty" url:"maxTransactionSize,omitempty"`
+	TermsOfService                  *OnboardingOptionResponse `json:"termsOfService" url:"termsOfService"`
+	Email                           *OnboardingOptionResponse `json:"email" url:"email"`
+	Name                            *OnboardingOptionResponse `json:"name" url:"name"`
+	Address                         *OnboardingOptionResponse `json:"address" url:"address"`
+	Phone                           *OnboardingOptionResponse `json:"phone" url:"phone"`
+	TenNinetyNine                   *OnboardingOptionResponse `json:"tenNinetyNine" url:"tenNinetyNine"`
+	W9                              *OnboardingOptionResponse `json:"w9" url:"w9"`
+	BankStatement                   *OnboardingOptionResponse `json:"bankStatement" url:"bankStatement"`
+	Type                            *OnboardingOptionResponse `json:"type" url:"type"`
+	DoingBusinessAs                 *OnboardingOptionResponse `json:"doingBusinessAs" url:"doingBusinessAs"`
+	Ein                             *OnboardingOptionResponse `json:"ein" url:"ein"`
+	Mcc                             *OnboardingOptionResponse `json:"mcc" url:"mcc"`
+	FormationDate                   *OnboardingOptionResponse `json:"formationDate" url:"formationDate"`
+	Website                         *OnboardingOptionResponse `json:"website" url:"website"`
+	Description                     *OnboardingOptionResponse `json:"description" url:"description"`
+	Representatives                 *OnboardingOptionResponse `json:"representatives" url:"representatives"`
+	Logo                            *OnboardingOptionResponse `json:"logo" url:"logo"`
+	AverageTransactionSize          *OnboardingOptionResponse `json:"averageTransactionSize" url:"averageTransactionSize"`
+	AverageMonthlyTransactionVolume *OnboardingOptionResponse `json:"averageMonthlyTransactionVolume" url:"averageMonthlyTransactionVolume"`
+	MaxTransactionSize              *OnboardingOptionResponse `json:"maxTransactionSize" url:"maxTransactionSize"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -628,7 +628,7 @@ type CheckPaymentRailResponse struct {
 	// unused
 	Name                     string                `json:"name" url:"name"`
 	Active                   bool                  `json:"active" url:"active"`
-	AvailableDeliveryMethods []CheckDeliveryMethod `json:"availableDeliveryMethods,omitempty" url:"availableDeliveryMethods,omitempty"`
+	AvailableDeliveryMethods []CheckDeliveryMethod `json:"availableDeliveryMethods" url:"availableDeliveryMethods"`
 	DefaultDeliveryMethod    CheckDeliveryMethod   `json:"defaultDeliveryMethod" url:"defaultDeliveryMethod"`
 	PrintDescription         bool                  `json:"printDescription" url:"printDescription"`
 
@@ -1070,14 +1070,14 @@ func (c *CommonOnboardingOptionsRequest) String() string {
 }
 
 type CommonOnboardingOptionsResponse struct {
-	TermsOfService *OnboardingOptionResponse `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
-	Email          *OnboardingOptionResponse `json:"email,omitempty" url:"email,omitempty"`
-	Name           *OnboardingOptionResponse `json:"name,omitempty" url:"name,omitempty"`
-	Address        *OnboardingOptionResponse `json:"address,omitempty" url:"address,omitempty"`
-	Phone          *OnboardingOptionResponse `json:"phone,omitempty" url:"phone,omitempty"`
-	TenNinetyNine  *OnboardingOptionResponse `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
-	W9             *OnboardingOptionResponse `json:"w9,omitempty" url:"w9,omitempty"`
-	BankStatement  *OnboardingOptionResponse `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
+	TermsOfService *OnboardingOptionResponse `json:"termsOfService" url:"termsOfService"`
+	Email          *OnboardingOptionResponse `json:"email" url:"email"`
+	Name           *OnboardingOptionResponse `json:"name" url:"name"`
+	Address        *OnboardingOptionResponse `json:"address" url:"address"`
+	Phone          *OnboardingOptionResponse `json:"phone" url:"phone"`
+	TenNinetyNine  *OnboardingOptionResponse `json:"tenNinetyNine" url:"tenNinetyNine"`
+	W9             *OnboardingOptionResponse `json:"w9" url:"w9"`
+	BankStatement  *OnboardingOptionResponse `json:"bankStatement" url:"bankStatement"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1297,7 +1297,7 @@ func (c *CustomPaymentRailResponse) String() string {
 }
 
 type EmailProviderRequest struct {
-	Sender                  *EmailSenderRequest `json:"sender,omitempty" url:"sender,omitempty"`
+	Sender                  *EmailSenderRequest `json:"sender" url:"sender"`
 	InboxDomain             string              `json:"inboxDomain" url:"inboxDomain"`
 	AlternativeInboxDomains []string            `json:"alternativeInboxDomains,omitempty" url:"alternativeInboxDomains,omitempty"`
 
@@ -1359,9 +1359,9 @@ func (e *EmailProviderRequest) String() string {
 }
 
 type EmailProviderResponse struct {
-	Sender                  *EmailSenderResponse `json:"sender,omitempty" url:"sender,omitempty"`
+	Sender                  *EmailSenderResponse `json:"sender" url:"sender"`
 	InboxDomain             string               `json:"inboxDomain" url:"inboxDomain"`
-	AlternativeInboxDomains []string             `json:"alternativeInboxDomains,omitempty" url:"alternativeInboxDomains,omitempty"`
+	AlternativeInboxDomains []string             `json:"alternativeInboxDomains" url:"alternativeInboxDomains"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2101,16 +2101,16 @@ func (i *IndividualOnboardingOptionsRequest) String() string {
 }
 
 type IndividualOnboardingOptionsResponse struct {
-	TermsOfService *OnboardingOptionResponse `json:"termsOfService,omitempty" url:"termsOfService,omitempty"`
-	Email          *OnboardingOptionResponse `json:"email,omitempty" url:"email,omitempty"`
-	Name           *OnboardingOptionResponse `json:"name,omitempty" url:"name,omitempty"`
-	Address        *OnboardingOptionResponse `json:"address,omitempty" url:"address,omitempty"`
-	Phone          *OnboardingOptionResponse `json:"phone,omitempty" url:"phone,omitempty"`
-	TenNinetyNine  *OnboardingOptionResponse `json:"tenNinetyNine,omitempty" url:"tenNinetyNine,omitempty"`
-	W9             *OnboardingOptionResponse `json:"w9,omitempty" url:"w9,omitempty"`
-	BankStatement  *OnboardingOptionResponse `json:"bankStatement,omitempty" url:"bankStatement,omitempty"`
-	DateOfBirth    *OnboardingOptionResponse `json:"dateOfBirth,omitempty" url:"dateOfBirth,omitempty"`
-	Ssn            *OnboardingOptionResponse `json:"ssn,omitempty" url:"ssn,omitempty"`
+	TermsOfService *OnboardingOptionResponse `json:"termsOfService" url:"termsOfService"`
+	Email          *OnboardingOptionResponse `json:"email" url:"email"`
+	Name           *OnboardingOptionResponse `json:"name" url:"name"`
+	Address        *OnboardingOptionResponse `json:"address" url:"address"`
+	Phone          *OnboardingOptionResponse `json:"phone" url:"phone"`
+	TenNinetyNine  *OnboardingOptionResponse `json:"tenNinetyNine" url:"tenNinetyNine"`
+	W9             *OnboardingOptionResponse `json:"w9" url:"w9"`
+	BankStatement  *OnboardingOptionResponse `json:"bankStatement" url:"bankStatement"`
+	DateOfBirth    *OnboardingOptionResponse `json:"dateOfBirth" url:"dateOfBirth"`
+	Ssn            *OnboardingOptionResponse `json:"ssn" url:"ssn"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -3365,8 +3365,8 @@ type OnboardingOptionsResponse struct {
 	EnableBusiness   bool                                 `json:"enableBusiness" url:"enableBusiness"`
 	EnableIndividual bool                                 `json:"enableIndividual" url:"enableIndividual"`
 	PaymentMethod    bool                                 `json:"paymentMethod" url:"paymentMethod"`
-	Business         *BusinessOnboardingOptionsResponse   `json:"business,omitempty" url:"business,omitempty"`
-	Individual       *IndividualOnboardingOptionsResponse `json:"individual,omitempty" url:"individual,omitempty"`
+	Business         *BusinessOnboardingOptionsResponse   `json:"business" url:"business"`
+	Individual       *IndividualOnboardingOptionsResponse `json:"individual" url:"individual"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -3802,11 +3802,11 @@ func (o *OrganizationResponse) String() string {
 
 type PaymentMethodsRequest struct {
 	// List of payment methods that can be used to pay invoices.
-	PayerPayments []*PaymentRailRequest `json:"payerPayments,omitempty" url:"payerPayments,omitempty"`
+	PayerPayments []*PaymentRailRequest `json:"payerPayments" url:"payerPayments"`
 	// List of payment methods that can be created by a payor to send disbursements.
-	BackupDisbursements []*PaymentRailRequest `json:"backupDisbursements,omitempty" url:"backupDisbursements,omitempty"`
+	BackupDisbursements []*PaymentRailRequest `json:"backupDisbursements" url:"backupDisbursements"`
 	// List of payment methods that can be created by a payee to receive disbursements.
-	VendorDisbursements []*PaymentRailRequest `json:"vendorDisbursements,omitempty" url:"vendorDisbursements,omitempty"`
+	VendorDisbursements []*PaymentRailRequest `json:"vendorDisbursements" url:"vendorDisbursements"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -3867,11 +3867,11 @@ func (p *PaymentMethodsRequest) String() string {
 
 type PaymentMethodsResponse struct {
 	// List of payment methods that can be used to pay invoices.
-	PayerPayments []*PaymentRailResponse `json:"payerPayments,omitempty" url:"payerPayments,omitempty"`
+	PayerPayments []*PaymentRailResponse `json:"payerPayments" url:"payerPayments"`
 	// List of payment methods that can be created by a payor to send disbursements.
-	BackupDisbursements []*PaymentRailResponse `json:"backupDisbursements,omitempty" url:"backupDisbursements,omitempty"`
+	BackupDisbursements []*PaymentRailResponse `json:"backupDisbursements" url:"backupDisbursements"`
 	// List of payment methods that can be created by a payee to receive disbursements.
-	VendorDisbursements []*PaymentRailResponse `json:"vendorDisbursements,omitempty" url:"vendorDisbursements,omitempty"`
+	VendorDisbursements []*PaymentRailResponse `json:"vendorDisbursements" url:"vendorDisbursements"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage

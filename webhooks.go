@@ -12,7 +12,7 @@ type BulkEntityCreationWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
 	// A list of bulk entity creation responses.
-	Data []*BulkEntityCreationFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data []*BulkEntityCreationFromObjectResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -68,7 +68,7 @@ type BulkInvoiceApprovalWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
 	// A list of bulk invoice approval responses.
-	Data []*BulkInvoiceApprovalFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data []*BulkInvoiceApprovalFromObjectResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -124,7 +124,7 @@ type BulkInvoiceCreationWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
 	// A list of bulk invoice creation responses.
-	Data []*BulkInvoiceCreationFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data []*BulkInvoiceCreationFromObjectResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -180,7 +180,7 @@ type BulkInvoiceUpdateWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
 	// A list of bulk invoice update responses.
-	Data []*BulkInvoiceUpdateFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data []*BulkInvoiceUpdateFromObjectResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -301,9 +301,9 @@ type CounterpartyWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
 	// A list of IDs for the payees involved.
-	PayeeID []EntityID `json:"payeeId,omitempty" url:"payeeId,omitempty"`
+	PayeeID []EntityID `json:"payeeId" url:"payeeId"`
 	// A list of IDs for the payors involved.
-	PayorID []EntityID `json:"payorId,omitempty" url:"payorId,omitempty"`
+	PayorID []EntityID `json:"payorId" url:"payorId"`
 	// User who initiated the change.
 	User *EntityUserResponse `json:"user,omitempty" url:"user,omitempty"`
 
@@ -381,7 +381,7 @@ type EntityMetadataUpdatedWebhook struct {
 	// The key of the metadata that was updated.
 	Key string `json:"key" url:"key"`
 	// A list of new values for the metadata.
-	Value []string `json:"value,omitempty" url:"value,omitempty"`
+	Value []string `json:"value" url:"value"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -458,7 +458,7 @@ type EntityStatusChangedWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
 	// The entity involved in the event.
-	Entity *EntityResponse `json:"entity,omitempty" url:"entity,omitempty"`
+	Entity *EntityResponse `json:"entity" url:"entity"`
 	// The ID of the entity that updated the entity. This will be different from the entityId if the entity was updated by a different entity (e.g. a C2 updating a C3).
 	// If the entity was created or updated by an admin, this will be 'admin'.
 	UpdatedByEntityID EntityID `json:"updatedByEntityId" url:"updatedByEntityId"`
@@ -551,7 +551,7 @@ type EntityWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
 	// The entity involved in the event.
-	Entity *EntityResponse `json:"entity,omitempty" url:"entity,omitempty"`
+	Entity *EntityResponse `json:"entity" url:"entity"`
 	// The ID of the entity that updated the entity. This will be different from the entityId if the entity was updated by a different entity (e.g. a C2 updating a C3).
 	// If the entity was created or updated by an admin, this will be 'admin'.
 	UpdatedByEntityID EntityID `json:"updatedByEntityId" url:"updatedByEntityId"`
@@ -626,7 +626,7 @@ type InvoiceCollectionEventWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
 	// The invoice involved in the event.
-	Invoice *InvoiceResponse `json:"invoice,omitempty" url:"invoice,omitempty"`
+	Invoice *InvoiceResponse `json:"invoice" url:"invoice"`
 	// Email message related to the invoice collection.
 	Email *EmailMessageResponse `json:"email,omitempty" url:"email,omitempty"`
 
@@ -756,7 +756,7 @@ type InvoiceStatusChangedWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
 	// The invoice involved in the event.
-	Invoice *InvoiceResponse `json:"invoice,omitempty" url:"invoice,omitempty"`
+	Invoice *InvoiceResponse `json:"invoice" url:"invoice"`
 	// User who initiated the change.
 	User *EntityUserResponse `json:"user,omitempty" url:"user,omitempty"`
 	// The new status of the invoice.
@@ -839,7 +839,7 @@ type InvoiceWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
 	// The invoice involved in the event.
-	Invoice *InvoiceResponse `json:"invoice,omitempty" url:"invoice,omitempty"`
+	Invoice *InvoiceResponse `json:"invoice" url:"invoice"`
 	// User who initiated the change.
 	User *EntityUserResponse `json:"user,omitempty" url:"user,omitempty"`
 
@@ -997,7 +997,7 @@ type PaymentGatewayProcessJobCompletedWebhook struct {
 	EventType string `json:"eventType" url:"eventType"`
 	// The ID of the payment gateway process job that completed.
 	JobID string                         `json:"jobId" url:"jobId"`
-	Data  *ProcessPaymentGatewayResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data  *ProcessPaymentGatewayResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1061,7 +1061,7 @@ type PaymentGatewayValidationJobCompletedWebhook struct {
 	EventType string `json:"eventType" url:"eventType"`
 	// The ID of the payment gateway validation job that completed.
 	JobID string                          `json:"jobId" url:"jobId"`
-	Data  *ValidatePaymentGatewayResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data  *ValidatePaymentGatewayResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1130,9 +1130,9 @@ type PaymentMethodWebhook struct {
 	// If the payment method was created or updated by an admin, this will be 'admin'.
 	UpdatedByEntityID EntityID `json:"updatedByEntityId" url:"updatedByEntityId"`
 	// The payment method details.
-	PaymentMethod *PaymentMethodResponse `json:"paymentMethod,omitempty" url:"paymentMethod,omitempty"`
+	PaymentMethod *PaymentMethodResponse `json:"paymentMethod" url:"paymentMethod"`
 	// Entity that the payment method belongs to.
-	Entity *EntityResponse `json:"entity,omitempty" url:"entity,omitempty"`
+	Entity *EntityResponse `json:"entity" url:"entity"`
 	// User who initiated the change.
 	User *EntityUserResponse `json:"user,omitempty" url:"user,omitempty"`
 
@@ -1219,7 +1219,7 @@ type TransactionWebhook struct {
 	// The type of the event.
 	EventType string `json:"eventType" url:"eventType"`
 	// The transaction details.
-	Transaction *TransactionResponse `json:"transaction,omitempty" url:"transaction,omitempty"`
+	Transaction *TransactionResponse `json:"transaction" url:"transaction"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage

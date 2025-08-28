@@ -268,13 +268,13 @@ type BankAccountResponse struct {
 	IsDefaultSource bool `json:"isDefaultSource" url:"isDefaultSource"`
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
-	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
+	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies" url:"supportedCurrencies"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
 	Frozen bool `json:"frozen" url:"frozen"`
 	// Metadata associated with this payment method.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// (ALPHA, MAY BE REMOVED) Indicates whether the payment method has been verified by the entity. This is useful if another entity has added this payment method to this entity, and you want the owner of the payment method to verify it is correct.
 	ConfirmedByEntity *bool      `json:"confirmedByEntity,omitempty" url:"confirmedByEntity,omitempty"`
 	CreatedAt         time.Time  `json:"createdAt" url:"createdAt"`
@@ -813,13 +813,13 @@ type CardResponse struct {
 	IsDefaultSource bool `json:"isDefaultSource" url:"isDefaultSource"`
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
-	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
+	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies" url:"supportedCurrencies"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
 	Frozen bool `json:"frozen" url:"frozen"`
 	// Metadata associated with this payment method.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// (ALPHA, MAY BE REMOVED) Indicates whether the payment method has been verified by the entity. This is useful if another entity has added this payment method to this entity, and you want the owner of the payment method to verify it is correct.
 	ConfirmedByEntity *bool     `json:"confirmedByEntity,omitempty" url:"confirmedByEntity,omitempty"`
 	CreatedAt         time.Time `json:"createdAt" url:"createdAt"`
@@ -1175,13 +1175,13 @@ type CheckResponse struct {
 	IsDefaultSource bool `json:"isDefaultSource" url:"isDefaultSource"`
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
-	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
+	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies" url:"supportedCurrencies"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
 	Frozen bool `json:"frozen" url:"frozen"`
 	// Metadata associated with this payment method.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// (ALPHA, MAY BE REMOVED) Indicates whether the payment method has been verified by the entity. This is useful if another entity has added this payment method to this entity, and you want the owner of the payment method to verify it is correct.
 	ConfirmedByEntity *bool     `json:"confirmedByEntity,omitempty" url:"confirmedByEntity,omitempty"`
 	CreatedAt         time.Time `json:"createdAt" url:"createdAt"`
@@ -1949,7 +1949,7 @@ type CustomPaymentMethodRequest struct {
 	// Payment method schema used for this payment method. Defines the fields that this payment method contains.
 	SchemaID CustomPaymentMethodSchemaID `json:"schemaId" url:"schemaId"`
 	// Object of key/value pairs that matches the keys in the linked payment method schema.
-	Data map[string]string `json:"data,omitempty" url:"data,omitempty"`
+	Data map[string]string `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2077,13 +2077,13 @@ type CustomPaymentMethodResponse struct {
 	IsDefaultSource bool `json:"isDefaultSource" url:"isDefaultSource"`
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
-	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
+	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies" url:"supportedCurrencies"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
 	Frozen bool `json:"frozen" url:"frozen"`
 	// Metadata associated with this payment method.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// (ALPHA, MAY BE REMOVED) Indicates whether the payment method has been verified by the entity. This is useful if another entity has added this payment method to this entity, and you want the owner of the payment method to verify it is correct.
 	ConfirmedByEntity *bool     `json:"confirmedByEntity,omitempty" url:"confirmedByEntity,omitempty"`
 	CreatedAt         time.Time `json:"createdAt" url:"createdAt"`
@@ -2096,9 +2096,9 @@ type CustomPaymentMethodResponse struct {
 	AvailableBalance *float64 `json:"availableBalance,omitempty" url:"availableBalance,omitempty"`
 	// Payment method schema used for this payment method. Defines the fields that this payment method contains.
 	SchemaID CustomPaymentMethodSchemaID        `json:"schemaId" url:"schemaId"`
-	Schema   *CustomPaymentMethodSchemaResponse `json:"schema,omitempty" url:"schema,omitempty"`
+	Schema   *CustomPaymentMethodSchemaResponse `json:"schema" url:"schema"`
 	// Object of key/value pairs that matches the keys in the linked payment method schema.
-	Data map[string]string `json:"data,omitempty" url:"data,omitempty"`
+	Data map[string]string `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2437,7 +2437,7 @@ type CustomPaymentMethodSchemaRequest struct {
 	IsDestination bool `json:"isDestination" url:"isDestination"`
 	// List of currencies that this payment method supports. If not provided, the payment method will support only USD.
 	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
-	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
+	Fields              []*CustomPaymentMethodSchemaField `json:"fields" url:"fields"`
 	// Estimated time in days for this payment method to process a payments. Set as 0 for same-day payment methods, -1 for unknown processing time.
 	EstimatedProcessingTime *int `json:"estimatedProcessingTime,omitempty" url:"estimatedProcessingTime,omitempty"`
 	// The maximum amount that can be transferred from this payment method in a single transaction.
@@ -2545,8 +2545,8 @@ type CustomPaymentMethodSchemaResponse struct {
 	// This payment method can be used as a payment destination for an invoice
 	IsDestination bool `json:"isDestination" url:"isDestination"`
 	// List of currencies that this payment method supports.
-	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
-	Fields              []*CustomPaymentMethodSchemaField `json:"fields,omitempty" url:"fields,omitempty"`
+	SupportedCurrencies []CurrencyCode                    `json:"supportedCurrencies" url:"supportedCurrencies"`
+	Fields              []*CustomPaymentMethodSchemaField `json:"fields" url:"fields"`
 	// Estimated time in days for this payment method to process a payments. 0 is an same-day payment methods, -1 is unknown processing time.
 	EstimatedProcessingTime int `json:"estimatedProcessingTime" url:"estimatedProcessingTime"`
 	// The maximum amount that can be transferred from this payment method in a single transaction.
@@ -2933,13 +2933,13 @@ type PaymentMethodBaseResponse struct {
 	IsDefaultSource bool `json:"isDefaultSource" url:"isDefaultSource"`
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
-	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
+	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies" url:"supportedCurrencies"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
 	Frozen bool `json:"frozen" url:"frozen"`
 	// Metadata associated with this payment method.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// (ALPHA, MAY BE REMOVED) Indicates whether the payment method has been verified by the entity. This is useful if another entity has added this payment method to this entity, and you want the owner of the payment method to verify it is correct.
 	ConfirmedByEntity *bool     `json:"confirmedByEntity,omitempty" url:"confirmedByEntity,omitempty"`
 	CreatedAt         time.Time `json:"createdAt" url:"createdAt"`
@@ -3077,9 +3077,9 @@ type PaymentMethodEvent struct {
 	// The ID of the event
 	ID PaymentMethodEventID `json:"id" url:"id"`
 	// The payment method data at the time of the event
-	Data *PaymentMethodResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data *PaymentMethodResponse `json:"data" url:"data"`
 	// The list of webhook IDs associated with this event
-	WebhookIDs []string `json:"webhookIds,omitempty" url:"webhookIds,omitempty"`
+	WebhookIDs []string `json:"webhookIds" url:"webhookIds"`
 	// The ID of the user who triggered the event
 	UserID *EntityUserID `json:"userId,omitempty" url:"userId,omitempty"`
 	// The ID of the entity that updated the payment method
@@ -3187,7 +3187,7 @@ type PaymentMethodEventID = string
 
 type PaymentMethodEventsResponse struct {
 	// The list of events
-	Data []*PaymentMethodEvent `json:"data,omitempty" url:"data,omitempty"`
+	Data []*PaymentMethodEvent `json:"data" url:"data"`
 	// The total number of events
 	Count int `json:"count" url:"count"`
 	// Whether there are more events to fetch
@@ -4019,7 +4019,7 @@ func (p *PaymentMethodUpdateRequest) validate() error {
 type PaymentMethodWithEntityFindResponse struct {
 	Count   int                                `json:"count" url:"count"`
 	HasMore bool                               `json:"hasMore" url:"hasMore"`
-	Data    []*PaymentMethodWithEntityResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*PaymentMethodWithEntityResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -4079,8 +4079,8 @@ func (p *PaymentMethodWithEntityFindResponse) String() string {
 }
 
 type PaymentMethodWithEntityResponse struct {
-	PaymentMethod *PaymentMethodResponse `json:"paymentMethod,omitempty" url:"paymentMethod,omitempty"`
-	Entity        *EntityResponse        `json:"entity,omitempty" url:"entity,omitempty"`
+	PaymentMethod *PaymentMethodResponse `json:"paymentMethod" url:"paymentMethod"`
+	Entity        *EntityResponse        `json:"entity" url:"entity"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -4481,13 +4481,13 @@ type UtilityPaymentMethodResponse struct {
 	IsDefaultSource bool `json:"isDefaultSource" url:"isDefaultSource"`
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
-	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
+	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies" url:"supportedCurrencies"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
 	Frozen bool `json:"frozen" url:"frozen"`
 	// Metadata associated with this payment method.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// (ALPHA, MAY BE REMOVED) Indicates whether the payment method has been verified by the entity. This is useful if another entity has added this payment method to this entity, and you want the owner of the payment method to verify it is correct.
 	ConfirmedByEntity *bool     `json:"confirmedByEntity,omitempty" url:"confirmedByEntity,omitempty"`
 	CreatedAt         time.Time `json:"createdAt" url:"createdAt"`
@@ -4691,9 +4691,9 @@ type WalletBalanceResponse struct {
 	// The ID of the entity that this wallet belongs to.
 	EntityID EntityID `json:"entityId" url:"entityId"`
 	// The available balance in this wallet.
-	AvailableBalance *WalletBalance `json:"availableBalance,omitempty" url:"availableBalance,omitempty"`
+	AvailableBalance *WalletBalance `json:"availableBalance" url:"availableBalance"`
 	// The pending balance in this wallet.
-	PendingBalance *WalletBalance `json:"pendingBalance,omitempty" url:"pendingBalance,omitempty"`
+	PendingBalance *WalletBalance `json:"pendingBalance" url:"pendingBalance"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -4765,21 +4765,21 @@ type WalletResponse struct {
 	IsDefaultSource bool `json:"isDefaultSource" url:"isDefaultSource"`
 	// Indicates whether this payment method is the default destination for the entity
 	IsDefaultDestination bool           `json:"isDefaultDestination" url:"isDefaultDestination"`
-	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies,omitempty" url:"supportedCurrencies,omitempty"`
+	SupportedCurrencies  []CurrencyCode `json:"supportedCurrencies" url:"supportedCurrencies"`
 	// ID for this payment method in the external accounting system (e.g Rutter or Codat)
 	ExternalAccountingSystemID *string `json:"externalAccountingSystemId,omitempty" url:"externalAccountingSystemId,omitempty"`
 	// Frozen payment methods cannot be used for payments, but will still be returned in API responses.
 	Frozen bool `json:"frozen" url:"frozen"`
 	// Metadata associated with this payment method.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// (ALPHA, MAY BE REMOVED) Indicates whether the payment method has been verified by the entity. This is useful if another entity has added this payment method to this entity, and you want the owner of the payment method to verify it is correct.
 	ConfirmedByEntity *bool     `json:"confirmedByEntity,omitempty" url:"confirmedByEntity,omitempty"`
 	CreatedAt         time.Time `json:"createdAt" url:"createdAt"`
 	UpdatedAt         time.Time `json:"updatedAt" url:"updatedAt"`
 	// The balance available for use in this wallet.
-	AvailableBalance *WalletBalance `json:"availableBalance,omitempty" url:"availableBalance,omitempty"`
+	AvailableBalance *WalletBalance `json:"availableBalance" url:"availableBalance"`
 	// The in-flight balance into/out of this wallet.
-	PendingBalance *WalletBalance `json:"pendingBalance,omitempty" url:"pendingBalance,omitempty"`
+	PendingBalance *WalletBalance `json:"pendingBalance" url:"pendingBalance"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage

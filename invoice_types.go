@@ -198,8 +198,8 @@ type ApprovalSlot struct {
 	// The ID of the user who is assigned to the approval slot. If undefined, the approval slot is assigned to all eligible approvers.
 	AssignedUserID  *EntityUserID  `json:"assignedUserId,omitempty" url:"assignedUserId,omitempty"`
 	Action          ApproverAction `json:"action" url:"action"`
-	EligibleRoles   []string       `json:"eligibleRoles,omitempty" url:"eligibleRoles,omitempty"`
-	EligibleUserIDs []EntityUserID `json:"eligibleUserIds,omitempty" url:"eligibleUserIds,omitempty"`
+	EligibleRoles   []string       `json:"eligibleRoles" url:"eligibleRoles"`
+	EligibleUserIDs []EntityUserID `json:"eligibleUserIds" url:"eligibleUserIds"`
 	// Either the date the invoice was created, date the approver was assigned, or date of last action by approver, whichever is latest.
 	Date time.Time `json:"date" url:"date"`
 
@@ -842,7 +842,7 @@ type BnplLoanInstallment struct {
 	// Type of installment
 	Type BnplInstallmentType `json:"type" url:"type"`
 	// Total amounts paid for this installment
-	TotalPaid *BnplInstallmentTotalPaid `json:"totalPaid,omitempty" url:"totalPaid,omitempty"`
+	TotalPaid *BnplInstallmentTotalPaid `json:"totalPaid" url:"totalPaid"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -963,7 +963,7 @@ type BnplLoanResponse struct {
 	// The current status of the loan
 	Status BnplLoanStatus `json:"status" url:"status"`
 	// The current outstanding balance breakdown
-	OutstandingBalance *BnplOutstandingBalance `json:"outstandingBalance,omitempty" url:"outstandingBalance,omitempty"`
+	OutstandingBalance *BnplOutstandingBalance `json:"outstandingBalance" url:"outstandingBalance"`
 	// URL to the terms agreement file
 	TermsAgreementFile *string `json:"termsAgreementFile,omitempty" url:"termsAgreementFile,omitempty"`
 	// URL to the invoice PDF
@@ -977,7 +977,7 @@ type BnplLoanResponse struct {
 	// The down payment amount in cents
 	DownPaymentAmount int `json:"downPaymentAmount" url:"downPaymentAmount"`
 	// List of all installments for this loan
-	Installments []*BnplLoanInstallment `json:"installments,omitempty" url:"installments,omitempty"`
+	Installments []*BnplLoanInstallment `json:"installments" url:"installments"`
 	// The payment cadence for the loan
 	Cadence BnplCadence `json:"cadence" url:"cadence"`
 	// The base fee rate as a percentage
@@ -1279,11 +1279,11 @@ type BnplOfferResponse struct {
 	// The date of the final payment in YYYY-MM-DD format
 	FinalPaymentDate string `json:"finalPaymentDate" url:"finalPaymentDate"`
 	// The fees associated with the offer
-	Fees *BnplFees `json:"fees,omitempty" url:"fees,omitempty"`
+	Fees *BnplFees `json:"fees" url:"fees"`
 	// A link to the terms and conditions for the offer
 	TermsLink *string `json:"termsLink,omitempty" url:"termsLink,omitempty"`
 	// A list of all installments, including down payment.
-	Installments []*BnplInstallment `json:"installments,omitempty" url:"installments,omitempty"`
+	Installments []*BnplInstallment `json:"installments" url:"installments"`
 	// The day of the week for payments, e.g. "Wednesday"
 	PaymentDayOfWeek BnplDayOfWeek `json:"paymentDayOfWeek" url:"paymentDayOfWeek"`
 	// The amount for each regular installment. The last installment may have a different amount. In cents.
@@ -1641,7 +1641,7 @@ func (b *BulkInvoiceApprovalFromObjectResponse) String() string {
 }
 
 type BulkInvoiceApprovalRequest struct {
-	Invoices []*ApprovalRequestWithID `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*ApprovalRequestWithID `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1687,7 +1687,7 @@ func (b *BulkInvoiceApprovalRequest) String() string {
 }
 
 type BulkInvoiceApprovalResponse struct {
-	Data []*BulkInvoiceApprovalFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data []*BulkInvoiceApprovalFromObjectResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1798,7 +1798,7 @@ func (b *BulkInvoiceCreationFromObjectResponse) String() string {
 }
 
 type BulkInvoiceCreationRequest struct {
-	Invoices []*InvoiceCreationRequest `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*InvoiceCreationRequest `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1844,7 +1844,7 @@ func (b *BulkInvoiceCreationRequest) String() string {
 }
 
 type BulkInvoiceCreationResponse struct {
-	Data []*BulkInvoiceCreationFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data []*BulkInvoiceCreationFromObjectResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1955,7 +1955,7 @@ func (b *BulkInvoiceUpdateFromObjectResponse) String() string {
 }
 
 type BulkInvoiceUpdateRequest struct {
-	Invoices []*InvoiceUpdateRequestWithID `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*InvoiceUpdateRequestWithID `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2001,7 +2001,7 @@ func (b *BulkInvoiceUpdateRequest) String() string {
 }
 
 type BulkInvoiceUpdateResponse struct {
-	Data []*BulkInvoiceUpdateFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data []*BulkInvoiceUpdateFromObjectResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2385,7 +2385,7 @@ type FindInvoiceResponse struct {
 	Count int `json:"count" url:"count"`
 	// True if there are more notifications available for the given start and end date filters.
 	HasMore bool               `json:"hasMore" url:"hasMore"`
-	Data    []*InvoiceResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*InvoiceResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2449,7 +2449,7 @@ type FindInvoiceTemplateResponse struct {
 	Count int `json:"count" url:"count"`
 	// True if there are more invoice templates available for the given filters.
 	HasMore bool                       `json:"hasMore" url:"hasMore"`
-	Data    []*InvoiceTemplateResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*InvoiceTemplateResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -3380,9 +3380,9 @@ type InvoiceEvent struct {
 	// The ID of the event
 	ID InvoiceEventID `json:"id" url:"id"`
 	// The data related to the invoice update
-	Data *InvoiceUpdateRequest `json:"data,omitempty" url:"data,omitempty"`
+	Data *InvoiceUpdateRequest `json:"data" url:"data"`
 	// The list of webhook IDs associated with this event
-	WebhookIDs []string `json:"webhookIds,omitempty" url:"webhookIds,omitempty"`
+	WebhookIDs []string `json:"webhookIds" url:"webhookIds"`
 	// The current status of the invoice event
 	Status *InvoiceStatus `json:"status,omitempty" url:"status,omitempty"`
 	// The ID of the user who triggered this event
@@ -3498,7 +3498,7 @@ func (i *InvoiceEvent) String() string {
 type InvoiceEventID = string
 
 type InvoiceEventsResponse struct {
-	Data    []*InvoiceEvent `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*InvoiceEvent `json:"data" url:"data"`
 	Count   int             `json:"count" url:"count"`
 	HasMore bool            `json:"hasMore" url:"hasMore"`
 
@@ -5203,10 +5203,10 @@ type InvoiceResponse struct {
 	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
 	// Shipping amount for this invoice.
 	ShippingAmount *float64                  `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
-	Approvers      []*ApprovalSlot           `json:"approvers,omitempty" url:"approvers,omitempty"`
-	ApprovalPolicy []*ApprovalPolicyResponse `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
+	Approvers      []*ApprovalSlot           `json:"approvers" url:"approvers"`
+	ApprovalPolicy []*ApprovalPolicyResponse `json:"approvalPolicy" url:"approvalPolicy"`
 	// Metadata associated with this invoice.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// The ID of the entity who created this invoice.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 	// Entity user who created this invoice.
@@ -5713,10 +5713,10 @@ type InvoiceResponseBase struct {
 	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
 	// Shipping amount for this invoice.
 	ShippingAmount *float64                  `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
-	Approvers      []*ApprovalSlot           `json:"approvers,omitempty" url:"approvers,omitempty"`
-	ApprovalPolicy []*ApprovalPolicyResponse `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
+	Approvers      []*ApprovalSlot           `json:"approvers" url:"approvers"`
+	ApprovalPolicy []*ApprovalPolicyResponse `json:"approvalPolicy" url:"approvalPolicy"`
 	// Metadata associated with this invoice.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// The ID of the entity who created this invoice.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 	// Entity user who created this invoice.
@@ -6789,10 +6789,10 @@ type InvoiceTemplateResponse struct {
 	TaxAmount *float64 `json:"taxAmount,omitempty" url:"taxAmount,omitempty"`
 	// Shipping amount for this invoice.
 	ShippingAmount *float64                  `json:"shippingAmount,omitempty" url:"shippingAmount,omitempty"`
-	Approvers      []*ApprovalSlot           `json:"approvers,omitempty" url:"approvers,omitempty"`
-	ApprovalPolicy []*ApprovalPolicyResponse `json:"approvalPolicy,omitempty" url:"approvalPolicy,omitempty"`
+	Approvers      []*ApprovalSlot           `json:"approvers" url:"approvers"`
+	ApprovalPolicy []*ApprovalPolicyResponse `json:"approvalPolicy" url:"approvalPolicy"`
 	// Metadata associated with this invoice.
-	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// The ID of the entity who created this invoice.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
 	// Entity user who created this invoice.
@@ -8278,7 +8278,7 @@ func (i *InvoiceUpdateRequestWithID) String() string {
 type MetadataFilter struct {
 	Key string `json:"key" url:"key"`
 	// If multiple values are provided, the filter will match if any of the values match (OR filter). To filter for the absence of a key, use the value 'NULL'. To filter for the presence of a key, use the value 'NOT NULL'.
-	Value *StringOrStringArray `json:"value,omitempty" url:"value,omitempty"`
+	Value *StringOrStringArray `json:"value" url:"value"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -8996,7 +8996,7 @@ type PaymentWeekSchedule struct {
 	RepeatEvery *int `json:"repeatEvery,omitempty" url:"repeatEvery,omitempty"`
 	// When to end the payments, either a number of occurrences or a date. Defaults to never ending if not specified
 	Ends     *PaymentScheduleEndCondition `json:"ends,omitempty" url:"ends,omitempty"`
-	RepeatOn []DayOfWeek                  `json:"repeatOn,omitempty" url:"repeatOn,omitempty"`
+	RepeatOn []DayOfWeek                  `json:"repeatOn" url:"repeatOn"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage

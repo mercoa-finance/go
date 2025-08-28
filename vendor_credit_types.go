@@ -15,7 +15,7 @@ type CalculateVendorCreditUsageResponse struct {
 	// Currency code for the amount. Defaults to USD.
 	Currency CurrencyCode `json:"currency" url:"currency"`
 	// Vendor credits that will be applied to the invoice. The objects returned represent the states each vendor credit will be in AFTER they are applied to the invoice, not their current states.
-	VendorCredits []*VendorCreditResponse `json:"vendorCredits,omitempty" url:"vendorCredits,omitempty"`
+	VendorCredits []*VendorCreditResponse `json:"vendorCredits" url:"vendorCredits"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -79,7 +79,7 @@ type FindVendorCreditResponse struct {
 	Count int `json:"count" url:"count"`
 	// True if there are more vendor credits available for the given filters.
 	HasMore bool                    `json:"hasMore" url:"hasMore"`
-	Data    []*VendorCreditResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*VendorCreditResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage

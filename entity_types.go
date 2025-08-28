@@ -97,7 +97,7 @@ func (a *AmountTrigger) String() string {
 type ApprovalPolicyHistoryResponse struct {
 	// The ID of the approval policy history
 	ID       string                    `json:"id" url:"id"`
-	Policies []*ApprovalPolicyResponse `json:"policies,omitempty" url:"policies,omitempty"`
+	Policies []*ApprovalPolicyResponse `json:"policies" url:"policies"`
 	// The user ID of the user who edited the approval policy
 	UserID    EntityUserID `json:"userId" url:"userId"`
 	CreatedAt time.Time    `json:"createdAt" url:"createdAt"`
@@ -188,8 +188,8 @@ type ApprovalPolicyID = string
 
 type ApprovalPolicyRequest struct {
 	// List of triggers that will cause this policy to be evaluated. If no triggers are provided, the policy will be evaluated for all invoices.
-	Trigger []*Trigger `json:"trigger,omitempty" url:"trigger,omitempty"`
-	Rule    *Rule      `json:"rule,omitempty" url:"rule,omitempty"`
+	Trigger []*Trigger `json:"trigger" url:"trigger"`
+	Rule    *Rule      `json:"rule" url:"rule"`
 	// The policy ID of the previous approval policy in the chain of policies. Use 'root' if no upstreamPolicyId is intended to be set.
 	UpstreamPolicyID ApprovalPolicyID `json:"upstreamPolicyId" url:"upstreamPolicyId"`
 
@@ -252,8 +252,8 @@ func (a *ApprovalPolicyRequest) String() string {
 
 type ApprovalPolicyResponse struct {
 	ID               ApprovalPolicyID `json:"id" url:"id"`
-	Trigger          []*Trigger       `json:"trigger,omitempty" url:"trigger,omitempty"`
-	Rule             *Rule            `json:"rule,omitempty" url:"rule,omitempty"`
+	Trigger          []*Trigger       `json:"trigger" url:"trigger"`
+	Rule             *Rule            `json:"rule" url:"rule"`
 	UpstreamPolicyID ApprovalPolicyID `json:"upstreamPolicyId" url:"upstreamPolicyId"`
 	CreatedAt        time.Time        `json:"createdAt" url:"createdAt"`
 	UpdatedAt        time.Time        `json:"updatedAt" url:"updatedAt"`
@@ -424,7 +424,7 @@ type ApproverRule struct {
 	// Number of approvals required to approve an invoice
 	NumApprovers int `json:"numApprovers" url:"numApprovers"`
 	// List of users or roles that should be used to determine eligible approvers
-	IdentifierList *IdentifierList `json:"identifierList,omitempty" url:"identifierList,omitempty"`
+	IdentifierList *IdentifierList `json:"identifierList" url:"identifierList"`
 	// If true, the policy will automatically assign approvers to the invoice. If more than one approver is eligible, the policy will assign all eligible approvers to the invoice.
 	AutoAssign *bool `json:"autoAssign,omitempty" url:"autoAssign,omitempty"`
 
@@ -589,7 +589,7 @@ func (b *BulkConnectedEntity) String() string {
 
 type BulkEntityCreationFromObject struct {
 	ConnectedEntity *BulkConnectedEntity     `json:"connectedEntity,omitempty" url:"connectedEntity,omitempty"`
-	Entities        []*EntityCreationRequest `json:"entities,omitempty" url:"entities,omitempty"`
+	Entities        []*EntityCreationRequest `json:"entities" url:"entities"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -748,7 +748,7 @@ func (b *BulkEntityCreationRequest) Accept(visitor BulkEntityCreationRequestVisi
 }
 
 type BulkEntityCreationResponse struct {
-	Data []*BulkEntityCreationFromObjectResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data []*BulkEntityCreationFromObjectResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1445,7 +1445,7 @@ func (c *CounterpartyCustomizationRequest) String() string {
 type CounterpartyInvoiceMetricsResponse struct {
 	TotalCount  int                                         `json:"totalCount" url:"totalCount"`
 	TotalAmount float64                                     `json:"totalAmount" url:"totalAmount"`
-	Statuses    []*CounterpartyInvoiceMetricsStatusResponse `json:"statuses,omitempty" url:"statuses,omitempty"`
+	Statuses    []*CounterpartyInvoiceMetricsStatusResponse `json:"statuses" url:"statuses"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1601,7 +1601,7 @@ type CounterpartyResponse struct {
 	// True if this entity has a direct relationship with your organization.
 	IsCustomer  bool             `json:"isCustomer" url:"isCustomer"`
 	AccountType AccountType      `json:"accountType" url:"accountType"`
-	Profile     *ProfileResponse `json:"profile,omitempty" url:"profile,omitempty"`
+	Profile     *ProfileResponse `json:"profile" url:"profile"`
 	// URL for the entity logo
 	Logo   *string      `json:"logo,omitempty" url:"logo,omitempty"`
 	Status EntityStatus `json:"status" url:"status"`
@@ -2116,7 +2116,7 @@ func (e EmailTemplateType) Ptr() *EmailTemplateType {
 
 type EntityAddPayeesRequest struct {
 	// List of payee entity IDs or foreign IDs to associate with the entity
-	Payees []EntityID `json:"payees,omitempty" url:"payees,omitempty"`
+	Payees []EntityID `json:"payees" url:"payees"`
 	// List of customizations to apply to the payees. If the payee is not currently a counterparty of the entity, the counterparty will be created with the provided customizations.
 	Customizations []*CounterpartyCustomizationRequest `json:"customizations,omitempty" url:"customizations,omitempty"`
 
@@ -2172,7 +2172,7 @@ func (e *EntityAddPayeesRequest) String() string {
 
 type EntityAddPayorsRequest struct {
 	// List of payor entity IDs or foreign IDs to associate with the entity
-	Payors []EntityID `json:"payors,omitempty" url:"payors,omitempty"`
+	Payors []EntityID `json:"payors" url:"payors"`
 	// List of customizations to apply to the payors. If the payor is not currently a counterparty of the entity, the counterparty will be created with the provided customizations.
 	Customizations []*CounterpartyCustomizationRequest `json:"customizations,omitempty" url:"customizations,omitempty"`
 
@@ -2328,7 +2328,7 @@ type EntityCreationRequest struct {
 	// If this entity has a direct relationship with your organization (e.g your direct customer or client), set this to true. Otherwise, set to false (e.g your customer's vendors).
 	IsCustomer  bool            `json:"isCustomer" url:"isCustomer"`
 	AccountType AccountType     `json:"accountType" url:"accountType"`
-	Profile     *ProfileRequest `json:"profile,omitempty" url:"profile,omitempty"`
+	Profile     *ProfileRequest `json:"profile" url:"profile"`
 	// If this entity will be paying invoices, set this to true.
 	IsPayor bool `json:"isPayor" url:"isPayor"`
 	// If this entity will be receiving payments, set this to true.
@@ -2581,16 +2581,16 @@ func (e *EntityCustomizationRequest) String() string {
 }
 
 type EntityCustomizationResponse struct {
-	Metadata           []*MetadataCustomizationRequest      `json:"metadata,omitempty" url:"metadata,omitempty"`
-	PaymentSource      []*PaymentMethodCustomizationRequest `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
-	BackupDisbursement []*PaymentMethodCustomizationRequest `json:"backupDisbursement,omitempty" url:"backupDisbursement,omitempty"`
-	PaymentDestination []*PaymentMethodCustomizationRequest `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
-	Ocr                *OcrCustomizationResponse            `json:"ocr,omitempty" url:"ocr,omitempty"`
-	Notifications      *NotificationCustomizationRequest    `json:"notifications,omitempty" url:"notifications,omitempty"`
-	Workflow           *WorkflowCustomizationRequest        `json:"workflow,omitempty" url:"workflow,omitempty"`
-	Invoice            *InvoiceCustomizationResponse        `json:"invoice,omitempty" url:"invoice,omitempty"`
-	Fees               *FeeCustomizationRequest             `json:"fees,omitempty" url:"fees,omitempty"`
-	RolePermissions    RolePermissionRequest                `json:"rolePermissions,omitempty" url:"rolePermissions,omitempty"`
+	Metadata           []*MetadataCustomizationRequest      `json:"metadata" url:"metadata"`
+	PaymentSource      []*PaymentMethodCustomizationRequest `json:"paymentSource" url:"paymentSource"`
+	BackupDisbursement []*PaymentMethodCustomizationRequest `json:"backupDisbursement" url:"backupDisbursement"`
+	PaymentDestination []*PaymentMethodCustomizationRequest `json:"paymentDestination" url:"paymentDestination"`
+	Ocr                *OcrCustomizationResponse            `json:"ocr" url:"ocr"`
+	Notifications      *NotificationCustomizationRequest    `json:"notifications" url:"notifications"`
+	Workflow           *WorkflowCustomizationRequest        `json:"workflow" url:"workflow"`
+	Invoice            *InvoiceCustomizationResponse        `json:"invoice" url:"invoice"`
+	Fees               *FeeCustomizationRequest             `json:"fees" url:"fees"`
+	RolePermissions    RolePermissionRequest                `json:"rolePermissions" url:"rolePermissions"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2702,9 +2702,9 @@ type EntityEvent struct {
 	// The ID of the event
 	ID EntityEventID `json:"id" url:"id"`
 	// The payment method data at the time of the event
-	Data *EntityResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data *EntityResponse `json:"data" url:"data"`
 	// The list of webhook IDs associated with this event
-	WebhookIDs []string `json:"webhookIds,omitempty" url:"webhookIds,omitempty"`
+	WebhookIDs []string `json:"webhookIds" url:"webhookIds"`
 	// The ID of the user who triggered the event
 	UserID *EntityUserID `json:"userId,omitempty" url:"userId,omitempty"`
 	// The ID of the entity that updated the payment method
@@ -2811,7 +2811,7 @@ func (e *EntityEvent) String() string {
 type EntityEventID = string
 
 type EntityEventsResponse struct {
-	Data    []*EntityEvent `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*EntityEvent `json:"data" url:"data"`
 	Count   int            `json:"count" url:"count"`
 	HasMore bool           `json:"hasMore" url:"hasMore"`
 
@@ -2874,7 +2874,7 @@ func (e *EntityEventsResponse) String() string {
 
 type EntityHidePayeesRequest struct {
 	// List of payee entity IDs or foreign IDs to hide
-	Payees []EntityID `json:"payees,omitempty" url:"payees,omitempty"`
+	Payees []EntityID `json:"payees" url:"payees"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2921,7 +2921,7 @@ func (e *EntityHidePayeesRequest) String() string {
 
 type EntityHidePayorsRequest struct {
 	// List of payor entity IDs or foreign IDs to hide
-	Payors []EntityID `json:"payors,omitempty" url:"payors,omitempty"`
+	Payors []EntityID `json:"payors" url:"payors"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2970,7 +2970,7 @@ type EntityID = string
 
 type EntityMetadataResponse struct {
 	Key   string   `json:"key" url:"key"`
-	Value []string `json:"value,omitempty" url:"value,omitempty"`
+	Value []string `json:"value" url:"value"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -3119,7 +3119,7 @@ type EntityResponse struct {
 	// True if this entity has a direct relationship with your organization.
 	IsCustomer  bool             `json:"isCustomer" url:"isCustomer"`
 	AccountType AccountType      `json:"accountType" url:"accountType"`
-	Profile     *ProfileResponse `json:"profile,omitempty" url:"profile,omitempty"`
+	Profile     *ProfileResponse `json:"profile" url:"profile"`
 	// URL for the entity logo
 	Logo   *string      `json:"logo,omitempty" url:"logo,omitempty"`
 	Status EntityStatus `json:"status" url:"status"`
@@ -3614,7 +3614,7 @@ type EntityUserResponse struct {
 	ForeignID *string   `json:"foreignId,omitempty" url:"foreignId,omitempty"`
 	Email     *string   `json:"email,omitempty" url:"email,omitempty"`
 	Name      *string   `json:"name,omitempty" url:"name,omitempty"`
-	Roles     []string  `json:"roles,omitempty" url:"roles,omitempty"`
+	Roles     []string  `json:"roles" url:"roles"`
 	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt" url:"updatedAt"`
 
@@ -3738,7 +3738,7 @@ type EntityWithPaymentMethodResponse struct {
 	// True if this entity has a direct relationship with your organization.
 	IsCustomer  bool             `json:"isCustomer" url:"isCustomer"`
 	AccountType AccountType      `json:"accountType" url:"accountType"`
-	Profile     *ProfileResponse `json:"profile,omitempty" url:"profile,omitempty"`
+	Profile     *ProfileResponse `json:"profile" url:"profile"`
 	// URL for the entity logo
 	Logo   *string      `json:"logo,omitempty" url:"logo,omitempty"`
 	Status EntityStatus `json:"status" url:"status"`
@@ -3979,7 +3979,7 @@ type FindCounterpartiesResponse struct {
 	Count int `json:"count" url:"count"`
 	// True if there are more counterparties available for the given filters.
 	HasMore bool                    `json:"hasMore" url:"hasMore"`
-	Data    []*CounterpartyResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*CounterpartyResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -4043,7 +4043,7 @@ type FindEntityResponse struct {
 	Count int `json:"count" url:"count"`
 	// True if there are more entities available for the given filters.
 	HasMore bool                               `json:"hasMore" url:"hasMore"`
-	Data    []*EntityWithPaymentMethodResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*EntityWithPaymentMethodResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -4107,7 +4107,7 @@ type FindEntityUserResponse struct {
 	Count int `json:"count" url:"count"`
 	// True if there are more users available for the given filters.
 	HasMore bool                  `json:"hasMore" url:"hasMore"`
-	Data    []*EntityUserResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*EntityUserResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -4171,7 +4171,7 @@ type FindNotificationResponse struct {
 	Count int `json:"count" url:"count"`
 	// True if there are more notifications available for the given start and end date filters.
 	HasMore bool                    `json:"hasMore" url:"hasMore"`
-	Data    []*NotificationResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*NotificationResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -4273,7 +4273,7 @@ func (i *IdentifierList) UnmarshalJSON(data []byte) error {
 	switch unmarshaler.Type {
 	case "rolesList":
 		var valueUnmarshaler struct {
-			RolesList []string `json:"value,omitempty"`
+			RolesList []string `json:"value"`
 		}
 		if err := json.Unmarshal(data, &valueUnmarshaler); err != nil {
 			return err
@@ -4281,7 +4281,7 @@ func (i *IdentifierList) UnmarshalJSON(data []byte) error {
 		i.RolesList = valueUnmarshaler.RolesList
 	case "userList":
 		var valueUnmarshaler struct {
-			UserList []EntityUserID `json:"value,omitempty"`
+			UserList []EntityUserID `json:"value"`
 		}
 		if err := json.Unmarshal(data, &valueUnmarshaler); err != nil {
 			return err
@@ -4298,7 +4298,7 @@ func (i IdentifierList) MarshalJSON() ([]byte, error) {
 	if i.RolesList != nil {
 		var marshaler = struct {
 			Type      string   `json:"type"`
-			RolesList []string `json:"value,omitempty"`
+			RolesList []string `json:"value"`
 		}{
 			Type:      "rolesList",
 			RolesList: i.RolesList,
@@ -4308,7 +4308,7 @@ func (i IdentifierList) MarshalJSON() ([]byte, error) {
 	if i.UserList != nil {
 		var marshaler = struct {
 			Type     string         `json:"type"`
-			UserList []EntityUserID `json:"value,omitempty"`
+			UserList []EntityUserID `json:"value"`
 		}{
 			Type:     "userList",
 			UserList: i.UserList,
@@ -4369,7 +4369,7 @@ func (i *IdentifierList) validate() error {
 
 type IndividualProfileRequest struct {
 	Email        *string                 `json:"email,omitempty" url:"email,omitempty"`
-	Name         *FullName               `json:"name,omitempty" url:"name,omitempty"`
+	Name         *FullName               `json:"name" url:"name"`
 	Phone        *PhoneNumber            `json:"phone,omitempty" url:"phone,omitempty"`
 	Address      *Address                `json:"address,omitempty" url:"address,omitempty"`
 	BirthDate    *BirthDate              `json:"birthDate,omitempty" url:"birthDate,omitempty"`
@@ -4455,7 +4455,7 @@ func (i *IndividualProfileRequest) String() string {
 
 type IndividualProfileResponse struct {
 	Email                *string      `json:"email,omitempty" url:"email,omitempty"`
-	Name                 *FullName    `json:"name,omitempty" url:"name,omitempty"`
+	Name                 *FullName    `json:"name" url:"name"`
 	Phone                *PhoneNumber `json:"phone,omitempty" url:"phone,omitempty"`
 	Address              *Address     `json:"address,omitempty" url:"address,omitempty"`
 	BirthDateProvided    bool         `json:"birthDateProvided" url:"birthDateProvided"`
@@ -4614,7 +4614,7 @@ type MetadataTrigger struct {
 	// The metadata key to match
 	Key string `json:"key" url:"key"`
 	// The metadata value the invoice must have to trigger this policy
-	Value []string `json:"value,omitempty" url:"value,omitempty"`
+	Value []string `json:"value" url:"value"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -4755,9 +4755,9 @@ type NotificationPolicyResponse struct {
 	// True if the selected notification type is disabled for this entity
 	Disabled bool `json:"disabled" url:"disabled"`
 	// List of user roles that should receive notifications in addition to the default users for this notification type
-	AdditionalRoles []string `json:"additionalRoles,omitempty" url:"additionalRoles,omitempty"`
+	AdditionalRoles []string `json:"additionalRoles" url:"additionalRoles"`
 	// List of user IDs that should receive notifications in addition to the default users for this notification type
-	AdditionalUsers []EntityUserID `json:"additionalUsers,omitempty" url:"additionalUsers,omitempty"`
+	AdditionalUsers []EntityUserID `json:"additionalUsers" url:"additionalUsers"`
 	// True if the selected notification type should be sent to the counterparty if this is a payable invoice.
 	NotifyPayeeCounterparty bool `json:"notifyPayeeCounterparty" url:"notifyPayeeCounterparty"`
 	// True if the selected notification type should be sent to the counterparty if this is a receivable invoice.
@@ -5177,15 +5177,15 @@ func (p *ProfileResponse) String() string {
 type RepresentativeID = string
 
 type RepresentativeRequest struct {
-	Name *FullName `json:"name,omitempty" url:"name,omitempty"`
+	Name *FullName `json:"name" url:"name"`
 	// Either phone or email is required.
 	Phone *PhoneNumber `json:"phone,omitempty" url:"phone,omitempty"`
 	// Either phone or email is required.
 	Email            *string                 `json:"email,omitempty" url:"email,omitempty"`
-	Address          *Address                `json:"address,omitempty" url:"address,omitempty"`
-	BirthDate        *BirthDate              `json:"birthDate,omitempty" url:"birthDate,omitempty"`
-	GovernmentID     *IndividualGovernmentID `json:"governmentID,omitempty" url:"governmentID,omitempty"`
-	Responsibilities *Responsibilities       `json:"responsibilities,omitempty" url:"responsibilities,omitempty"`
+	Address          *Address                `json:"address" url:"address"`
+	BirthDate        *BirthDate              `json:"birthDate" url:"birthDate"`
+	GovernmentID     *IndividualGovernmentID `json:"governmentID" url:"governmentID"`
+	Responsibilities *Responsibilities       `json:"responsibilities" url:"responsibilities"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -5274,13 +5274,13 @@ func (r *RepresentativeRequest) String() string {
 
 type RepresentativeResponse struct {
 	ID                   RepresentativeID  `json:"id" url:"id"`
-	Name                 *FullName         `json:"name,omitempty" url:"name,omitempty"`
+	Name                 *FullName         `json:"name" url:"name"`
 	Phone                *PhoneNumber      `json:"phone,omitempty" url:"phone,omitempty"`
 	Email                *string           `json:"email,omitempty" url:"email,omitempty"`
-	Address              *Address          `json:"address,omitempty" url:"address,omitempty"`
+	Address              *Address          `json:"address" url:"address"`
 	BirthDateProvided    bool              `json:"birthDateProvided" url:"birthDateProvided"`
 	GovernmentIDProvided bool              `json:"governmentIDProvided" url:"governmentIDProvided"`
-	Responsibilities     *Responsibilities `json:"responsibilities,omitempty" url:"responsibilities,omitempty"`
+	Responsibilities     *Responsibilities `json:"responsibilities" url:"responsibilities"`
 	CreatedOn            time.Time         `json:"createdOn" url:"createdOn"`
 	UpdatedOn            time.Time         `json:"updatedOn" url:"updatedOn"`
 	DisabledOn           *time.Time        `json:"disabledOn,omitempty" url:"disabledOn,omitempty"`
@@ -5711,7 +5711,7 @@ func (r *Rule) validate() error {
 }
 
 type TaxID struct {
-	Ein *Ein `json:"ein,omitempty" url:"ein,omitempty"`
+	Ein *Ein `json:"ein" url:"ein"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -5806,7 +5806,7 @@ func (t *TokenGenerationEntityOptions) String() string {
 type TokenGenerationInvoiceOptions struct {
 	// Defaults to OPTIONAL. If set to REQUIRED, the user will be required to provide at least one line item when creating an invoice. If set to DISABLED, the user will not be able to provide line items when creating an invoice.
 	LineItems *LineItemAvailabilities `json:"lineItems,omitempty" url:"lineItems,omitempty"`
-	Status    []InvoiceStatus         `json:"status,omitempty" url:"status,omitempty"`
+	Status    []InvoiceStatus         `json:"status" url:"status"`
 	// If true, recurring invoice templates will be available to the user.
 	Recurring *bool `json:"recurring,omitempty" url:"recurring,omitempty"`
 
@@ -6576,7 +6576,7 @@ func (v VendorPortalTab) Ptr() *VendorPortalTab {
 }
 
 type VendorTrigger struct {
-	VendorIDs []EntityID `json:"vendorIds,omitempty" url:"vendorIds,omitempty"`
+	VendorIDs []EntityID `json:"vendorIds" url:"vendorIds"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage

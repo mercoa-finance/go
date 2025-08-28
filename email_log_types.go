@@ -207,7 +207,7 @@ type EmailLogResponse struct {
 	Count int `json:"count" url:"count"`
 	// True if there are more logs available for the given filters.
 	HasMore bool        `json:"hasMore" url:"hasMore"`
-	Data    []*EmailLog `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*EmailLog `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage

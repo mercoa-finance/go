@@ -88,7 +88,7 @@ type FindTransactionsRequest struct {
 type FindTransactionsResponse struct {
 	Count   int                    `json:"count" url:"count"`
 	HasMore bool                   `json:"hasMore" url:"hasMore"`
-	Data    []*TransactionResponse `json:"data,omitempty" url:"data,omitempty"`
+	Data    []*TransactionResponse `json:"data" url:"data"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -520,12 +520,12 @@ type TransactionResponseAchBase struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
@@ -717,12 +717,12 @@ type TransactionResponseBankToBankWithInvoices struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
@@ -731,7 +731,7 @@ type TransactionResponseBankToBankWithInvoices struct {
 	// If the invoice failed to be paid, this field will be populated with the reason of failure.
 	FailureReason *TransactionFailureReason `json:"failureReason,omitempty" url:"failureReason,omitempty"`
 	// Invoices associated with this transaction
-	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*InvoiceResponse `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -923,12 +923,12 @@ type TransactionResponseBankToMailedCheckWithInvoices struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
@@ -939,7 +939,7 @@ type TransactionResponseBankToMailedCheckWithInvoices struct {
 	// The date the check was mailed. If the check was not mailed, this field will be null.
 	MailedOnDate *time.Time `json:"mailedOnDate,omitempty" url:"mailedOnDate,omitempty"`
 	// Invoices associated with this transaction
-	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*InvoiceResponse `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1142,12 +1142,12 @@ type TransactionResponseBankToPrintedCheckWithInvoices struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
@@ -1156,7 +1156,7 @@ type TransactionResponseBankToPrintedCheckWithInvoices struct {
 	// The number of the check
 	CheckNumber int `json:"checkNumber" url:"checkNumber"`
 	// Invoices associated with this transaction
-	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*InvoiceResponse `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1348,12 +1348,12 @@ type TransactionResponseBankToWalletWithInvoices struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
@@ -1362,7 +1362,7 @@ type TransactionResponseBankToWalletWithInvoices struct {
 	// If the invoice failed to be paid, this field will be populated with the reason of failure.
 	FailureReason *TransactionFailureReason `json:"failureReason,omitempty" url:"failureReason,omitempty"`
 	// Invoices associated with this transaction
-	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*InvoiceResponse `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1554,12 +1554,12 @@ type TransactionResponseBase struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
@@ -1742,12 +1742,12 @@ type TransactionResponseCardToBankAccountWithInvoices struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
@@ -1756,7 +1756,7 @@ type TransactionResponseCardToBankAccountWithInvoices struct {
 	// If the invoice failed to be paid, this field will be populated with the reason of failure.
 	FailureReason *TransactionFailureReason `json:"failureReason,omitempty" url:"failureReason,omitempty"`
 	// Invoices associated with this transaction
-	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*InvoiceResponse `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1948,19 +1948,19 @@ type TransactionResponseCardToWalletWithInvoices struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
 	CreatedAt                 time.Time                  `json:"createdAt" url:"createdAt"`
 	UpdatedAt                 time.Time                  `json:"updatedAt" url:"updatedAt"`
 	// Invoices associated with this transaction
-	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*InvoiceResponse `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2145,12 +2145,12 @@ type TransactionResponseCheckBase struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
@@ -2342,12 +2342,12 @@ type TransactionResponseCheckBaseMailed struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
@@ -2552,19 +2552,19 @@ type TransactionResponseCustomWithInvoices struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
 	CreatedAt                 time.Time                  `json:"createdAt" url:"createdAt"`
 	UpdatedAt                 time.Time                  `json:"updatedAt" url:"updatedAt"`
 	// Invoices associated with this transaction
-	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*InvoiceResponse `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2749,12 +2749,12 @@ type TransactionResponseWalletToBankWithInvoices struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
@@ -2763,7 +2763,7 @@ type TransactionResponseWalletToBankWithInvoices struct {
 	// If the invoice failed to be paid, this field will be populated with the reason of failure.
 	FailureReason *TransactionFailureReason `json:"failureReason,omitempty" url:"failureReason,omitempty"`
 	// Invoices associated with this transaction
-	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*InvoiceResponse `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -2955,19 +2955,19 @@ type TransactionResponseWalletToWalletWithInvoices struct {
 	Amount                    float64                    `json:"amount" url:"amount"`
 	Currency                  string                     `json:"currency" url:"currency"`
 	PayerID                   EntityID                   `json:"payerId" url:"payerId"`
-	Payer                     *CounterpartyResponse      `json:"payer,omitempty" url:"payer,omitempty"`
-	PaymentSource             *PaymentMethodResponse     `json:"paymentSource,omitempty" url:"paymentSource,omitempty"`
+	Payer                     *CounterpartyResponse      `json:"payer" url:"payer"`
+	PaymentSource             *PaymentMethodResponse     `json:"paymentSource" url:"paymentSource"`
 	PaymentSourceID           PaymentMethodID            `json:"paymentSourceId" url:"paymentSourceId"`
 	VendorID                  EntityID                   `json:"vendorId" url:"vendorId"`
-	Vendor                    *CounterpartyResponse      `json:"vendor,omitempty" url:"vendor,omitempty"`
-	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination,omitempty" url:"paymentDestination,omitempty"`
+	Vendor                    *CounterpartyResponse      `json:"vendor" url:"vendor"`
+	PaymentDestination        *PaymentMethodResponse     `json:"paymentDestination" url:"paymentDestination"`
 	PaymentDestinationID      PaymentMethodID            `json:"paymentDestinationId" url:"paymentDestinationId"`
 	PaymentDestinationOptions *PaymentDestinationOptions `json:"paymentDestinationOptions,omitempty" url:"paymentDestinationOptions,omitempty"`
 	Fees                      *InvoiceFeesResponse       `json:"fees,omitempty" url:"fees,omitempty"`
 	CreatedAt                 time.Time                  `json:"createdAt" url:"createdAt"`
 	UpdatedAt                 time.Time                  `json:"updatedAt" url:"updatedAt"`
 	// Invoices associated with this transaction
-	Invoices []*InvoiceResponse `json:"invoices,omitempty" url:"invoices,omitempty"`
+	Invoices []*InvoiceResponse `json:"invoices" url:"invoices"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
