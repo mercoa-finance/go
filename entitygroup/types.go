@@ -12,7 +12,9 @@ type EntityGroupGetRequest struct {
 }
 
 type EntityGroupFindRequest struct {
-	// The maximum number of results to return. Defaults to 1. Max is 10.
+	// The maximum number of results to return. Defaults to 1. Max is 20.
 	Limit         *int                           `json:"-" url:"limit,omitempty"`
 	StartingAfter *mercoafinancego.EntityGroupID `json:"-" url:"startingAfter,omitempty"`
+	// Search entity groups by name. This will perform a case-insensitive search on the group name.
+	Search *string `json:"-" url:"search,omitempty"`
 }

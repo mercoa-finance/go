@@ -18,6 +18,10 @@ type BankAccountCheckOptions struct {
 	RoutingNumberOverride *string `json:"routingNumberOverride,omitempty" url:"routingNumberOverride,omitempty"`
 	// If provided, will print a check with the provided account number instead of the one from the bank account
 	AccountNumberOverride *string `json:"accountNumberOverride,omitempty" url:"accountNumberOverride,omitempty"`
+	// If provided, will print a check with the provided account holder name instead of the payer name from the invoice
+	AccountHolderNameOverride *string `json:"accountHolderNameOverride,omitempty" url:"accountHolderNameOverride,omitempty"`
+	// If provided, will print a check with the provided account holder address instead of the payer address from the invoice
+	AccountHolderAddressOverride *Address `json:"accountHolderAddressOverride,omitempty" url:"accountHolderAddressOverride,omitempty"`
 	// Name of the person who's signature will be printed on the check.
 	SignatoryName string `json:"signatoryName" url:"signatoryName"`
 	// Base64 encoded image of the signature. If not provided, will use the signatoryName to generate a signature. Mercoa will automatically grayscale, resize, and convert the image to a PNG the image to fit on the check.
@@ -55,6 +59,20 @@ func (b *BankAccountCheckOptions) GetAccountNumberOverride() *string {
 		return nil
 	}
 	return b.AccountNumberOverride
+}
+
+func (b *BankAccountCheckOptions) GetAccountHolderNameOverride() *string {
+	if b == nil {
+		return nil
+	}
+	return b.AccountHolderNameOverride
+}
+
+func (b *BankAccountCheckOptions) GetAccountHolderAddressOverride() *Address {
+	if b == nil {
+		return nil
+	}
+	return b.AccountHolderAddressOverride
 }
 
 func (b *BankAccountCheckOptions) GetSignatoryName() string {
