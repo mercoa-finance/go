@@ -345,6 +345,7 @@ type ProcessPaymentGatewayCardDetails struct {
 	Iframe        *ProcessPaymentGatewayCardDetailsIframe
 	StripeIssuing *ProcessPaymentGatewayCardDetailsStripeIssuing
 	Lithic        *ProcessPaymentGatewayCardDetailsLithic
+	MarqetaJs     *ProcessPaymentGatewayCardDetailsMarqetaJs
 }
 
 func (p *ProcessPaymentGatewayCardDetails) GetType() string {
@@ -380,6 +381,13 @@ func (p *ProcessPaymentGatewayCardDetails) GetLithic() *ProcessPaymentGatewayCar
 		return nil
 	}
 	return p.Lithic
+}
+
+func (p *ProcessPaymentGatewayCardDetails) GetMarqetaJs() *ProcessPaymentGatewayCardDetailsMarqetaJs {
+	if p == nil {
+		return nil
+	}
+	return p.MarqetaJs
 }
 
 func (p *ProcessPaymentGatewayCardDetails) UnmarshalJSON(data []byte) error {
@@ -418,6 +426,12 @@ func (p *ProcessPaymentGatewayCardDetails) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		p.Lithic = value
+	case "marqetaJs":
+		value := new(ProcessPaymentGatewayCardDetailsMarqetaJs)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.MarqetaJs = value
 	}
 	return nil
 }
@@ -438,6 +452,9 @@ func (p ProcessPaymentGatewayCardDetails) MarshalJSON() ([]byte, error) {
 	if p.Lithic != nil {
 		return internal.MarshalJSONWithExtraProperty(p.Lithic, "type", "lithic")
 	}
+	if p.MarqetaJs != nil {
+		return internal.MarshalJSONWithExtraProperty(p.MarqetaJs, "type", "marqetaJs")
+	}
 	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
 }
 
@@ -446,6 +463,7 @@ type ProcessPaymentGatewayCardDetailsVisitor interface {
 	VisitIframe(*ProcessPaymentGatewayCardDetailsIframe) error
 	VisitStripeIssuing(*ProcessPaymentGatewayCardDetailsStripeIssuing) error
 	VisitLithic(*ProcessPaymentGatewayCardDetailsLithic) error
+	VisitMarqetaJs(*ProcessPaymentGatewayCardDetailsMarqetaJs) error
 }
 
 func (p *ProcessPaymentGatewayCardDetails) Accept(visitor ProcessPaymentGatewayCardDetailsVisitor) error {
@@ -460,6 +478,9 @@ func (p *ProcessPaymentGatewayCardDetails) Accept(visitor ProcessPaymentGatewayC
 	}
 	if p.Lithic != nil {
 		return visitor.VisitLithic(p.Lithic)
+	}
+	if p.MarqetaJs != nil {
+		return visitor.VisitMarqetaJs(p.MarqetaJs)
 	}
 	return fmt.Errorf("type %T does not define a non-empty union type", p)
 }
@@ -480,6 +501,9 @@ func (p *ProcessPaymentGatewayCardDetails) validate() error {
 	}
 	if p.Lithic != nil {
 		fields = append(fields, "lithic")
+	}
+	if p.MarqetaJs != nil {
+		fields = append(fields, "marqetaJs")
 	}
 	if len(fields) == 0 {
 		if p.Type != "" {
@@ -1032,6 +1056,143 @@ func (p *ProcessPaymentGatewayCardDetailsLithic) UnmarshalJSON(data []byte) erro
 }
 
 func (p *ProcessPaymentGatewayCardDetailsLithic) String() string {
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type ProcessPaymentGatewayCardDetailsMarqetaJs struct {
+	// The first name of the card user
+	FirstName string `json:"firstName" url:"firstName"`
+	// The last name of the card user
+	LastName string `json:"lastName" url:"lastName"`
+	// The postal code of the address of the card
+	PostalCode string `json:"postalCode" url:"postalCode"`
+	// The country of the address of the card
+	Country CountryCode `json:"country" url:"country"`
+	// The type of card (credit or debit). Defaults to debit.
+	CardType *ProcessPaymentGatewayCardType `json:"cardType,omitempty" url:"cardType,omitempty"`
+	// The phone number of the card user
+	PhoneNumber *string `json:"phoneNumber,omitempty" url:"phoneNumber,omitempty"`
+	// The email of the card user
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The full address of the card user
+	FullAddress *string `json:"fullAddress,omitempty" url:"fullAddress,omitempty"`
+	// The details of the fallback ACH account to use for the payment. This will be used if a fee is charged for card processing.
+	AchDetails *ProcessPaymentGatewayAchDetails `json:"achDetails,omitempty" url:"achDetails,omitempty"`
+	// The Marqeta card token for the virtual card
+	CardToken string `json:"cardToken" url:"cardToken"`
+	// The Marqeta client access token for Marqeta.js authentication
+	ClientAccessToken string `json:"clientAccessToken" url:"clientAccessToken"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetFirstName() string {
+	if p == nil {
+		return ""
+	}
+	return p.FirstName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetLastName() string {
+	if p == nil {
+		return ""
+	}
+	return p.LastName
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetPostalCode() string {
+	if p == nil {
+		return ""
+	}
+	return p.PostalCode
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetCountry() CountryCode {
+	if p == nil {
+		return ""
+	}
+	return p.Country
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetCardType() *ProcessPaymentGatewayCardType {
+	if p == nil {
+		return nil
+	}
+	return p.CardType
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetPhoneNumber() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PhoneNumber
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetEmail() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Email
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetFullAddress() *string {
+	if p == nil {
+		return nil
+	}
+	return p.FullAddress
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetAchDetails() *ProcessPaymentGatewayAchDetails {
+	if p == nil {
+		return nil
+	}
+	return p.AchDetails
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetCardToken() string {
+	if p == nil {
+		return ""
+	}
+	return p.CardToken
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetClientAccessToken() string {
+	if p == nil {
+		return ""
+	}
+	return p.ClientAccessToken
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) GetExtraProperties() map[string]interface{} {
+	return p.extraProperties
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) UnmarshalJSON(data []byte) error {
+	type unmarshaler ProcessPaymentGatewayCardDetailsMarqetaJs
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = ProcessPaymentGatewayCardDetailsMarqetaJs(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *ProcessPaymentGatewayCardDetailsMarqetaJs) String() string {
 	if len(p.rawJSON) > 0 {
 		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
 			return value
@@ -1793,6 +1954,8 @@ type ProcessPaymentGatewaySuccessResponse struct {
 	GatewayAmount *float64 `json:"gatewayAmount,omitempty" url:"gatewayAmount,omitempty"`
 	// The vendor name detected from the payment gateway
 	VendorName *string `json:"vendorName,omitempty" url:"vendorName,omitempty"`
+	// Information about what data is required to proceed with payment
+	RequiredData *ValidatePaymentGatewayRequiredData `json:"requiredData,omitempty" url:"requiredData,omitempty"`
 	// List of payment gateway attempts for this job
 	Attempts []*PaymentGatewayAttempt `json:"attempts" url:"attempts"`
 	// The timestamp when the job was created
@@ -1837,6 +2000,13 @@ func (p *ProcessPaymentGatewaySuccessResponse) GetVendorName() *string {
 		return nil
 	}
 	return p.VendorName
+}
+
+func (p *ProcessPaymentGatewaySuccessResponse) GetRequiredData() *ValidatePaymentGatewayRequiredData {
+	if p == nil {
+		return nil
+	}
+	return p.RequiredData
 }
 
 func (p *ProcessPaymentGatewaySuccessResponse) GetAttempts() []*PaymentGatewayAttempt {
@@ -2782,6 +2952,107 @@ func (v *ValidatePaymentGatewayRequestHTML) String() string {
 	return fmt.Sprintf("%#v", v)
 }
 
+type ValidatePaymentGatewayRequiredData struct {
+	// Whether the payment gateway requires an account number to proceed
+	NeedsAccountNumber *bool `json:"needsAccountNumber,omitempty" url:"needsAccountNumber,omitempty"`
+	// Whether the payment gateway requires a postal code to proceed
+	NeedsPostalCode *bool `json:"needsPostalCode,omitempty" url:"needsPostalCode,omitempty"`
+	// Whether the payment gateway requires an email address to proceed
+	NeedsEmail *bool `json:"needsEmail,omitempty" url:"needsEmail,omitempty"`
+	// Whether the payment gateway requires the account holder's first name to proceed
+	NeedsAccountHolderFirstName *bool `json:"needsAccountHolderFirstName,omitempty" url:"needsAccountHolderFirstName,omitempty"`
+	// Whether the payment gateway requires the account holder's last name to proceed
+	NeedsAccountHolderLastName *bool `json:"needsAccountHolderLastName,omitempty" url:"needsAccountHolderLastName,omitempty"`
+	// Whether the payment gateway requires a full service address to proceed
+	NeedsFullServiceAddress *bool `json:"needsFullServiceAddress,omitempty" url:"needsFullServiceAddress,omitempty"`
+	// Whether the payment gateway requires a phone number to proceed
+	NeedsPhoneNumber *bool `json:"needsPhoneNumber,omitempty" url:"needsPhoneNumber,omitempty"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (v *ValidatePaymentGatewayRequiredData) GetNeedsAccountNumber() *bool {
+	if v == nil {
+		return nil
+	}
+	return v.NeedsAccountNumber
+}
+
+func (v *ValidatePaymentGatewayRequiredData) GetNeedsPostalCode() *bool {
+	if v == nil {
+		return nil
+	}
+	return v.NeedsPostalCode
+}
+
+func (v *ValidatePaymentGatewayRequiredData) GetNeedsEmail() *bool {
+	if v == nil {
+		return nil
+	}
+	return v.NeedsEmail
+}
+
+func (v *ValidatePaymentGatewayRequiredData) GetNeedsAccountHolderFirstName() *bool {
+	if v == nil {
+		return nil
+	}
+	return v.NeedsAccountHolderFirstName
+}
+
+func (v *ValidatePaymentGatewayRequiredData) GetNeedsAccountHolderLastName() *bool {
+	if v == nil {
+		return nil
+	}
+	return v.NeedsAccountHolderLastName
+}
+
+func (v *ValidatePaymentGatewayRequiredData) GetNeedsFullServiceAddress() *bool {
+	if v == nil {
+		return nil
+	}
+	return v.NeedsFullServiceAddress
+}
+
+func (v *ValidatePaymentGatewayRequiredData) GetNeedsPhoneNumber() *bool {
+	if v == nil {
+		return nil
+	}
+	return v.NeedsPhoneNumber
+}
+
+func (v *ValidatePaymentGatewayRequiredData) GetExtraProperties() map[string]interface{} {
+	return v.extraProperties
+}
+
+func (v *ValidatePaymentGatewayRequiredData) UnmarshalJSON(data []byte) error {
+	type unmarshaler ValidatePaymentGatewayRequiredData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*v = ValidatePaymentGatewayRequiredData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *v)
+	if err != nil {
+		return err
+	}
+	v.extraProperties = extraProperties
+	v.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (v *ValidatePaymentGatewayRequiredData) String() string {
+	if len(v.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(v.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(v); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", v)
+}
+
 type ValidatePaymentGatewayResponse struct {
 	JobStatus string
 	Pending   *ValidatePaymentGatewayPendingResponse
@@ -2930,12 +3201,14 @@ type ValidatePaymentGatewaySuccessResponse struct {
 	PaymentGatewayURL *string `json:"paymentGatewayUrl,omitempty" url:"paymentGatewayUrl,omitempty"`
 	// Data on the card payments that were extracted from the gateway
 	Card *ValidatePaymentGatewayCardResponse `json:"card,omitempty" url:"card,omitempty"`
-	// The invoice amount detected from the payment gateway
+	// The invoice amount detected from the invoice
 	InvoiceAmount *float64 `json:"invoiceAmount,omitempty" url:"invoiceAmount,omitempty"`
 	// The amount displayed on the payment gateway (may include fees)
 	GatewayAmount *float64 `json:"gatewayAmount,omitempty" url:"gatewayAmount,omitempty"`
-	// The vendor name detected from the payment gateway
+	// The vendor name
 	VendorName *string `json:"vendorName,omitempty" url:"vendorName,omitempty"`
+	// Information about what data is required to proceed with payment
+	RequiredData *ValidatePaymentGatewayRequiredData `json:"requiredData,omitempty" url:"requiredData,omitempty"`
 	// The timestamp when the job was created
 	CreatedAt time.Time `json:"createdAt" url:"createdAt"`
 	// The timestamp when the job was last updated
@@ -2985,6 +3258,13 @@ func (v *ValidatePaymentGatewaySuccessResponse) GetVendorName() *string {
 		return nil
 	}
 	return v.VendorName
+}
+
+func (v *ValidatePaymentGatewaySuccessResponse) GetRequiredData() *ValidatePaymentGatewayRequiredData {
+	if v == nil {
+		return nil
+	}
+	return v.RequiredData
 }
 
 func (v *ValidatePaymentGatewaySuccessResponse) GetCreatedAt() time.Time {

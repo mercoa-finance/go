@@ -34,7 +34,7 @@ type FindEntities struct {
 	IsPayor *bool `json:"-" url:"isPayor,omitempty"`
 	// Use search instead. Deprecated. Filter entities by name. Partial matches are supported.
 	Name *string `json:"-" url:"name,omitempty"`
-	// Find entities by name, email, or emailTo. Partial matches are supported.
+	// Find entities by name, email, emailTo, entity ID, or foreign ID. Partial matches are supported for name, email, and emailTo. Exact matches are used for entity ID and foreign ID.
 	Search *string `json:"-" url:"search,omitempty"`
 	// Filter entities by simple key/value metadata. Each filter will be applied as an AND condition. Duplicate keys will be ignored.
 	Metadata *mercoafinancego.MetadataFilter `json:"-" url:"metadata,omitempty"`

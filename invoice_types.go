@@ -5209,6 +5209,10 @@ type InvoiceResponse struct {
 	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// The ID of the entity who created this invoice.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
+	// The ID of the entity group that created this invoice.
+	EntityGroupID *EntityGroupID `json:"entityGroupId,omitempty" url:"entityGroupId,omitempty"`
+	// The foreign ID of the entity group that created this invoice.
+	EntityGroupForeignID *string `json:"entityGroupForeignId,omitempty" url:"entityGroupForeignId,omitempty"`
 	// Entity user who created this invoice.
 	CreatorUser *EntityUserResponse `json:"creatorUser,omitempty" url:"creatorUser,omitempty"`
 	CreatedAt   time.Time           `json:"createdAt" url:"createdAt"`
@@ -5478,6 +5482,20 @@ func (i *InvoiceResponse) GetCreatorEntityID() *EntityID {
 	return i.CreatorEntityID
 }
 
+func (i *InvoiceResponse) GetEntityGroupID() *EntityGroupID {
+	if i == nil {
+		return nil
+	}
+	return i.EntityGroupID
+}
+
+func (i *InvoiceResponse) GetEntityGroupForeignID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.EntityGroupForeignID
+}
+
 func (i *InvoiceResponse) GetCreatorUser() *EntityUserResponse {
 	if i == nil {
 		return nil
@@ -5719,6 +5737,10 @@ type InvoiceResponseBase struct {
 	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// The ID of the entity who created this invoice.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
+	// The ID of the entity group that created this invoice.
+	EntityGroupID *EntityGroupID `json:"entityGroupId,omitempty" url:"entityGroupId,omitempty"`
+	// The foreign ID of the entity group that created this invoice.
+	EntityGroupForeignID *string `json:"entityGroupForeignId,omitempty" url:"entityGroupForeignId,omitempty"`
 	// Entity user who created this invoice.
 	CreatorUser *EntityUserResponse `json:"creatorUser,omitempty" url:"creatorUser,omitempty"`
 	CreatedAt   time.Time           `json:"createdAt" url:"createdAt"`
@@ -5973,6 +5995,20 @@ func (i *InvoiceResponseBase) GetCreatorEntityID() *EntityID {
 		return nil
 	}
 	return i.CreatorEntityID
+}
+
+func (i *InvoiceResponseBase) GetEntityGroupID() *EntityGroupID {
+	if i == nil {
+		return nil
+	}
+	return i.EntityGroupID
+}
+
+func (i *InvoiceResponseBase) GetEntityGroupForeignID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.EntityGroupForeignID
 }
 
 func (i *InvoiceResponseBase) GetCreatorUser() *EntityUserResponse {
@@ -6795,6 +6831,10 @@ type InvoiceTemplateResponse struct {
 	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// The ID of the entity who created this invoice.
 	CreatorEntityID *EntityID `json:"creatorEntityId,omitempty" url:"creatorEntityId,omitempty"`
+	// The ID of the entity group that created this invoice.
+	EntityGroupID *EntityGroupID `json:"entityGroupId,omitempty" url:"entityGroupId,omitempty"`
+	// The foreign ID of the entity group that created this invoice.
+	EntityGroupForeignID *string `json:"entityGroupForeignId,omitempty" url:"entityGroupForeignId,omitempty"`
 	// Entity user who created this invoice.
 	CreatorUser *EntityUserResponse `json:"creatorUser,omitempty" url:"creatorUser,omitempty"`
 	CreatedAt   time.Time           `json:"createdAt" url:"createdAt"`
@@ -7050,6 +7090,20 @@ func (i *InvoiceTemplateResponse) GetCreatorEntityID() *EntityID {
 		return nil
 	}
 	return i.CreatorEntityID
+}
+
+func (i *InvoiceTemplateResponse) GetEntityGroupID() *EntityGroupID {
+	if i == nil {
+		return nil
+	}
+	return i.EntityGroupID
+}
+
+func (i *InvoiceTemplateResponse) GetEntityGroupForeignID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.EntityGroupForeignID
 }
 
 func (i *InvoiceTemplateResponse) GetCreatorUser() *EntityUserResponse {
