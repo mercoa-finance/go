@@ -1452,10 +1452,11 @@ func (e EmailSenderProvider) Ptr() *EmailSenderProvider {
 }
 
 type EmailSenderRequest struct {
-	Provider  EmailSenderProvider `json:"provider" url:"provider"`
-	FromEmail string              `json:"fromEmail" url:"fromEmail"`
-	FromName  string              `json:"fromName" url:"fromName"`
-	APIKey    *string             `json:"apiKey,omitempty" url:"apiKey,omitempty"`
+	Provider        EmailSenderProvider `json:"provider" url:"provider"`
+	FromEmail       string              `json:"fromEmail" url:"fromEmail"`
+	FromName        string              `json:"fromName" url:"fromName"`
+	APIKey          *string             `json:"apiKey,omitempty" url:"apiKey,omitempty"`
+	UseSmartReplyTo *bool               `json:"useSmartReplyTo,omitempty" url:"useSmartReplyTo,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1487,6 +1488,13 @@ func (e *EmailSenderRequest) GetAPIKey() *string {
 		return nil
 	}
 	return e.APIKey
+}
+
+func (e *EmailSenderRequest) GetUseSmartReplyTo() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.UseSmartReplyTo
 }
 
 func (e *EmailSenderRequest) GetExtraProperties() map[string]interface{} {
@@ -1522,10 +1530,11 @@ func (e *EmailSenderRequest) String() string {
 }
 
 type EmailSenderResponse struct {
-	Provider  EmailSenderProvider `json:"provider" url:"provider"`
-	FromEmail string              `json:"fromEmail" url:"fromEmail"`
-	FromName  string              `json:"fromName" url:"fromName"`
-	HasAPIKey bool                `json:"hasApiKey" url:"hasApiKey"`
+	Provider        EmailSenderProvider `json:"provider" url:"provider"`
+	FromEmail       string              `json:"fromEmail" url:"fromEmail"`
+	FromName        string              `json:"fromName" url:"fromName"`
+	HasAPIKey       bool                `json:"hasApiKey" url:"hasApiKey"`
+	UseSmartReplyTo *bool               `json:"useSmartReplyTo,omitempty" url:"useSmartReplyTo,omitempty"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
@@ -1557,6 +1566,13 @@ func (e *EmailSenderResponse) GetHasAPIKey() bool {
 		return false
 	}
 	return e.HasAPIKey
+}
+
+func (e *EmailSenderResponse) GetUseSmartReplyTo() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.UseSmartReplyTo
 }
 
 func (e *EmailSenderResponse) GetExtraProperties() map[string]interface{} {

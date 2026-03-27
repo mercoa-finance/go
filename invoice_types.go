@@ -6153,6 +6153,7 @@ const (
 	InvoiceStatusNew        InvoiceStatus = "NEW"
 	InvoiceStatusApproved   InvoiceStatus = "APPROVED"
 	InvoiceStatusScheduled  InvoiceStatus = "SCHEDULED"
+	InvoiceStatusProcessing InvoiceStatus = "PROCESSING"
 	InvoiceStatusPending    InvoiceStatus = "PENDING"
 	InvoiceStatusPaid       InvoiceStatus = "PAID"
 	InvoiceStatusArchived   InvoiceStatus = "ARCHIVED"
@@ -6173,6 +6174,8 @@ func NewInvoiceStatusFromString(s string) (InvoiceStatus, error) {
 		return InvoiceStatusApproved, nil
 	case "SCHEDULED":
 		return InvoiceStatusScheduled, nil
+	case "PROCESSING":
+		return InvoiceStatusProcessing, nil
 	case "PENDING":
 		return InvoiceStatusPending, nil
 	case "PAID":
